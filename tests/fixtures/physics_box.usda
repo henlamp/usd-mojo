@@ -1,0 +1,69 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World" (
+    prepend apiSchemas = ["MaterialBindingAPI"]
+)
+{
+    rel material:binding:physics = </World/Material>
+
+    def PhysicsScene "Physics"
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+    }
+
+    def Material "Material" (
+        prepend apiSchemas = ["PhysicsMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 0.6
+        float physics:restitution = 0
+        float physics:staticFriction = 0.6
+    }
+
+    def Cube "Ground" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        float3 xformOp:scale = (5, 5, 0.1)
+        double3 xformOp:translate = (0, 0, -0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Xform "Box" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        custom vector3f[] directions = [(1, 0, 0), (0, 1, 0)]
+        custom int[] indices = [1, -2, 3]
+        custom matrix4d matrix = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+        custom double3 offset = (1, 2, 3)
+        custom quatd orientation = (1, 0, 0, 0)
+        float physics:mass = 1
+        custom float[] weights = [0.25, 0.5, 0.75]
+        double3 xformOp:translate = (0, 0, 2)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def Cube "Collider" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3 xformOp:scale = (0.25, 0.25, 0.25)
+            uniform token[] xformOpOrder = ["xformOp:scale"]
+        }
+    }
+
+    def PhysicsFixedJoint "DisabledFixed"
+    {
+        rel physics:body1 = </World/Box>
+        bool physics:jointEnabled = 0
+    }
+}
+

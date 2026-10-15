@@ -1,0 +1,60 @@
+[workspace]
+name = "usd-mojo"
+version = "0.1.0"
+description = "Typed Mojo access to OpenUSD scenes and bulk geometry"
+channels = ["conda-forge"]
+platforms = [
+  { name = "apple-silicon", platform = "osx-arm64", macos = "13.0" },
+  { name = "linux-x86", platform = "linux-64", glibc = "2.34" },
+]
+requires-pixi = "==0.81.0"
+
+[dependencies]
+python = "==3.12.13"
+openusd = "==26.08"
+cmake = ">=3.30,<5"
+ninja = ">=1.12,<2"
+
+[pypi-dependencies]
+mojo = "==1.1.0"
+
+[feature.nightly.dependencies]
+python = "==3.12.13"
+openusd = "==26.08"
+cmake = ">=3.30,<5"
+ninja = ">=1.12,<2"
+
+[feature.nightly.pypi-dependencies]
+mojo = "==1.2.0.dev2026100905"
+
+[feature.nightly.pypi-options]
+extra-index-urls = ["https://whl.modular.com/nightly/simple/"]
+
+[environments]
+default = []
+nightly = { features = ["nightly"], no-default-feature = true }
+
+[feature.nightly.tasks]
+check = "python tools/check.py"
+package = "python tools/package.py"
+check-package = "python tools/package_check.py"
+check-hardening = "python tools/hardening.py"
+check-applications = "python tools/applications_check.py"
+check-api = "python tools/check_api.py"
+acceptance = "python tools/acceptance.py"
+benchmark-native = "python benchmarks/native_views.py"
+benchmark = "python benchmarks/run.py --build-dir .build/benchmarks"
+
+[tasks]
+check-integration = "python tools/integration_check.py"
+build = "python tools/build.py"
+check = "python tools/check.py"
+example = { cmd = "python tools/run.py examples/inspect.mojo tests/fixtures/composed.usda", depends-on = ["build"] }
+package = "python tools/package.py"
+check-package = "python tools/package_check.py"
+check-hardening = "python tools/hardening.py"
+check-applications = "python tools/applications_check.py"
+check-api = "python tools/check_api.py"
+acceptance = "python tools/acceptance.py"
+benchmark-native = "python benchmarks/native_views.py"
+benchmark = "python benchmarks/run.py --build-dir .build/benchmarks"

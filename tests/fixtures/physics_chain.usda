@@ -1,0 +1,109 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    timeCodesPerSecond = 60
+    upAxis = "Z"
+)
+
+def Xform "World" (
+    prepend apiSchemas = ["MaterialBindingAPI"]
+)
+{
+    rel material:binding:physics = </World/Material>
+
+    def PhysicsScene "Physics"
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+    }
+
+    def Material "Material" (
+        prepend apiSchemas = ["PhysicsMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 0.6
+        float physics:restitution = 0
+        float physics:staticFriction = 0.6
+    }
+
+    def Cube "Ground" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        float3 xformOp:scale = (5, 5, 0.1)
+        double3 xformOp:translate = (0, 0, -0.1)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+    }
+
+    def Xform "Arm0" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        float physics:mass = 1
+        double3 xformOp:translate = (0, 0, 1.5)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def Cube "Collider" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3 xformOp:scale = (0.12, 0.12, 0.5)
+            uniform token[] xformOpOrder = ["xformOp:scale"]
+        }
+    }
+
+    def Xform "Arm1" (
+        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+    )
+    {
+        float physics:mass = 1
+        double3 xformOp:translate = (0, 0, 0.5)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def Cube "Collider" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3 xformOp:scale = (0.12, 0.12, 0.5)
+            uniform token[] xformOpOrder = ["xformOp:scale"]
+        }
+    }
+
+    def PhysicsRevoluteJoint "Shoulder" (
+        prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+    )
+    {
+        float drive:angular:physics:damping = 1.7453293
+        float drive:angular:physics:maxForce = 20
+        float drive:angular:physics:stiffness = 0
+        float drive:angular:physics:targetVelocity = 57.29578
+        uniform token drive:angular:physics:type = "force"
+        uniform token physics:axis = "Y"
+        rel physics:body1 = </World/Arm0>
+        point3f physics:localPos0 = (0, 0, 2)
+        point3f physics:localPos1 = (0, 0, 0.5)
+        float physics:lowerLimit = -45
+        float physics:upperLimit = 45
+    }
+
+    def PhysicsRevoluteJoint "Elbow" (
+        prepend apiSchemas = ["PhysicsDriveAPI:angular"]
+    )
+    {
+        float drive:angular:physics:damping = 0.034906585
+        float drive:angular:physics:maxForce = 20
+        float drive:angular:physics:stiffness = 0
+        float drive:angular:physics:targetVelocity = 0
+        uniform token drive:angular:physics:type = "force"
+        uniform token physics:axis = "Y"
+        rel physics:body0 = </World/Arm0>
+        rel physics:body1 = </World/Arm1>
+        point3f physics:localPos0 = (0, 0, -0.5)
+        point3f physics:localPos1 = (0, 0, 0.5)
+        float physics:lowerLimit = -70
+        float physics:upperLimit = 70
+    }
+}
+

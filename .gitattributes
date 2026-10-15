@@ -1,0 +1,5 @@
+# The official USD exporter ends text layers with a blank line.
+*.usda text eol=lf whitespace=-blank-at-eof
+
+# Preserve original upstream license/notice bytes, including line endings.
+licenses/** -text

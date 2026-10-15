@@ -1,0 +1,8 @@
+.pixi/
+.build/
+.cache/
+__pycache__/
+__mojocache__/
+.DS_Store
+.local/
+/tests/*.json

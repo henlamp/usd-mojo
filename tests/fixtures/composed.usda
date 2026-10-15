@@ -1,0 +1,28 @@
+#usda 1.0
+(
+    defaultPrim = "World"
+    metersPerUnit = 1
+    upAxis = "Z"
+    timeCodesPerSecond = 60
+)
+def Xform "World"
+{
+    double3 xformOp:translate = (10, 0, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate"]
+    def Xform "Robot" (
+        prepend references = @asset.usda@</Asset>
+        variants = { string appearance = "blue" }
+        prepend variantSets = "appearance"
+    )
+    {
+        variantSet "appearance" = {
+            "blue" {
+                custom string colorLabel = "blue"
+            }
+            "red" {
+                custom string colorLabel = "red"
+            }
+        }
+    }
+    def Scope "Empty" {}
+}

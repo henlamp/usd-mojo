@@ -1,0 +1,188 @@
+[
+  {
+    "name": "bool",
+    "cpp": "bool",
+    "width": 1,
+    "channel": "unsigned"
+  },
+  {
+    "name": "uchar",
+    "cpp": "uint8_t",
+    "width": 1,
+    "channel": "unsigned"
+  },
+  {
+    "name": "int",
+    "cpp": "int32_t",
+    "width": 1,
+    "channel": "signed"
+  },
+  {
+    "name": "uint",
+    "cpp": "uint32_t",
+    "width": 1,
+    "channel": "unsigned"
+  },
+  {
+    "name": "int64",
+    "cpp": "int64_t",
+    "width": 1,
+    "channel": "signed"
+  },
+  {
+    "name": "uint64",
+    "cpp": "uint64_t",
+    "width": 1,
+    "channel": "unsigned"
+  },
+  {
+    "name": "half",
+    "cpp": "GfHalf",
+    "width": 1,
+    "channel": "numbers"
+  },
+  {
+    "name": "float",
+    "cpp": "float",
+    "width": 1,
+    "channel": "numbers"
+  },
+  {
+    "name": "double",
+    "cpp": "double",
+    "width": 1,
+    "channel": "numbers"
+  },
+  {
+    "name": "timecode",
+    "cpp": "SdfTimeCode",
+    "width": 1,
+    "channel": "numbers"
+  },
+  {
+    "name": "string",
+    "cpp": "std::string",
+    "width": 1,
+    "channel": "texts"
+  },
+  {
+    "name": "token",
+    "cpp": "TfToken",
+    "width": 1,
+    "channel": "texts"
+  },
+  {
+    "name": "asset",
+    "cpp": "SdfAssetPath",
+    "width": 1,
+    "channel": "texts"
+  },
+  {
+    "name": "matrix2d",
+    "cpp": "GfMatrix2d",
+    "width": 4,
+    "channel": "numbers"
+  },
+  {
+    "name": "matrix3d",
+    "cpp": "GfMatrix3d",
+    "width": 9,
+    "channel": "numbers"
+  },
+  {
+    "name": "matrix4d",
+    "cpp": "GfMatrix4d",
+    "width": 16,
+    "channel": "numbers"
+  },
+  {
+    "name": "quatd",
+    "cpp": "GfQuatd",
+    "width": 4,
+    "channel": "numbers"
+  },
+  {
+    "name": "quatf",
+    "cpp": "GfQuatf",
+    "width": 4,
+    "channel": "numbers"
+  },
+  {
+    "name": "quath",
+    "cpp": "GfQuath",
+    "width": 4,
+    "channel": "numbers"
+  },
+  {
+    "name": "double2",
+    "cpp": "GfVec2d",
+    "width": 2,
+    "channel": "numbers"
+  },
+  {
+    "name": "float2",
+    "cpp": "GfVec2f",
+    "width": 2,
+    "channel": "numbers"
+  },
+  {
+    "name": "half2",
+    "cpp": "GfVec2h",
+    "width": 2,
+    "channel": "numbers"
+  },
+  {
+    "name": "int2",
+    "cpp": "GfVec2i",
+    "width": 2,
+    "channel": "signed"
+  },
+  {
+    "name": "double3",
+    "cpp": "GfVec3d",
+    "width": 3,
+    "channel": "numbers"
+  },
+  {
+    "name": "float3",
+    "cpp": "GfVec3f",
+    "width": 3,
+    "channel": "numbers"
+  },
+  {
+    "name": "half3",
+    "cpp": "GfVec3h",
+    "width": 3,
+    "channel": "numbers"
+  },
+  {
+    "name": "int3",
+    "cpp": "GfVec3i",
+    "width": 3,
+    "channel": "signed"
+  },
+  {
+    "name": "double4",
+    "cpp": "GfVec4d",
+    "width": 4,
+    "channel": "numbers"
+  },
+  {
+    "name": "float4",
+    "cpp": "GfVec4f",
+    "width": 4,
+    "channel": "numbers"
+  },
+  {
+    "name": "half4",
+    "cpp": "GfVec4h",
+    "width": 4,
+    "channel": "numbers"
+  },
+  {
+    "name": "int4",
+    "cpp": "GfVec4i",
+    "width": 4,
+    "channel": "signed"
+  }
+]

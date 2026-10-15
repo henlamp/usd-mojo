@@ -1,0 +1,25 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    timeCodesPerSecond = 24
+)
+def Xform "Asset"
+{
+    double3 xformOp:translate = (1, 2, 3)
+    uniform token[] xformOpOrder = ["xformOp:translate"]
+    def Mesh "Triangle"
+    {
+        point3f[] points = [(0, 0, 0), (1, 0, 0), (0, 1, 0)]
+        point3f[] points.timeSamples = {
+            0: [(0, 0, 0), (1, 0, 0), (0, 1, 0)],
+            2: [(0, 0, 2), (1, 0, 2), (0, 1, 2)]
+        }
+        int[] faceVertexCounts = [3]
+        int[] faceVertexIndices = [0, 1, 2]
+        uniform token subdivisionScheme = "none"
+        custom bool enabled = true
+        custom string label = "Dreieck 🔥"
+        custom double gain = 1.5
+        custom double gain.timeSamples = { 0: 2, 2: 4 }
+    }
+}
