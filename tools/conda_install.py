@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -113,10 +114,12 @@ runpy.run_path(str(Path(__file__).resolve().parents[1] / "share/usd-mojo/compile
     manifest = {
         "format": 1,
         "layout": "conda",
-        "version": "0.1.0",
+        "version": json.loads((root / "conda.recipe/recipe.yaml").read_text())[
+            "package"
+        ]["version"],
         "compiler": compiler,
         "system": sys.platform,
-        "machine": "arm64" if sys.platform == "darwin" else "x86_64",
+        "machine": platform.machine(),
         "sdk_version": 2608,
         "bridge_abi": 2,
         "sdk_bundled": False,

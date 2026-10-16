@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
-project(usd_mojo_bridge VERSION 0.1.0 LANGUAGES CXX)
+project(usd_mojo_bridge VERSION 0.2.0 LANGUAGES CXX)
 find_package(pxr CONFIG REQUIRED)
 add_library(usd_mojo_bridge SHARED bridge.cpp)
 target_compile_features(usd_mojo_bridge PRIVATE cxx_std_17)

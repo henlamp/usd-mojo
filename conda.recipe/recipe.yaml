@@ -1,15 +1,15 @@
 {
   "package": {
     "name": "usd-mojo",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "source": {
     "path": ".."
   },
   "build": {
-    "number": 5,
-    "string": "mojo110_5",
-    "skip": "not (osx and arm64)",
+    "number": 0,
+    "string": "mojo110_0",
+    "skip": "not ((osx and arm64) or (linux and x86_64))",
     "files": [
       "lib/mojo/usd_mojo.mojoc",
       "lib/libusd_mojo_bridge.*",
@@ -38,17 +38,29 @@
     ],
     "host": [
       "mojo-compiler ==1.1.0",
-      "openusd ==26.08 py312h07b4ffe_0",
+      "openusd ==26.08",
       "python 3.12.*",
-      "libcxx ==23.1.3",
+      {
+        "if": "osx",
+        "then": "libcxx ==23.1.3"
+      },
       "tbb ==2023.0.0"
     ],
     "run": [
       "mojo-compiler ==1.1.0",
-      "openusd ==26.08 py312h07b4ffe_0",
+      "openusd ==26.08",
       "python 3.12.*",
-      "__osx >=13.0",
-      "libcxx >=23.1.3,<24",
+      {
+        "if": "osx",
+        "then": [
+          "__osx >=13.0",
+          "libcxx >=23.1.3,<24"
+        ]
+      },
+      {
+        "if": "linux",
+        "then": "__glibc >=2.34"
+      },
       "tbb >=2023.0.0,<2024"
     ]
   },

@@ -1,5 +1,8 @@
 # Development
 
+Develop on `development`; merge tested changes into `main` through focused pull
+requests. Publish new versions from `main` and preserve published release files.
+
 Use `pixi install --locked` and a C++ compiler. Keep builds outside synchronized folders.
 Run `pixi run -e default acceptance --execution-kind native`; repeat with
 `-e nightly` for compiler-sensitive changes.

@@ -22,12 +22,17 @@ jobs:
           pixi-version: v0.81.0
           cache: true
       - run: pixi run --locked -e ${{ matrix.environment }} acceptance --execution-kind native
+      - if: matrix.environment == 'default'
+        run: pixi exec --spec python=3.12.13 --spec rattler-build=0.76.1 -- python tools/release.py build
+      - if: matrix.environment == 'default'
+        run: pixi exec --spec python=3.12.13 -- python tools/release.py installed --channel "file://$PWD/.build/distributions"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: verification-${{ matrix.os }}-${{ matrix.environment }}
           path: |
             .build/acceptance.json
+            .build/distributions/**
             .build/*.log
             .build/native-benchmarks/benchmark.json
             .build/api-verification.json

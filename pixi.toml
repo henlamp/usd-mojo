@@ -1,6 +1,6 @@
 [workspace]
 name = "usd-mojo"
-version = "0.1.0"
+version = "0.2.0"
 description = "Typed Mojo access to OpenUSD scenes and bulk geometry"
 channels = ["conda-forge"]
 platforms = [
