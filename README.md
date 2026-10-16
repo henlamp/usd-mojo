@@ -8,13 +8,13 @@ schema data. Returned values own their storage; mesh snapshots offer borrowed vi
 
 ## Install
 
-Build from source with a C++ compiler installed:
+With [Pixi](https://pixi.sh):
 
 ```sh
-git clone https://github.com/henlamp/usd-mojo.git
-cd usd-mojo
-pixi install --locked
-pixi run build
+pixi init my-project
+cd my-project
+pixi workspace channel add https://repo.prefix.dev/modular-community https://conda.modular.com/max
+pixi add usd-mojo
 ```
 
 Save as `example.mojo` and provide a scene containing `/World/Mesh`:
@@ -29,7 +29,8 @@ def main() raises:
 ```
 
 ```sh
-pixi run python tools/run.py example.mojo
+pixi run usd-mojo-build example.mojo -o example
+pixi run ./example
 ```
 
 Version 0.1.0 packages target Mojo 1.1.0, OpenUSD 26.08 and macOS ARM64.
