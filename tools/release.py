@@ -80,6 +80,35 @@ def checked_artifact(tag=None):
     return artifact, report
 
 
+def check_linux_abi(metadata, bridge):
+    """Reject a bridge that needs a newer glibc than its declared floor."""
+    if metadata["subdir"] != "linux-64":
+        return
+
+    def version(text):
+        parts = tuple(map(int, text.split(".")))
+        return parts + (0,) * (3 - len(parts))
+
+    floors = [
+        version(match[1])
+        for dependency in metadata["depends"]
+        if (match := re.match(r"__glibc >=([0-9.]+)", dependency))
+    ]
+    if not floors:
+        raise ValueError("Linux package must declare its glibc floor")
+    required = max(
+        (
+            version(text.decode())
+            for text in re.findall(rb"\bGLIBC_([0-9.]+)\b", bridge.read_bytes())
+        ),
+        default=(0, 0, 0),
+    )
+    if required > max(floors):
+        raise ValueError(
+            f"Bridge requires glibc {required}, above package floor {max(floors)}"
+        )
+
+
 def inspect(artifact, rattler, destination):
     subprocess.run(
         [rattler, "package", "extract", str(artifact), "--dest", str(destination)],
@@ -98,6 +127,7 @@ def inspect(artifact, rattler, destination):
         or metadata["license"] != "MIT"
     ):
         raise ValueError("Compiler or license metadata mismatch")
+    check_linux_abi(metadata, destination / "lib/libusd_mojo_bridge.so")
     for filename in recipe["about"]["license_file"]:
         if (destination / "info/licenses" / filename).read_bytes() != (
             ROOT / filename

@@ -1,7 +1,7 @@
 # Compatibility
 
-Version 0.1.0 uses the documented API with native macOS ARM64 acceptance.
-Linux remains experimental until a native runner executes the current source.
+Development 0.2.0 retains the reviewed 0.1 API. Source/SDK checks pass natively
+on macOS ARM64 and Linux x86-64; the final Linux Conda fresh-install gate is pending.
 
 ## Supported API
 
@@ -61,4 +61,4 @@ integrity and relocation checks do not establish support for another SDK build.
 ## Validation
 
 [Recorded checks](VALIDATION.md) cover SDK semantics, ownership, malformed input,
-installed consumers and geometry applications. Native Linux remains pending.
+installed consumers and geometry applications. Linux package acceptance is pending.

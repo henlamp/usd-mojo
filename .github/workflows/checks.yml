@@ -1,14 +1,20 @@
 name: Library checks
 on:
   push:
-    branches: ["**"]
+    branches: [main]
     paths-ignore: ["docs/**"]
   pull_request:
   workflow_dispatch:
+    inputs:
+      package_only:
+        description: Check only the Linux package and a fresh installed consumer
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
   sdk-and-mojo:
+    if: ${{ !inputs.package_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -44,5 +50,24 @@ jobs:
             .build/benchmarks/benchmark.json
             .build/packages/*.tar.gz
             .build/packages/*.sha256
+          include-hidden-files: true
+          if-no-files-found: error
+  linux-package:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.package_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
+        with:
+          pixi-version: v0.81.0
+          run-install: false
+      - run: pixi exec --spec python=3.12.13 --spec rattler-build=0.76.1 -- python tools/release.py build
+      - run: pixi exec --spec python=3.12.13 -- python tools/release.py installed --channel "file://$PWD/.build/distributions"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: linux-package
+          path: .build/distributions/**
           include-hidden-files: true
           if-no-files-found: error
