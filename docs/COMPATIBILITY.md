@@ -1,7 +1,8 @@
 # Compatibility
 
 Development 0.2.0 retains the reviewed 0.1 API. Source/SDK checks pass natively
-on macOS ARM64 and Linux x86-64; the final Linux Conda fresh-install gate is pending.
+on macOS ARM64 and Linux x86-64. Conda packages pass fresh Pixi installation
+on both targets; the Linux package was checked on Ubuntu 22.04 under WSL2.
 
 ## Supported API
 
@@ -61,4 +62,5 @@ integrity and relocation checks do not establish support for another SDK build.
 ## Validation
 
 [Recorded checks](VALIDATION.md) cover SDK semantics, ownership, malformed input,
-installed consumers and geometry applications. Linux package acceptance is pending.
+installed consumers and geometry applications. The [Linux package record](evidence/020-linux.json)
+includes the tested source, artifact hash and fresh-install result.

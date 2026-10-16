@@ -36,7 +36,8 @@ pixi run ./example
 Published 0.1.0 packages target Mojo 1.1.0, OpenUSD 26.08 and macOS ARM64.
 Pixi installs the SDK and CPython library; the Mojo API makes no Python
 calls. Source checks also cover 1.2.0.dev2026100905 and Linux x86-64.
-Development 0.2.0 adds Linux packaging; its final fresh-install check is pending.
+Development 0.2.0 passes native Linux packaging and fresh Pixi installation
+on Ubuntu 22.04 under WSL2; it is not yet published.
 
 Stages are move-only and cannot be accessed concurrently. Units, matrices and
 time codes retain USD conventions. Rendering, physics execution, subdivision

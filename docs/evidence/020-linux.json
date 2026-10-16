@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "checked_on": "2026-10-16",
+  "version": "0.2.0 unreleased",
+  "source_commit": "cdbe578c47428a625e43a66df267876fde76d453",
+  "platform": {
+    "os": "Ubuntu 22.04 on WSL2",
+    "architecture": "x86_64",
+    "host_glibc": "2.35"
+  },
+  "tools": {
+    "pixi": "0.81.0",
+    "rattler_build": "0.76.1",
+    "python": "3.12.13",
+    "mojo_compiler": "1.1.0",
+    "openusd": "26.08"
+  },
+  "package": {
+    "artifact": "usd-mojo-0.2.0-mojo110_0.conda",
+    "subdir": "linux-64",
+    "sha256": "e494fd8cb897082e8497dbd90d5d32f5a151258bdde69800441175526ad94e06",
+    "recipe_sha256": "f9da6fdc2f4cee43a6b5e29476565846cb71c303546b88d4d1265973567d0823",
+    "depends": [
+      "mojo-compiler ==1.1.0",
+      "openusd ==26.8",
+      "python 3.12.*",
+      "tbb >=2023.0.0,<2024",
+      "__glibc >=2.28",
+      "libgcc >=15.3.0,<16",
+      "libstdcxx >=15.3.0,<16",
+      "__glibc >=2.28,<3.0.a0",
+      "openusd >=26.8,<26.9.0a0",
+      "python_abi 3.12.* *_cp312"
+    ]
+  },
+  "checks": {
+    "native_build": "passed",
+    "rattler_installed_consumer": "passed",
+    "fresh_pixi_installed_consumer": "passed",
+    "installed_package_sha256": "e494fd8cb897082e8497dbd90d5d32f5a151258bdde69800441175526ad94e06",
+    "consumer": "Build and run a separate Mojo program; load an owned triangle mesh snapshot, check the coordinate count (9) and two expected point components.",
+    "bridge_elf": "x86_64",
+    "declared_glibc_floor": "2.28",
+    "bridge_glibc_symbols": [
+      "GLIBC_2.2.5",
+      "GLIBC_2.3",
+      "GLIBC_2.14"
+    ],
+    "glibc_abi_floor": "passed",
+    "license_and_notice_bytes": "unchanged",
+    "private_path_and_credential_scan": "passed"
+  },
+  "limits": {
+    "cpu_cores": 1,
+    "nice": 15,
+    "gpu_used": false,
+    "timeout_seconds": 300,
+    "elapsed_seconds": 97.18024253845215,
+    "sampled_peak_owned_rss_bytes": 2498600960,
+    "resource_guard": "passed"
+  },
+  "scope": "Native Linux packaging and installed-consumer check on glibc 2.35. The bridge symbol check does not constitute execution on glibc 2.28. No performance benchmark or community-channel publication."
+}

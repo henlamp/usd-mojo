@@ -3,7 +3,8 @@
 ## 0.2.0 (unreleased)
 
 Linux x86-64 Conda packages with platform-specific SDK dependencies, native
-installed-consumer checks and platform-bound artifact verification.
+installed-consumer checks and platform-bound artifact verification. Builds use
+a glibc 2.28 sysroot and reject bridges requiring a newer glibc than declared.
 
 ## 0.1.0
 
