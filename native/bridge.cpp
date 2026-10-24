@@ -8,6 +8,9 @@
 #pragma GCC diagnostic ignored "-Wcpp"
 #endif
 #include <pxr/pxr.h>
+#include "sdk_pin.h"
+#include "error_bridge.h"
+static_assert(PXR_VERSION == USDM_EXPECTED_SDK_VERSION, "Selected SDK differs from the reviewed pin");
 #include <pxr/base/gf/matrix4d.h>
 #include <pxr/base/gf/vec3f.h>
 #include <pxr/base/gf/vec3d.h>
@@ -15,9 +18,14 @@
 #include <pxr/base/gf/quatd.h>
 #include <pxr/base/gf/transform.h>
 #include <pxr/base/tf/errorMark.h>
+#include <pxr/base/tf/notice.h>
+#include <pxr/base/tf/weakBase.h>
+#include <pxr/base/tf/weakPtr.h>
+#include <pxr/usd/usd/notice.h>
 #include <pxr/base/vt/array.h>
 #include <pxr/usd/sdf/path.h>
 #include <pxr/usd/sdf/types.h>
+#include <pxr/usd/sdf/schema.h>
 #include <pxr/usd/usd/attribute.h>
 #include <pxr/usd/usd/primRange.h>
 #include <pxr/usd/usd/stage.h>
@@ -43,34 +51,18 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <set>
 
 #define USDM_API extern "C" __attribute__((visibility("default")))
 PXR_NAMESPACE_USING_DIRECTIVE
 static_assert(sizeof(int) == sizeof(int32_t), "32-bit SDK topology required");
 static_assert(sizeof(uintptr_t) == sizeof(uint64_t), "64-bit targets required");
 namespace {
-enum class ErrorKind : int32_t {
-    InvalidArgument = 1,
-    NotFound = 2,
-    TypeMismatch = 3,
-    Unsupported = 4,
-    InvalidData = 5,
-    Io = 6,
-    Sdk = 7,
-    Incompatible = 8,
-    Internal = 9,
-    Resource = 10
-};
-struct BridgeError : std::runtime_error {
-    ErrorKind kind;
-    BridgeError(ErrorKind category, const std::string &message)
-        : std::runtime_error(message), kind(category) {}
-};
-thread_local std::string last_error;
-thread_local ErrorKind last_error_kind = ErrorKind::Internal;
-struct StageOwner {
-    UsdStageRefPtr stage;
-};
+using usd_mojo_native::ErrorKind;
+using usd_mojo_native::BridgeError;
+using usd_mojo_native::require;
+thread_local usd_mojo_native::ErrorState core_error;
+struct StageOwner { UsdStageRefPtr stage; };
 struct MeshOwner {
     VtVec3fArray points;
     VtIntArray counts, indices;
@@ -79,49 +71,23 @@ struct ArrayOwner {
     std::vector<double> values;
 };
 template <class F, class T> T protect(F &&action, T failure) noexcept {
-    try {
-        last_error.clear();
-        last_error_kind = ErrorKind::Internal;
+    return core_error.protect([&]() {
         TfErrorMark errors;
         auto result = action();
         if (!errors.IsClean()) {
             std::string message;
-            for (const auto &error : errors)
-                message += error.GetCommentary() + "\n";
+            for (const auto &error : errors) message += error.GetCommentary() + "\n";
             errors.Clear();
-            throw std::runtime_error(message);
+            throw BridgeError(ErrorKind::Sdk, message);
         }
         return result;
-    } catch (const BridgeError &error) {
-        last_error_kind = error.kind;
-        last_error = error.what();
-    } catch (const std::bad_alloc &error) {
-        last_error_kind = ErrorKind::Resource;
-        last_error = error.what();
-    } catch (const std::exception &error) {
-        last_error_kind = ErrorKind::Sdk;
-        last_error = error.what();
-    } catch (...) {
-        last_error = "Unknown exception in OpenUSD bridge";
-    }
-    return failure;
+    }, std::move(failure));
 }
 // Hold snapshots until SDK diagnostics have also passed the exception boundary.
 template <class F> uint64_t protect_owned(F &&action) noexcept {
     using Owner = decltype(action());
     auto result = protect(std::forward<F>(action), Owner{});
     return reinterpret_cast<uint64_t>(result.release());
-}
-void require(bool condition, const std::string &message,
-             ErrorKind kind = ErrorKind::InvalidArgument) {
-    if (!condition)
-        throw BridgeError(kind, message);
-}
-// Avoid allocating an error string on every successful numeric element check.
-void require(bool condition, const char *message,
-             ErrorKind kind = ErrorKind::InvalidArgument) {
-    if (!condition)
-        throw BridgeError(kind, message);
 }
 void check_diagnostics(TfErrorMark &errors) {
     if (errors.IsClean())
@@ -208,16 +174,16 @@ void validate_topology(const MeshOwner &mesh) {
 USDM_API int64_t usdm_error_text(char *destination, int64_t capacity) noexcept {
     // Preserve the last failing call's error while the client copies it.
     try {
-        return copy_text(last_error, destination, capacity);
+        return copy_text(core_error.message, destination, capacity);
     } catch (...) {
         return -1;
     }
 }
 USDM_API int64_t usdm_error_size() noexcept {
-    return static_cast<int64_t>(last_error.size() + 1);
+    return static_cast<int64_t>(core_error.message.size() + 1);
 }
 USDM_API int32_t usdm_error_kind() noexcept {
-    return static_cast<int32_t>(last_error_kind);
+    return static_cast<int32_t>(core_error.kind);
 }
 USDM_API int32_t usdm_abi_version() noexcept {
     return 2;
@@ -315,9 +281,9 @@ std::string text_query(uint64_t handle, const char *path, int32_t kind,
         auto rel = prim(handle, path).GetRelationship(attr_name(name));
         require(bool(rel), "Relationship does not exist", ErrorKind::NotFound);
         SdfPathVector targets;
-        const bool resolved = rel.GetForwardedTargets(&targets);
-        require(resolved || !rel.HasAuthoredTargets(),
-                "Cannot resolve relationship targets");
+        // False can mean no effective target opinion (including empty list ops).
+        // Actual composition diagnostics are handled by the enclosing error mark.
+        rel.GetForwardedTargets(&targets);
         for (const auto &target : targets)
             result += target.GetString() + "\n";
     } else if (kind == 8) {
@@ -842,3 +808,34 @@ USDM_API int32_t usdm_mesh_copy(uint64_t handle, float *points, int64_t np,
 #include "value_bridge.h"
 
 #include "scene_bridge.h"
+USDM_API uint64_t usdm_strings_new() noexcept {
+    return protect_owned([] { return std::make_unique<StringsOwner>(); });
+}
+USDM_API int32_t usdm_strings_append(uint64_t h, const char *value) noexcept {
+    return protect([&] {
+        require(value != nullptr, "Null string argument");
+        strings_owner(h).values.emplace_back(value);
+        return int32_t(0);
+    }, int32_t(-1));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

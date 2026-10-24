@@ -1,6 +1,6 @@
 [workspace]
 name = "usd-mojo"
-version = "0.1.0"
+version = "0.2.0"
 description = "Typed Mojo access to OpenUSD scenes and bulk geometry"
 channels = ["conda-forge"]
 platforms = [
@@ -16,7 +16,7 @@ cmake = ">=3.30,<5"
 ninja = ">=1.12,<2"
 
 [pypi-dependencies]
-mojo = "==1.1.0"
+mojo = "==1.2.0"
 
 [feature.nightly.dependencies]
 python = "==3.12.13"

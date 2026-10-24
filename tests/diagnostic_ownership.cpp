@@ -18,10 +18,10 @@ int main() {
         return result;
     });
     assert(rejected == 0 && destroyed == 1);
-    assert(last_error.find("Injected SDK failure") != std::string::npos);
+    assert(core_error.message.find("Injected SDK failure") != std::string::npos);
     const auto accepted =
         protect_owned([]() { return std::make_unique<DiagnosticProbe>(); });
-    assert(accepted != 0 && destroyed == 1 && last_error.empty());
+    assert(accepted != 0 && destroyed == 1 && core_error.message.empty());
     delete reinterpret_cast<DiagnosticProbe *>(accepted);
     assert(destroyed == 2);
 }

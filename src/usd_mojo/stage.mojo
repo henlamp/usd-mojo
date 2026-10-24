@@ -8,6 +8,16 @@ One stage must not be accessed concurrently. Matrix storage and units retain
 USD conventions, allowing applications to choose their own conversions.
 """
 from .errors import UsdError, UsdErrorKind
+from ._bridge import (
+    _c_bytes,
+    _error,
+    _check,
+    _take_text,
+    _take_value,
+    _take_strings,
+    _make_value,
+    _StringsOwner,
+)
 from std.collections import Array, ImmSpan, MutSpan
 from std.memory import Pointer
 from std.ffi import c_int, external_call
@@ -52,47 +62,6 @@ struct MeshData(Copyable):
         return len(self.face_vertex_counts)
 
 
-def _validate_text(var value: String) raises UsdError:
-    for byte in value.bytes():
-        if byte == 0:
-            raise UsdError(
-                .invalid_argument, "USD text must not contain NUL bytes"
-            )
-
-
-def _c_bytes(value: String) -> List[UInt8]:
-    """Own a NUL-terminated UTF-8 buffer across the C call, including empty text.
-
-    A temporary CStringSpan may own its terminator; extracting its raw pointer
-    does not keep that temporary alive on every pinned compiler/host combination.
-    """
-    var result = List[UInt8](length=value.byte_length() + 1, fill=0)
-    var i = 0
-    for byte in value.bytes():
-        result[i] = byte
-        i += 1
-    return result^
-
-
-def _error() -> UsdError:
-    var kind = UsdErrorKind(Int(external_call["usdm_error_kind", c_int]()))
-    var needed = Int(external_call["usdm_error_size", Int64]())
-    if needed <= 1:
-        return UsdError(kind, "OpenUSD operation failed")
-    var bytes = List[UInt8](length=needed, fill=0)
-    var copied = external_call["usdm_error_text", Int64](
-        bytes.unsafe_ptr(), Int64(needed)
-    )
-    if copied != Int64(needed):
-        return UsdError(.internal, "Cannot copy OpenUSD error")
-    return UsdError(kind, String(unsafe_from_utf8_ptr=bytes.unsafe_ptr()))
-
-
-def _check(status: Int64) raises UsdError:
-    if status < 0:
-        raise _error()
-
-
 def _validate_time(time: TimeCode) raises UsdError:
     if not time.is_default and not isfinite(time.value):
         raise UsdError(.invalid_argument, "USD time code must be finite")
@@ -120,9 +89,8 @@ struct Stage(Movable):
         create: Bool = False,
         load_payloads: Bool = True,
     ) raises UsdError:
-        var _filename_utf8 = _c_bytes(filename)
         self._handle = 0
-        _validate_text(filename)
+        var _filename_utf8 = _c_bytes(filename)
         if external_call["usdm_abi_version", c_int]() != 2:
             raise UsdError(.incompatible, "Incompatible usd-mojo bridge ABI")
         if create or load_payloads:
@@ -152,8 +120,6 @@ struct Stage(Movable):
     ) raises UsdError -> String:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         var handle = external_call["usdm_text_snapshot", UInt64](
             self._handle,
@@ -163,48 +129,13 @@ struct Stage(Movable):
             time.value,
             c_int(time.is_default),
         )
-        return self._consume_text(handle)
-
-    def _consume_text(self, handle: UInt64) raises UsdError -> String:
-        if not handle:
-            raise _error()
-        var owner = _TextOwner(handle)
-        var needed = external_call["usdm_snapshot_text_size", Int64](
-            owner.handle
-        )
-        _check(needed)
-        if needed < 1:
-            raise UsdError(.internal, "Invalid text snapshot extent")
-        var bytes = List[UInt8](length=Int(needed), fill=0)
-        var copied = external_call["usdm_snapshot_text", Int64](
-            owner.handle, bytes.unsafe_ptr(), needed
-        )
-        _check(copied)
-        if copied != needed:
-            raise UsdError(.internal, "Text snapshot extent mismatch")
-        return String(unsafe_from_utf8_ptr=bytes.unsafe_ptr())
-
-    def _value_text(self, handle: UInt64, index: Int) raises UsdError -> String:
-        var needed = external_call["usdm_value_text_size", Int64](
-            handle, Int64(index)
-        )
-        _check(needed)
-        var bytes = List[UInt8](length=Int(needed), fill=0)
-        var copied = external_call["usdm_value_text", Int64](
-            handle, Int64(index), bytes.unsafe_ptr(), needed
-        )
-        _check(copied)
-        if copied != needed:
-            raise UsdError(.internal, "USD value changed during copy")
-        return String(unsafe_from_utf8_ptr=bytes.unsafe_ptr())
+        return _take_text(handle)
 
     def read_value(
         self, var path: String, var name: String, time: TimeCode = .default
     ) raises UsdError -> Value:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         var handle = external_call["usdm_value_read", UInt64](
             self._handle,
@@ -213,48 +144,7 @@ struct Stage(Movable):
             time.value,
             c_int(time.is_default),
         )
-        return self._consume_value(handle)
-
-    def _consume_value(self, handle: UInt64) raises UsdError -> Value:
-        if not handle:
-            raise _error()
-        var owner = _ValueOwner(handle)
-        var result = Value(self._value_text(owner.handle, -1))
-        var nc = external_call["usdm_value_count", Int64](
-            owner.handle, c_int(0)
-        )
-        var ic = external_call["usdm_value_count", Int64](
-            owner.handle, c_int(1)
-        )
-        var uc = external_call["usdm_value_count", Int64](
-            owner.handle, c_int(2)
-        )
-        var tc = external_call["usdm_value_count", Int64](
-            owner.handle, c_int(3)
-        )
-        _check(nc)
-        _check(ic)
-        _check(uc)
-        _check(tc)
-        result.numbers = List[Float64](length=Int(nc), fill=0)
-        result.integers = List[Int64](length=Int(ic), fill=0)
-        result.unsigned_integers = List[UInt64](length=Int(uc), fill=0)
-        _check(
-            Int64(
-                external_call["usdm_value_copy", c_int](
-                    owner.handle,
-                    result.numbers.unsafe_ptr(),
-                    nc,
-                    result.integers.unsafe_ptr(),
-                    ic,
-                    result.unsigned_integers.unsafe_ptr(),
-                    uc,
-                )
-            )
-        )
-        for i in range(Int(tc)):
-            result.texts.append(self._value_text(owner.handle, i))
-        return result^
+        return _take_value(handle)
 
     def set_value(
         mut self,
@@ -270,42 +160,8 @@ struct Stage(Movable):
         """
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
-        _validate_text(value.type_name)
         _validate_time(time)
-        var type_name = value.type_name.copy()
-        var _type_name_utf8 = _c_bytes(type_name)
-        var handle = external_call["usdm_value_new", UInt64](
-            _type_name_utf8.unsafe_ptr()
-        )
-        if not handle:
-            raise _error()
-        var owner = _ValueOwner(handle)
-        _check(
-            Int64(
-                external_call["usdm_value_fill", c_int](
-                    owner.handle,
-                    value.numbers.unsafe_ptr(),
-                    Int64(len(value.numbers)),
-                    value.integers.unsafe_ptr(),
-                    Int64(len(value.integers)),
-                    value.unsigned_integers.unsafe_ptr(),
-                    Int64(len(value.unsigned_integers)),
-                )
-            )
-        )
-        for text in value.texts:
-            var owned = String(text)
-            _validate_text(owned)
-            var _owned_utf8 = _c_bytes(owned)
-            _check(
-                Int64(
-                    external_call["usdm_value_add_text", c_int](
-                        owner.handle, _owned_utf8.unsafe_ptr()
-                    )
-                )
-            )
+        var owner = _make_value(value)
         _check(
             Int64(
                 external_call["usdm_value_write", c_int](
@@ -331,9 +187,6 @@ struct Stage(Movable):
         var _path_utf8 = _c_bytes(path)
         var _asset_path_utf8 = _c_bytes(asset_path)
         var _prim_path_utf8 = _c_bytes(prim_path)
-        _validate_text(path)
-        _validate_text(asset_path)
-        _validate_text(prim_path)
         _check(
             Int64(
                 external_call["usdm_add_reference", c_int](
@@ -354,7 +207,6 @@ struct Stage(Movable):
         scale: Float64 = 1,
     ) raises UsdError:
         var _asset_path_utf8 = _c_bytes(asset_path)
-        _validate_text(asset_path)
         _check(
             Int64(
                 external_call["usdm_add_sublayer", c_int](
@@ -368,7 +220,6 @@ struct Stage(Movable):
 
     def set_default_prim(mut self, var path: String) raises UsdError:
         var _path_utf8 = _c_bytes(path)
-        _validate_text(path)
         _check(
             Int64(
                 external_call["usdm_default_prim", c_int](
@@ -387,9 +238,6 @@ struct Stage(Movable):
         var _path_utf8 = _c_bytes(path)
         var _set_name_utf8 = _c_bytes(set_name)
         var _choice_utf8 = _c_bytes(choice)
-        _validate_text(path)
-        _validate_text(set_name)
-        _validate_text(choice)
         _check(
             Int64(
                 external_call["usdm_variant", c_int](
@@ -408,8 +256,6 @@ struct Stage(Movable):
         """Author into the selected variant until edit_root() is called."""
         var _path_utf8 = _c_bytes(path)
         var _set_name_utf8 = _c_bytes(set_name)
-        _validate_text(path)
-        _validate_text(set_name)
         _check(
             Int64(
                 external_call["usdm_variant_edit", c_int](
@@ -429,9 +275,6 @@ struct Stage(Movable):
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
         var _target_utf8 = _c_bytes(target)
-        _validate_text(path)
-        _validate_text(name)
-        _validate_text(target)
         _check(
             Int64(
                 external_call["usdm_relationship", c_int](
@@ -449,8 +292,6 @@ struct Stage(Movable):
     ) raises UsdError:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         var empty = String("")
         var _empty_utf8 = _c_bytes(empty)
         _check(
@@ -493,9 +334,6 @@ struct Stage(Movable):
         var _path_utf8 = _c_bytes(path)
         var _schema_utf8 = _c_bytes(schema)
         var _instance_utf8 = _c_bytes(instance)
-        _validate_text(path)
-        _validate_text(schema)
-        _validate_text(instance)
         _check(
             Int64(
                 external_call["usdm_apply_schema", c_int](
@@ -507,30 +345,6 @@ struct Stage(Movable):
             )
         )
 
-    def _consume_strings(self, handle: UInt64) raises UsdError -> List[String]:
-        if not handle:
-            raise _error()
-        var owner = _StringsOwner(handle)
-        var count = external_call["usdm_strings_count", Int64](owner.handle)
-        _check(count)
-        var result = List[String](capacity=Int(count))
-        for i in range(Int(count)):
-            var needed = external_call["usdm_strings_text_size", Int64](
-                owner.handle, Int64(i)
-            )
-            _check(needed)
-            if needed < 1:
-                raise UsdError(.internal, "Invalid string snapshot extent")
-            var bytes = List[UInt8](length=Int(needed), fill=0)
-            var copied = external_call["usdm_strings_text", Int64](
-                owner.handle, Int64(i), bytes.unsafe_ptr(), needed
-            )
-            _check(copied)
-            if copied != needed:
-                raise UsdError(.internal, "String snapshot extent mismatch")
-            result.append(String(unsafe_from_utf8_ptr=bytes.unsafe_ptr()))
-        return result^
-
     def _information(
         self,
         kind: Int,
@@ -539,15 +353,11 @@ struct Stage(Movable):
         key: String = "",
         dictionary: String = "",
     ) raises UsdError -> List[String]:
-        _validate_text(path)
-        _validate_text(name)
-        _validate_text(key)
-        _validate_text(dictionary)
         var p = _c_bytes(path)
         var n = _c_bytes(name)
         var k = _c_bytes(key)
         var d = _c_bytes(dictionary)
-        return self._consume_strings(
+        return _take_strings(
             external_call["usdm_information", UInt64](
                 self._handle,
                 c_int(kind),
@@ -589,7 +399,6 @@ struct Stage(Movable):
         )
 
     def prim_info(self, path: String) raises UsdError -> PrimInfo:
-        _validate_text(path)
         var p = _c_bytes(path)
         var f = List[Int32](length=7, fill=0)
         _check(
@@ -635,7 +444,6 @@ struct Stage(Movable):
     def set_payload_loaded(
         mut self, path: String, loaded: Bool
     ) raises UsdError:
-        _validate_text(path)
         var p = _c_bytes(path)
         _check(
             Int64(
@@ -648,9 +456,6 @@ struct Stage(Movable):
     def add_payload(
         mut self, path: String, asset: String, prim_path: String = ""
     ) raises UsdError:
-        _validate_text(path)
-        _validate_text(asset)
-        _validate_text(prim_path)
         var p = _c_bytes(path)
         var a = _c_bytes(asset)
         var t = _c_bytes(prim_path)
@@ -663,7 +468,6 @@ struct Stage(Movable):
         )
 
     def set_instanceable(mut self, path: String, enabled: Bool) raises UsdError:
-        _validate_text(path)
         var p = _c_bytes(path)
         _check(
             Int64(
@@ -706,8 +510,6 @@ struct Stage(Movable):
     def time_samples(
         self, path: String, name: String
     ) raises UsdError -> List[Float64]:
-        _validate_text(path)
-        _validate_text(name)
         var p = _c_bytes(path)
         var n = _c_bytes(name)
         var handle = external_call["usdm_time_samples", UInt64](
@@ -735,12 +537,10 @@ struct Stage(Movable):
         time: TimeCode = .default,
         index: Int = 0,
     ) raises UsdError -> AssetPathData:
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         var p = _c_bytes(path)
         var n = _c_bytes(name)
-        var v = self._consume_strings(
+        var v = _take_strings(
             external_call["usdm_asset_paths", UInt64](
                 self._handle,
                 p.unsafe_ptr(),
@@ -755,8 +555,6 @@ struct Stage(Movable):
     def primvar_info(
         self, path: String, name: String
     ) raises UsdError -> PrimvarInfo:
-        _validate_text(path)
-        _validate_text(name)
         var p = _c_bytes(path)
         var n = _c_bytes(name)
         var v = List[Int64](length=2, fill=0)
@@ -771,7 +569,7 @@ struct Stage(Movable):
                 )
             )
         )
-        var interpolation = self._consume_text(
+        var interpolation = _take_text(
             external_call["usdm_primvar_interpolation", UInt64](
                 self._handle, p.unsafe_ptr(), n.unsafe_ptr(), c_int(0)
             )
@@ -779,10 +577,9 @@ struct Stage(Movable):
         return PrimvarInfo(interpolation^, Int(v[0]), Int(v[1]))
 
     def normals_interpolation(self, path: String) raises UsdError -> String:
-        _validate_text(path)
         var p = _c_bytes(path)
         var n = _c_bytes("")
-        return self._consume_text(
+        return _take_text(
             external_call["usdm_primvar_interpolation", UInt64](
                 self._handle, p.unsafe_ptr(), n.unsafe_ptr(), c_int(1)
             )
@@ -813,15 +610,11 @@ struct Stage(Movable):
     ) raises UsdError -> Value:
         """Read a supported typed metadata leaf; dictionaries use explicit keys.
         """
-        _validate_text(path)
-        _validate_text(attribute)
-        _validate_text(key)
-        _validate_text(dictionary)
         var p = _c_bytes(path)
         var a = _c_bytes(attribute)
         var k = _c_bytes(key)
         var d = _c_bytes(dictionary)
-        return self._consume_value(
+        return _take_value(
             external_call["usdm_metadata_read", UInt64](
                 self._handle,
                 p.unsafe_ptr(),
@@ -894,7 +687,6 @@ struct Stage(Movable):
 
     def is_instance(self, var path: String) raises UsdError -> Bool:
         var _path_utf8 = _c_bytes(path)
-        _validate_text(path)
         var status = external_call["usdm_prim_instance", c_int](
             self._handle, _path_utf8.unsafe_ptr()
         )
@@ -906,8 +698,6 @@ struct Stage(Movable):
     ) raises UsdError -> Bool:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         var status = external_call["usdm_attr_state", c_int](
             self._handle,
             _path_utf8.unsafe_ptr(),
@@ -922,8 +712,6 @@ struct Stage(Movable):
     ) raises UsdError -> Bool:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         var status = external_call["usdm_attr_state", c_int](
             self._handle,
             _path_utf8.unsafe_ptr(),
@@ -954,8 +742,6 @@ struct Stage(Movable):
     ) raises UsdError -> List[Float64]:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         var values = List[Float64](length=count, fill=0)
         _check(
@@ -995,7 +781,6 @@ struct Stage(Movable):
         self, var path: String, time: TimeCode = .default
     ) raises UsdError -> TransformData:
         var _path_utf8 = _c_bytes(path)
-        _validate_text(path)
         _validate_time(time)
         var v = List[Float64](length=10, fill=0)
         _check(
@@ -1021,8 +806,6 @@ struct Stage(Movable):
     ) raises UsdError -> List[Float64]:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         var handle = external_call["usdm_array_snapshot", UInt64](
             self._handle,
@@ -1107,8 +890,6 @@ struct Stage(Movable):
         """Read a float or double attribute, retaining Float64 precision."""
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         var value = List[Float64](length=1, fill=0)
         _check(
@@ -1142,8 +923,6 @@ struct Stage(Movable):
     ) raises UsdError -> Bool:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         var value = List[c_int](length=1, fill=0)
         _check(
@@ -1170,8 +949,6 @@ struct Stage(Movable):
         """Author a float/double; create a custom double if missing."""
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         _check(
             Int64(
@@ -1195,8 +972,6 @@ struct Stage(Movable):
     ) raises UsdError:
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
-        _validate_text(path)
-        _validate_text(name)
         _validate_time(time)
         _check(
             Int64(
@@ -1221,9 +996,6 @@ struct Stage(Movable):
         var _path_utf8 = _c_bytes(path)
         var _name_utf8 = _c_bytes(name)
         var _value_utf8 = _c_bytes(value)
-        _validate_text(path)
-        _validate_text(name)
-        _validate_text(value)
         _validate_time(time)
         _check(
             Int64(
@@ -1244,8 +1016,6 @@ struct Stage(Movable):
         """Define ancestors as needed and assign the supplied schema type."""
         var _path_utf8 = _c_bytes(path)
         var _type_name_utf8 = _c_bytes(type_name)
-        _validate_text(path)
-        _validate_text(type_name)
         _check(
             Int64(
                 external_call["usdm_define_prim", c_int](
@@ -1261,9 +1031,11 @@ struct Stage(Movable):
         _check(Int64(external_call["usdm_stage_save", c_int](self._handle)))
 
     def export(self, var filename: String) raises UsdError:
-        """Export the composed, flattened stage; preserves scene values."""
+        """Flatten the working set; reject unregistered metadata that SDK would drop.
+
+        Use Layer.export to preserve layer structure and unknown vendor fields.
+        """
         var _filename_utf8 = _c_bytes(filename)
-        _validate_text(filename)
         _check(
             Int64(
                 external_call["usdm_stage_export", c_int](
@@ -1281,7 +1053,6 @@ struct Stage(Movable):
         Numeric time codes are frames, not seconds.
         """
         var _path_utf8 = _c_bytes(path)
-        _validate_text(path)
         _validate_time(time)
         var values = List[Float64](length=16, fill=0)
         _check(
@@ -1341,7 +1112,6 @@ struct MeshSnapshot(Movable):
         self._points_address = 0
         self._counts_address = 0
         self._indices_address = 0
-        _validate_text(path)
         _validate_time(time)
         var bytes = _c_bytes(path)
         self._handle = external_call["usdm_mesh_snapshot", UInt64](
@@ -1463,45 +1233,3 @@ struct _ArrayOwner(Movable):
 
     def __deinit__(deinit self):
         external_call["usdm_array_close", NoneType](self.handle)
-
-
-struct _ValueOwner(Movable):
-    var handle: UInt64
-
-    def __init__(out self, handle: UInt64):
-        self.handle = handle
-
-    def __init__(out self, *, deinit move: Self):
-        self.handle = move.handle
-
-    def __deinit__(deinit self):
-        if self.handle:
-            external_call["usdm_value_close", NoneType](self.handle)
-
-
-struct _TextOwner(Movable):
-    var handle: UInt64
-
-    def __init__(out self, handle: UInt64):
-        self.handle = handle
-
-    def __init__(out self, *, deinit move: Self):
-        self.handle = move.handle
-
-    def __deinit__(deinit self):
-        if self.handle:
-            external_call["usdm_text_close", NoneType](self.handle)
-
-
-struct _StringsOwner(Movable):
-    var handle: UInt64
-
-    def __init__(out self, handle: UInt64):
-        self.handle = handle
-
-    def __init__(out self, *, deinit move: Self):
-        self.handle = move.handle
-
-    def __deinit__(deinit self):
-        if self.handle:
-            external_call["usdm_strings_close", NoneType](self.handle)

@@ -1,13 +1,19 @@
 cmake_minimum_required(VERSION 3.30)
-project(usd_mojo_bridge VERSION 0.1.0 LANGUAGES CXX)
+project(usd_mojo_bridge VERSION 0.2.0 LANGUAGES CXX)
 find_package(pxr CONFIG REQUIRED)
+set(USDM_SDK_RPATH)
+foreach(SDK_PREFIX IN LISTS CMAKE_PREFIX_PATH)
+  list(APPEND USDM_SDK_RPATH "${SDK_PREFIX}/lib")
+endforeach()
 add_library(usd_mojo_bridge SHARED bridge.cpp)
 target_compile_features(usd_mojo_bridge PRIVATE cxx_std_17)
 # Retain useful relative diagnostic paths without exposing local checkout/SDK prefixes.
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
   target_compile_options(usd_mojo_bridge PRIVATE
-    "-ffile-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=native"
-    "-ffile-prefix-map=${CMAKE_PREFIX_PATH}=openusd-sdk")
+    "-ffile-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=native")
+  foreach(SDK_PREFIX IN LISTS CMAKE_PREFIX_PATH)
+    target_compile_options(usd_mojo_bridge PRIVATE "-ffile-prefix-map=${SDK_PREFIX}=external-sdk")
+  endforeach()
   # Imported SDK paths may retain a Pixi symlink instead of its resolved prefix.
   foreach(SDK_INCLUDE_DIR IN LISTS PXR_INCLUDE_DIRS)
     target_compile_options(usd_mojo_bridge PRIVATE
@@ -21,7 +27,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_L
   target_compile_options(usd_mojo_bridge PRIVATE -Wno-error=cpp)
 endif()
 target_include_directories(usd_mojo_bridge PRIVATE ${PXR_INCLUDE_DIRS})
-target_link_libraries(usd_mojo_bridge PRIVATE usd usdGeom usdPhysics usdShade sdf tf gf vt)
+target_include_directories(usd_mojo_bridge SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/openusd)
+target_link_libraries(usd_mojo_bridge PRIVATE usd usdGeom usdPhysics usdShade usdSkel usdUtils usdValidation sdf ar plug tf gf vt ts)
 # The Conda SDK is built with Python support. Standalone C++/Mojo hosts must
 # provide its CPython symbols even though this bridge never calls the Python API.
 if(TARGET Python3::Python)
@@ -29,7 +36,7 @@ if(TARGET Python3::Python)
 endif()
 set_target_properties(usd_mojo_bridge PROPERTIES
   CXX_VISIBILITY_PRESET default VISIBILITY_INLINES_HIDDEN NO
-  BUILD_RPATH "${CMAKE_PREFIX_PATH}/lib")
+  BUILD_RPATH "${USDM_SDK_RPATH}")
 
 # USD compares RTTI identity for asset/timecode arrays across shared libraries.
 # Their template typeinfo must remain coalescible on macOS libc++.
@@ -53,7 +60,8 @@ if(USD_MOJO_TESTS)
     target_compile_options(diagnostic_ownership PRIVATE -Wno-error=cpp)
   endif()
   target_include_directories(diagnostic_ownership PRIVATE ${PXR_INCLUDE_DIRS})
-  target_link_libraries(diagnostic_ownership PRIVATE usd usdGeom usdPhysics usdShade sdf tf gf vt)
+  target_include_directories(diagnostic_ownership SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/openusd)
+  target_link_libraries(diagnostic_ownership PRIVATE usd usdGeom usdPhysics usdShade usdSkel usdUtils usdValidation sdf ar plug tf gf vt ts)
   if(TARGET Python3::Python)
     target_link_libraries(diagnostic_ownership PRIVATE Python3::Python)
   endif()
@@ -61,5 +69,5 @@ if(USD_MOJO_TESTS)
     target_link_directories(diagnostic_ownership PRIVATE "${CMAKE_PREFIX_PATH}/lib")
     target_link_options(diagnostic_ownership PRIVATE -Wl,--disable-new-dtags)
   endif()
-  set_target_properties(diagnostic_ownership PROPERTIES BUILD_RPATH "${CMAKE_PREFIX_PATH}/lib")
+  set_target_properties(diagnostic_ownership PROPERTIES BUILD_RPATH "${USDM_SDK_RPATH}")
 endif()

@@ -1,10 +1,11 @@
 # API reference
 
-`Stage` is a move-only SDK owner; public throwing operations raise `UsdError`. Returned lists,
-values and information snapshots own their storage and outlive the stage.
+`Stage` is a move-only SDK owner; public throwing operations raise `UsdError`.
+Returned lists, values and information snapshots own their storage and outlive the stage.
 No stage may be accessed concurrently, including editing while taking snapshots.
-Independent stages can be used independently. Raw bridge handles are private
-implementation details, not a public API or a validation boundary for arbitrary
+Stages can share SDK layers: do not edit a shared layer concurrently with readers
+on another stage. Raw bridge handles are private implementation details,
+not a public API or a validation boundary for arbitrary
 pointers. OpenUSD's installed resolver and plugins control file access.
 
 | Access | Public methods |
@@ -50,13 +51,12 @@ non-finite inputs. Signed/unsigned 64-bit integers never pass through floating
 storage. UTF8 text containing embedded NUL raises an error rather than truncating.
 Matrices use USD row-vector conventions, with translation at offsets 12–14.
 
-Only `save` persists the root layer. `export` flattens the composed stage.
-Editing a referenced layer or arbitrary edit target is not exposed in version 0.1.
-Shader graphs can be inspected through attributes and connections; there is no
-shader evaluation, rendering, physics execution, GPU code or USDZ packager here.
-
-See [compatibility](COMPATIBILITY.md) for error categories,
-versioning and acceptance requirements.
+`save` persists the root layer; `save_layers` uses the SDK's contributing-layer
+save operation, with session layers explicitly selected. `export` flattens the
+composed stage. Physics execution and subdivision evaluation are application concerns.
+Flattened exports and frozen snapshots reject unregistered metadata that the SDK
+would discard. Register its schema plugin before opening, or use `Layer.export`
+to retain the original opinions. A population mask may exclude unrelated objects.
 
 ## Native mesh snapshots
 

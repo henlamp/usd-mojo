@@ -184,5 +184,11 @@
     "cpp": "GfVec4i",
     "width": 4,
     "channel": "signed"
+  },
+  {
+    "name": "pathExpression",
+    "cpp": "SdfPathExpression",
+    "width": 1,
+    "channel": "texts"
   }
 ]
