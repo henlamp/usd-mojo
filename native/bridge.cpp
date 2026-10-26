@@ -832,10 +832,17 @@ USDM_API int32_t usdm_strings_append(uint64_t h, const char *value) noexcept {
 
 
 
+namespace {
+std::unique_ptr<TextOwner> editor_text(std::string s) {
+    auto result = std::make_unique<TextOwner>();
+    result->text = std::move(s);
+    return result;
+}
+}
+#include "array_bridge.h"
 
 
 
-
-
+#include "catalog_bridge.h"
 
 

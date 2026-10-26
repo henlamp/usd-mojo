@@ -22,6 +22,7 @@ def samples():
         "string": "Grüße\n🔥",
         "token": "physics:body",
         "asset": Sdf.AssetPath("relative.asset"),
+        "pathExpression": Sdf.PathExpression("/World//{isa:Mesh}"),
     }
     for n in (2, 3, 4):
         result[f"matrix{n}d"] = getattr(Gf, f"Matrix{n}d")(2.0)
@@ -37,7 +38,7 @@ def samples():
             ("int", "i"),
         ):
             result[f"{prefix}{n}"] = getattr(Gf, f"Vec{n}{suffix}")(*range(1, n + 1))
-    assert len(result) == 31
+    assert len(result) == 32
     return result
 
 
@@ -120,10 +121,10 @@ def check_values(
     finally:
         api.usdm_value_close(handle)
     return {
-        "scalar_types": 31,
-        "array_types": 31,
-        "empty_arrays": 31,
-        "independent_sdk_roundtrips": 186,
+        "scalar_types": len(samples()),
+        "array_types": len(samples()),
+        "empty_arrays": len(samples()),
+        "independent_sdk_roundtrips": len(samples()) * 3 * 2,
         "output": output.strip(),
     }
 

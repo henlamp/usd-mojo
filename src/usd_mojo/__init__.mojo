@@ -35,4 +35,6 @@ from .information import AssetPathData, StageInfo, PrimInfo, PrimvarInfo
 
 
 
+from .arrays import ArraySnapshot, set_array
+from .catalog import ValueTypeInfo, value_types
 

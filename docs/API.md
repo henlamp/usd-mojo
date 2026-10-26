@@ -58,6 +58,16 @@ Flattened exports and frozen snapshots reject unregistered metadata that the SDK
 would discard. Register its schema plugin before opening, or use `Layer.export`
 to retain the original opinions. A population mask may exclude unrelated objects.
 
+### Authoring and numeric streaming
+
+`ArraySnapshot(stage, path, name, time).view[dtype]()` lends immutable packed
+numeric components directly from owned SDK array storage. Integers retain their
+width; vectors/matrices retain their component layout. Unsupported layouts fail
+explicitly. Boolean views use UInt8 components containing 0/1. `set_array` copies
+a compatible host span into SDK-owned storage once, without Float64 promotion.
+Caller storage can be reused after return. SDK decoding,
+small-array materialization and GPU uploads can still allocate or copy.
+
 ## Native mesh snapshots
 
 `Stage.mesh_snapshot(path, time)` or `MeshSnapshot(stage, path, time)` captures

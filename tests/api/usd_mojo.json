@@ -1,6 +1,7 @@
 {
   "api_version": "0.2",
   "exports": [
+    "ArraySnapshot",
     "AssetPathData",
     "BodyData",
     "CameraData",
@@ -21,6 +22,7 @@
     "UsdError",
     "UsdErrorKind",
     "Value",
+    "ValueTypeInfo",
     "Vector3",
     "read_body",
     "read_camera",
@@ -30,9 +32,63 @@
     "read_material",
     "read_normals",
     "read_primvar",
-    "sdk_version"
+    "sdk_version",
+    "set_array",
+    "value_types"
   ],
   "declarations": {
+    "arrays.ArraySnapshot": [
+      "struct ArraySnapshot(Movable)"
+    ],
+    "arrays.ArraySnapshot.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "arrays.ArraySnapshot.__init__": [
+      "def __init__( out self, stage: Stage, path: String, name: String, time: TimeCode = .default, ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)"
+    ],
+    "arrays.ArraySnapshot.byte_count": [
+      "var byte_count: Int"
+    ],
+    "arrays.ArraySnapshot.components_per_element": [
+      "var components_per_element: Int"
+    ],
+    "arrays.ArraySnapshot.element_count": [
+      "var element_count: Int"
+    ],
+    "arrays.ArraySnapshot.type_name": [
+      "var type_name: String"
+    ],
+    "arrays.ArraySnapshot.view": [
+      "def view[ dtype: DType ](self) raises UsdError -> ImmSpan[Scalar[dtype], origin_of(self)]"
+    ],
+    "arrays.set_array": [
+      "def set_array[ dtype: DType ]( mut stage: Stage, path: String, name: String, type_name: String, values: ImmSpan[Scalar[dtype], _], time: TimeCode = .default, ) raises UsdError"
+    ],
+    "catalog.ValueTypeInfo": [
+      "@fieldwise_init struct ValueTypeInfo(Copyable)"
+    ],
+    "catalog.ValueTypeInfo.cpp_type": [
+      "var cpp_type: String"
+    ],
+    "catalog.ValueTypeInfo.is_array": [
+      "var is_array: Bool"
+    ],
+    "catalog.ValueTypeInfo.name": [
+      "var name: String"
+    ],
+    "catalog.ValueTypeInfo.native_view": [
+      "var native_view: Bool"
+    ],
+    "catalog.ValueTypeInfo.readable_writable": [
+      "var readable_writable: Bool"
+    ],
+    "catalog.ValueTypeInfo.role": [
+      "var role: String"
+    ],
+    "catalog.value_types": [
+      "def value_types() raises UsdError -> List[ValueTypeInfo]"
+    ],
     "errors.UsdError": [
       "@fieldwise_init struct UsdError(Copyable, Writable)"
     ],
