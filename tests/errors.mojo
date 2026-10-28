@@ -3,7 +3,7 @@
 """Consumers recover from failures by category, without parsing messages."""
 from std.sys import argv
 from std.testing import assert_equal, assert_true
-from usd_mojo import Stage, TimeCode, UsdError, UsdErrorKind
+from usd_mojo import Stage, Layer, Value, TimeCode, UsdError, UsdErrorKind
 
 
 def main() raises:
@@ -56,4 +56,27 @@ def main() raises:
     assert_equal(
         stage.read_float("/World/Robot/Triangle", "gain"), Float64(1.5)
     )
+    var root = Layer(stage)
+    var before = root.content()
+    for text in [String("\x00prefix"), String("mid\x00dle"), String("suffix\x00")]:
+        for mode in range(4):
+            rejected = False
+            try:
+                if mode == 0:
+                    _ = stage.prim_type(String(text))
+                elif mode == 1:
+                    root.set_sublayers([String("valid.usda"), String(text)])
+                elif mode == 2:
+                    stage.set_value(
+                        "/World/Robot/Triangle", "label",
+                        Value.text("string", [String(text)]),
+                    )
+                else:
+                    var invalid = Stage(String(text))
+                    _ = invalid
+            except error:
+                assert_equal(error.kind, UsdErrorKind.invalid_argument)
+                rejected = True
+            assert_true(rejected)
+    assert_equal(root.content(), before)
     print("PASS typed error recovery and non-poisoning")

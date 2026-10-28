@@ -58,7 +58,22 @@ Flattened exports and frozen snapshots reject unregistered metadata that the SDK
 would discard. Register its schema plugin before opening, or use `Layer.export`
 to retain the original opinions. A population mask may exclude unrelated objects.
 
+## Development 0.2 additions
+
+| Area | API and semantics |
+| --- | --- |
+| Layers | `Layer(filename, create=True)`, `Layer(stage, session=True)`, `Layer.anonymous()`, content/export/save, sublayer paths and time offsets. Layers share SDK identity. `replace_content` parses separately before replacing content. |
+| Editing | `EditTarget(stage, layer, reference_prim=...)` retains the SDK mapping; applying it to another stage fails. Ambiguous reference mappings are rejected. `NamespaceEditor` preflights prim/property edits and accepts explicitly registered dependent stages. Only composed, loaded dependencies are visible. |
+| Metadata | `Metadata` owns dictionaries, exact base values and opaque SDK values. Child snapshots are independent. Path/token/string list operations and references/payloads retain explicit/prepend/append/delete/add/order items and layer offsets. `set_metadata` authors composed-object metadata; `set_layer_field` edits raw Sdf opinions. Unsupported base conversions fail without discarding the opaque value. |
+| Composition | Masked stage construction, population-mask expansion, `LoadRule`, layer muting, inherits/specializes and `composition_arcs`. `ResolverContext` retains default search paths or delegates context-string parsing to the active SDK resolver. `register_plugins` uses the SDK plugin registry. |
+
 ### Authoring and numeric streaming
+
+`set_reference_opinions`, `set_payload_opinions`, `set_inherit_opinions` and
+`set_specialize_opinions` author explicit/prepend/append/delete/add/order list
+opinions in a `Layer`, creating local overs as needed. They replace the selected
+field's list opinion. `clear_arc_opinions` reveals weaker opinions. Layer variant
+removal edits local definitions; authored selections remain separate opinions.
 
 `ArraySnapshot(stage, path, name, time).view[dtype]()` lends immutable packed
 numeric components directly from owned SDK array storage. Integers retain their

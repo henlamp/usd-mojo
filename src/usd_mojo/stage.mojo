@@ -25,6 +25,7 @@ from std.math import isfinite
 from .values import Vector3, Quaternion, TransformData
 from .value import Value
 from .information import AssetPathData, StageInfo, PrimInfo, PrimvarInfo
+from .resolver import ResolverContext
 
 
 @fieldwise_init
@@ -101,6 +102,50 @@ struct Stage(Movable):
             self._handle = external_call["usdm_stage_open_policy", UInt64](
                 _filename_utf8.unsafe_ptr(), c_int(0)
             )
+        if not self._handle:
+            raise _error()
+
+    def __init__(
+        out self,
+        var filename: String,
+        population_mask: List[String],
+        *,
+        load_payloads: Bool = True,
+        search_paths: List[String] = List[String](),
+    ) raises UsdError:
+        """Open directly with a population mask, before composing excluded prims.
+
+        An empty mask opens an empty working set; ["/"] includes the full stage.
+        Search paths configure the SDK default asset resolver for this stage.
+        """
+        self._handle = 0
+        if external_call["usdm_abi_version", c_int]() != 2:
+            raise UsdError(.incompatible, "Incompatible usd-mojo bridge ABI")
+        var path = _c_bytes(filename)
+        var mask = _StringsOwner(population_mask)
+        var search = _StringsOwner(search_paths)
+        self._handle = external_call["usdm_stage_open_masked", UInt64](
+            path.unsafe_ptr(), mask.handle, search.handle, c_int(load_payloads)
+        )
+        if not self._handle:
+            raise _error()
+
+    def __init__(
+        out self,
+        filename: String,
+        context: ResolverContext,
+        *,
+        population_mask: List[String] = [String("/")],
+        load_payloads: Bool = True,
+    ) raises UsdError:
+        self._handle = 0
+        if external_call["usdm_abi_version", c_int]() != 2:
+            raise UsdError(.incompatible, "OpenUSD bridge ABI mismatch")
+        var f = _c_bytes(filename)
+        var mask = _StringsOwner(population_mask)
+        self._handle = external_call["usdm_stage_open_context", UInt64](
+            f.unsafe_ptr(), context._handle, mask.handle, c_int(load_payloads)
+        )
         if not self._handle:
             raise _error()
 

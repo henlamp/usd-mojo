@@ -4,7 +4,7 @@
 from std.sys import argv
 from std.collections import ImmSpan
 from std.testing import assert_equal, assert_true
-from usd_mojo import Stage, Value, ArraySnapshot, set_array, UsdErrorKind
+from usd_mojo import Stage, Value, ArraySnapshot, set_array, UsdErrorKind, Layer
 
 
 def main() raises:
@@ -75,6 +75,8 @@ def main() raises:
     var native = ArraySnapshot(stage, "/Data", "native")
     assert_equal(native.element_count, 2)
     assert_equal(native.view[DType.float32]()[0], Float32(1))
+    var root = Layer(stage)
+    var before = root.content()
     var invalid_bool: List[UInt8] = [2]
     var invalid_components: List[Float32] = [1, 2]
     var rejected_input = False
@@ -93,6 +95,7 @@ def main() raises:
         assert_equal(error.kind, UsdErrorKind.invalid_argument)
         rejected_input = True
     assert_true(rejected_input)
+    assert_equal(root.content(), before)
     stage.set_value("/Data", "u64", Value.unsigned("uint64[]", [UInt64(0)]))
     assert_equal(unsigned.view[DType.uint64]()[0], UInt64.MAX)
     var rejected = False

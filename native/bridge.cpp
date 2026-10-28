@@ -218,10 +218,36 @@ USDM_API int32_t usdm_stage_save(uint64_t handle) noexcept {
         },
         int32_t(-1));
 }
+namespace {
+// SDK flattening drops unregistered metadata with a warning. Refuse that loss
+// before creating an output; layer export can preserve the original opinions.
+void require_flatten_metadata(StageOwner &source) {
+    const auto &stage = source.stage;
+    auto check = [](const UsdObject &object) {
+        for (const auto &entry : object.GetAllAuthoredMetadata())
+            require(SdfSchema::GetInstance().IsRegistered(entry.first),
+                    "Cannot flatten unregistered metadata '" + entry.first.GetString() +
+                    "' at " + object.GetPath().GetString() +
+                    "; register its schema plugin or use Layer.export",
+                    ErrorKind::Unsupported);
+    };
+    check(stage->GetPseudoRoot());
+    auto check_prim = [&](const UsdPrim &prim) {
+        check(prim);
+        for (const auto &property : prim.GetAuthoredProperties()) check(property);
+    };
+    for (const auto &prim : stage->TraverseAll()) check_prim(prim);
+    // Shared descendants have one composition per prototype. Check that
+    // composition once rather than expanding every instance proxy.
+    for (const auto &prototype : stage->GetPrototypes())
+        for (const auto &prim : UsdPrimRange(prototype, UsdPrimAllPrimsPredicate)) check_prim(prim);
+}
+}
 USDM_API int32_t usdm_stage_export(uint64_t handle, const char *path) noexcept {
     return protect(
         [&]() {
             require(path && *path, "Empty export filename");
+            require_flatten_metadata(owner(handle));
             require(owner(handle).stage->Export(path),
                     "Cannot export composed USD stage", ErrorKind::Io);
             return int32_t(0);
@@ -808,16 +834,10 @@ USDM_API int32_t usdm_mesh_copy(uint64_t handle, float *points, int64_t np,
 #include "value_bridge.h"
 
 #include "scene_bridge.h"
-USDM_API uint64_t usdm_strings_new() noexcept {
-    return protect_owned([] { return std::make_unique<StringsOwner>(); });
-}
-USDM_API int32_t usdm_strings_append(uint64_t h, const char *value) noexcept {
-    return protect([&] {
-        require(value != nullptr, "Null string argument");
-        strings_owner(h).values.emplace_back(value);
-        return int32_t(0);
-    }, int32_t(-1));
-}
+
+#include "editor_bridge.h"
+
+#include "composition_bridge.h"
 
 
 
@@ -827,18 +847,6 @@ USDM_API int32_t usdm_strings_append(uint64_t h, const char *value) noexcept {
 
 
 
-
-
-
-
-
-namespace {
-std::unique_ptr<TextOwner> editor_text(std::string s) {
-    auto result = std::make_unique<TextOwner>();
-    result->text = std::move(s);
-    return result;
-}
-}
 #include "array_bridge.h"
 
 
