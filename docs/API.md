@@ -66,14 +66,30 @@ to retain the original opinions. A population mask may exclude unrelated objects
 | Editing | `EditTarget(stage, layer, reference_prim=...)` retains the SDK mapping; applying it to another stage fails. Ambiguous reference mappings are rejected. `NamespaceEditor` preflights prim/property edits and accepts explicitly registered dependent stages. Only composed, loaded dependencies are visible. |
 | Metadata | `Metadata` owns dictionaries, exact base values and opaque SDK values. Child snapshots are independent. Path/token/string list operations and references/payloads retain explicit/prepend/append/delete/add/order items and layer offsets. `set_metadata` authors composed-object metadata; `set_layer_field` edits raw Sdf opinions. Unsupported base conversions fail without discarding the opaque value. |
 | Composition | Masked stage construction, population-mask expansion, `LoadRule`, layer muting, inherits/specializes and `composition_arcs`. `ResolverContext` retains default search paths or delegates context-string parsing to the active SDK resolver. `register_plugins` uses the SDK plugin registry. |
+| Runtime handoff | `SceneSnapshot` freezes composed opinions, including the session and selected working set. `paths`, `types` and `prototypes` align with contiguous borrowed Float64 world matrices. `value` reads the frozen description; external asset bytes are not copied. `poll_changes` consumes bounded SDK notice paths; `all_dirty` requires a full refresh. GPU transfers belong to runtime adapters. |
 
 ### Authoring and numeric streaming
+
+`override_prim` and `create_class_prim` author `over`/`class` specs in the selected
+edit target. `create_attribute`, value blocks, clearing values/samples, property
+opinion removal and connection/relationship setters preserve weaker opinions
+according to USD composition. Clearing an opinion and authoring an explicit empty
+list have different effects. High/low representations are authored as variants
+and payloads; the library does not generate simplified meshes.
 
 `set_reference_opinions`, `set_payload_opinions`, `set_inherit_opinions` and
 `set_specialize_opinions` author explicit/prepend/append/delete/add/order list
 opinions in a `Layer`, creating local overs as needed. They replace the selected
 field's list opinion. `clear_arc_opinions` reveals weaker opinions. Layer variant
 removal edits local definitions; authored selections remain separate opinions.
+
+`set_values(stage, List[AttributeEdit])` preflights paths, types and mappings before
+writing. Root/identity-time batches use Sdf change blocks without calling Usd
+inside the deferred-composition region. Mapped timelines and timecode values use
+Usd authoring to preserve time conversions and can emit multiple notices. Batches
+are not rollback transactions for runtime allocation or SDK failures.
+Relationship collisions in composed properties or hidden target-layer specs fail
+before any writes.
 
 `ArraySnapshot(stage, path, name, time).view[dtype]()` lends immutable packed
 numeric components directly from owned SDK array storage. Integers retain their

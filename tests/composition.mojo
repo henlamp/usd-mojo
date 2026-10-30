@@ -28,6 +28,8 @@ from usd_mojo import (
     set_inherit_opinions,
     set_specialize_opinions,
     clear_arc_opinions,
+    create_class_prim,
+    override_prim,
 )
 
 
@@ -116,6 +118,7 @@ def main() raises:
     var arc_stage = Stage(String(directory, "/arc-root.usda"), create=True)
     arc_stage.add_sublayer("arc-weak.usda")
     arc_stage.define_prim("/Ref", "Xform")
+    override_prim(arc_stage, "/Ref")
     var arc_layer = Layer(arc_stage)
     assert_equal(arc_stage.read_float("/Ref", "tuning"), Float64(3))
     set_reference_opinions(arc_layer, "/Ref", List[CompositionArc]())
@@ -129,7 +132,7 @@ def main() raises:
     arc_stage.define_prim("/Payload", "Xform")
     set_payload_opinions(arc_layer, "/Payload", [CompositionArc("weak.usda", "/World/Robot")])
     assert_equal(arc_stage.read_float("/Payload", "tuning"), Float64(3))
-    arc_stage.define_prim("/Class", "Scope")
+    create_class_prim(arc_stage, "/Class")
     arc_stage.set_float("/Class", "gain", 8)
     arc_stage.define_prim("/Derived", "Xform")
     set_inherit_opinions(arc_layer, "/Derived", [String("/Class")])

@@ -59,6 +59,7 @@ from .composition import (
 )
 
 
+from .snapshots import ChangeSet, poll_changes, SceneSnapshot
 
 
 
@@ -66,6 +67,22 @@ from .layers import LayerOffset, NamespaceEditor, NamespaceCheck
 
 from .resolver import ResolverContext
 
+from .authoring import (
+    AttributeEdit,
+    override_prim,
+    create_class_prim,
+    set_active,
+    create_attribute,
+    clear_attribute_values,
+    clear_value_at,
+    block_attribute,
+    block_value_at,
+    remove_property_opinion,
+    set_values,
+    set_connections,
+    clear_connection_opinions,
+    set_relationship_targets,
+)
 
 from .arrays import ArraySnapshot, set_array
 from .catalog import ValueTypeInfo, value_types

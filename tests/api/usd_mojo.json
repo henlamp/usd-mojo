@@ -3,8 +3,10 @@
   "exports": [
     "ArraySnapshot",
     "AssetPathData",
+    "AttributeEdit",
     "BodyData",
     "CameraData",
+    "ChangeSet",
     "CompositionArc",
     "DriveData",
     "EditTarget",
@@ -25,6 +27,7 @@
     "PrimvarInfo",
     "Quaternion",
     "ResolverContext",
+    "SceneSnapshot",
     "Stage",
     "StageInfo",
     "TimeCode",
@@ -36,14 +39,23 @@
     "Vector3",
     "add_inherit",
     "add_specialize",
+    "block_attribute",
+    "block_value_at",
     "clear_arc_opinions",
+    "clear_attribute_values",
+    "clear_connection_opinions",
     "clear_layer_field",
     "clear_metadata",
+    "clear_value_at",
     "composition_arcs",
+    "create_attribute",
+    "create_class_prim",
     "expand_population_mask",
     "load_rules",
     "mute_layer",
     "muted_layers",
+    "override_prim",
+    "poll_changes",
     "population_mask",
     "read_body",
     "read_camera",
@@ -55,10 +67,13 @@
     "read_primvar",
     "register_plugins",
     "remove_prim",
+    "remove_property_opinion",
     "rename_prim",
     "save_layers",
     "sdk_version",
+    "set_active",
     "set_array",
+    "set_connections",
     "set_inherit_opinions",
     "set_layer_field",
     "set_load_rules",
@@ -66,7 +81,9 @@
     "set_payload_opinions",
     "set_population_mask",
     "set_reference_opinions",
+    "set_relationship_targets",
     "set_specialize_opinions",
+    "set_values",
     "value_types"
   ],
   "declarations": {
@@ -97,6 +114,60 @@
     ],
     "arrays.set_array": [
       "def set_array[ dtype: DType ]( mut stage: Stage, path: String, name: String, type_name: String, values: ImmSpan[Scalar[dtype], _], time: TimeCode = .default, ) raises UsdError"
+    ],
+    "authoring.AttributeEdit": [
+      "@fieldwise_init struct AttributeEdit(Copyable)"
+    ],
+    "authoring.AttributeEdit.name": [
+      "var name: String"
+    ],
+    "authoring.AttributeEdit.path": [
+      "var path: String"
+    ],
+    "authoring.AttributeEdit.time": [
+      "var time: TimeCode"
+    ],
+    "authoring.AttributeEdit.value": [
+      "var value: Value"
+    ],
+    "authoring.block_attribute": [
+      "def block_attribute( mut stage: Stage, path: String, name: String ) raises UsdError"
+    ],
+    "authoring.block_value_at": [
+      "def block_value_at( mut stage: Stage, path: String, name: String, time: TimeCode ) raises UsdError"
+    ],
+    "authoring.clear_attribute_values": [
+      "def clear_attribute_values( mut stage: Stage, path: String, name: String ) raises UsdError"
+    ],
+    "authoring.clear_connection_opinions": [
+      "def clear_connection_opinions( mut stage: Stage, path: String, name: String ) raises UsdError"
+    ],
+    "authoring.clear_value_at": [
+      "def clear_value_at( mut stage: Stage, path: String, name: String, time: TimeCode = .default ) raises UsdError"
+    ],
+    "authoring.create_attribute": [
+      "def create_attribute( mut stage: Stage, path: String, name: String, type_name: String, *, custom: Bool = True, uniform: Bool = False, ) raises UsdError"
+    ],
+    "authoring.create_class_prim": [
+      "def create_class_prim(mut stage: Stage, path: String) raises UsdError"
+    ],
+    "authoring.override_prim": [
+      "def override_prim(mut stage: Stage, path: String) raises UsdError"
+    ],
+    "authoring.remove_property_opinion": [
+      "def remove_property_opinion( mut stage: Stage, path: String, name: String ) raises UsdError"
+    ],
+    "authoring.set_active": [
+      "def set_active(mut stage: Stage, path: String, active: Bool) raises UsdError"
+    ],
+    "authoring.set_connections": [
+      "def set_connections( mut stage: Stage, path: String, name: String, sources: List[String] ) raises UsdError"
+    ],
+    "authoring.set_relationship_targets": [
+      "def set_relationship_targets( mut stage: Stage, path: String, name: String, targets: List[String] ) raises UsdError"
+    ],
+    "authoring.set_values": [
+      "def set_values(mut stage: Stage, edits: List[AttributeEdit]) raises UsdError"
     ],
     "catalog.ValueTypeInfo": [
       "@fieldwise_init struct ValueTypeInfo(Copyable)"
@@ -739,6 +810,55 @@
       "def __init__(out self, *, deinit move: Self)",
       "def __init__(out self, configuration: String) raises UsdError",
       "def __init__(out self, paths: List[String]) raises UsdError"
+    ],
+    "snapshots.ChangeSet": [
+      "@fieldwise_init struct ChangeSet(Copyable)"
+    ],
+    "snapshots.ChangeSet.all_dirty": [
+      "var all_dirty: Bool"
+    ],
+    "snapshots.ChangeSet.changed": [
+      "var changed: List[String]"
+    ],
+    "snapshots.ChangeSet.generation": [
+      "var generation: UInt64"
+    ],
+    "snapshots.ChangeSet.resynced": [
+      "var resynced: List[String]"
+    ],
+    "snapshots.SceneSnapshot": [
+      "struct SceneSnapshot(Movable)"
+    ],
+    "snapshots.SceneSnapshot.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "snapshots.SceneSnapshot.__init__": [
+      "def __init__( out self, stage: Stage, time: TimeCode = .default ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)"
+    ],
+    "snapshots.SceneSnapshot.export": [
+      "def export(self, filename: String) raises UsdError"
+    ],
+    "snapshots.SceneSnapshot.generation": [
+      "var generation: UInt64"
+    ],
+    "snapshots.SceneSnapshot.paths": [
+      "def paths(self) raises UsdError -> List[String]"
+    ],
+    "snapshots.SceneSnapshot.prototypes": [
+      "def prototypes(self) raises UsdError -> List[String]"
+    ],
+    "snapshots.SceneSnapshot.transforms": [
+      "def transforms(self) -> ImmSpan[Float64, origin_of(self)]"
+    ],
+    "snapshots.SceneSnapshot.types": [
+      "def types(self) raises UsdError -> List[String]"
+    ],
+    "snapshots.SceneSnapshot.value": [
+      "def value( self, path: String, name: String, time: TimeCode = .default ) raises UsdError -> Value"
+    ],
+    "snapshots.poll_changes": [
+      "def poll_changes(mut stage: Stage) raises UsdError -> ChangeSet"
     ],
     "stage.MeshData": [
       "@fieldwise_init struct MeshData(Copyable)"

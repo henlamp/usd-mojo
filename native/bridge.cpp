@@ -62,7 +62,34 @@ using usd_mojo_native::ErrorKind;
 using usd_mojo_native::BridgeError;
 using usd_mojo_native::require;
 thread_local usd_mojo_native::ErrorState core_error;
-struct StageOwner { UsdStageRefPtr stage; };
+struct StageOwner : TfWeakBase {
+    UsdStageRefPtr stage;
+    uint64_t generation = 0;
+    std::set<SdfPath> resynced, changed;
+    bool all_dirty = false;
+    TfNotice::Key notice;
+    void on_changed(const UsdNotice::ObjectsChanged &message, const UsdStageWeakPtr &) noexcept {
+        if (generation != std::numeric_limits<uint64_t>::max()) ++generation;
+        else all_dirty = true;
+        if (all_dirty) return;
+        try {
+            for (const auto &path : message.GetResyncedPaths()) resynced.insert(path);
+            for (const auto &path : message.GetChangedInfoOnlyPaths()) changed.insert(path);
+            if (resynced.size() + changed.size() > 8192) {
+                all_dirty = true;
+                resynced.clear(); changed.clear();
+            }
+        } catch (...) {
+            // Notice delivery must not throw into an SDK authoring operation.
+            all_dirty = true;
+            resynced.clear(); changed.clear();
+        }
+    }
+    void watch() {
+        notice = TfNotice::Register(TfCreateWeakPtr(this), &StageOwner::on_changed, UsdStageWeakPtr(stage));
+    }
+    ~StageOwner() { TfNotice::Revoke(notice); }
+};
 struct MeshOwner {
     VtVec3fArray points;
     VtIntArray counts, indices;
@@ -203,6 +230,7 @@ USDM_API uint64_t usdm_stage_open(const char *path, int32_t create) noexcept {
         check_diagnostics(diagnostics);
         auto result = std::make_unique<StageOwner>();
         result->stage = stage;
+        result->watch();
         return result;
     });
 }
@@ -841,11 +869,19 @@ USDM_API int32_t usdm_mesh_copy(uint64_t handle, float *points, int64_t np,
 
 
 
+namespace {
+std::unique_ptr<ValueOwner> domain_value(const VtValue &value, const std::string &type = {}) {
+    auto result = std::make_unique<ValueOwner>();
+    result->type = type.empty() ? SdfGetValueTypeNameForValue(value).GetAsToken().GetString() : type;
+    decode(*result, value);
+    return result;
+}
+}
+#include "snapshot_bridge.h"
 
 
 
-
-
+#include "authoring_bridge.h"
 
 #include "array_bridge.h"
 

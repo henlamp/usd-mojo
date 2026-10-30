@@ -38,6 +38,7 @@ USDM_API uint64_t usdm_stage_open_context(const char *filename, uint64_t context
         result->stage = UsdStage::OpenMasked(filename, context_owner(context).value, population_mask(mask),
             load ? UsdStage::LoadAll : UsdStage::LoadNone);
         require(bool(result->stage), "Cannot open USD stage in resolver context", ErrorKind::Io);
+        result->watch();
         return result;
     });
 }
@@ -55,6 +56,7 @@ USDM_API uint64_t usdm_stage_open_masked(const char *filename, uint64_t mask, ui
             result->stage = UsdStage::OpenMasked(filename, context, paths, policy);
         }
         require(bool(result->stage), "Cannot open masked USD stage", ErrorKind::Io);
+        result->watch();
         return result;
     });
 }
