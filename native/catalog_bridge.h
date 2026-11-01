@@ -41,3 +41,40 @@ USDM_API uint64_t usdm_value_types() noexcept {
         return result;
     });
 }
+USDM_API uint64_t usdm_schema_types() noexcept {
+    return protect_owned([] {
+        auto result = std::make_unique<StringsOwner>();
+        std::set<TfType> types;
+        PlugRegistry::GetAllDerivedTypes(TfType::Find<UsdSchemaBase>(), &types);
+        const auto &registry = UsdSchemaRegistry::GetInstance();
+        std::map<std::string, std::pair<std::string, const UsdPrimDefinition *>>
+            entries;
+        for (const auto &type : types) {
+            auto name = UsdSchemaRegistry::GetSchemaTypeName(type);
+            if (name.IsEmpty())
+                continue;
+            const auto *definition = registry.FindConcretePrimDefinition(name);
+            std::string kind = "typed";
+            if (!definition) {
+                definition = registry.FindAppliedAPIPrimDefinition(name);
+                kind = "api";
+            }
+            if (!definition) {
+                definition = registry.FindAbstractPrimDefinition(name);
+                kind = "abstract";
+            }
+            if (!definition)
+                kind = "unapplied";
+            entries.emplace(name.GetString(), std::make_pair(kind, definition));
+        }
+        for (const auto &entry : entries) {
+            std::string names;
+            if (entry.second.second)
+                for (const auto &name : entry.second.second->GetPropertyNames())
+                    names += name.GetString() + "\n";
+            result->values.insert(result->values.end(),
+                                  {entry.first, entry.second.first, names});
+        }
+        return result;
+    });
+}

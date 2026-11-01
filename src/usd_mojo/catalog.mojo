@@ -35,3 +35,22 @@ def value_types() raises UsdError -> List[ValueTypeInfo]:
     return result^
 
 
+@fieldwise_init
+struct SchemaTypeInfo(Copyable):
+    var name: String
+    var kind: String
+    var properties: List[String]
+
+
+def schema_types() raises UsdError -> List[SchemaTypeInfo]:
+    var fields = _take_strings(external_call["usdm_schema_types", UInt64]())
+    if len(fields) % 3:
+        raise UsdError(.internal, "Invalid schema catalog")
+    var result = List[SchemaTypeInfo](capacity=len(fields) // 3)
+    for i in range(0, len(fields), 3):
+        var names = List[String]()
+        for name in fields[i + 2].split("\n"):
+            if name.byte_length() > 0:
+                names.append(String(name))
+        result.append(SchemaTypeInfo(fields[i], fields[i + 1], names^))
+    return result^

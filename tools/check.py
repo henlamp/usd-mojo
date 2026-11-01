@@ -1,51 +1,25 @@
 """Verify real USD semantics, C ABI boundaries and a precompiled consumer."""
 
+from config import pins
 import ctypes
 import hashlib
 import json
 import platform
-import re
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-from build import BUILD, ROOT, build
+from build import BUILD, ROOT, build, require_compile, require_rejection
 from check_api import check as check_api
 from evidence import SCOPE, source_hash
 from information_checks import check_information
-from link import linker_flags
+from expansion_checks import check as check_expansion
+from catalog_check import check as check_catalog
+from spline_check import check as check_splines
 from pxr import Usd, UsdGeom
 from value_checks import check_graphics, check_values
-
-
-def compile_consumer(
-    source: Path, binary: Path, imports: Path
-) -> subprocess.CompletedProcess:
-    bridge = BUILD / "native"
-    return subprocess.run(
-        [
-            "mojo",
-            "build",
-            "--Werror",
-            "-I",
-            str(imports),
-            *linker_flags(bridge),
-            str(source),
-            "-o",
-            str(binary),
-        ],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-
-
-def require_compile(source: Path, binary: Path, imports: Path) -> None:
-    result = compile_consumer(source, binary, imports)
-    if result.returncode:
-        raise RuntimeError(result.stdout + result.stderr)
 
 
 def sdk_comparison(binary: Path, fixture: Path) -> int:
@@ -224,16 +198,11 @@ def main() -> None:
             check=True,
         )
         for name in ("escape", "mutation", "move", "copy"):
-            rejected = compile_consumer(
+            require_rejection(
                 ROOT / f"tests/reject_snapshot_{name}.mojo",
                 directory / "rejected",
                 ROOT / "src",
-            )
-            assert rejected.returncode != 0, name
-            errors = " ".join(re.findall(r": error: ([^\n]+)", rejected.stderr)).lower()
-            assert any(
-                word in errors
-                for word in (
+                diagnostics=(
                     "origin",
                     "lifetime",
                     "mutable",
@@ -242,19 +211,31 @@ def main() -> None:
                     "uninitialized",
                     "copy",
                     "mutation",
-                )
-            ), rejected.stderr
+                ),
+            )
+        for name in (
+            "scene_escape",
+            "scene_move",
+            "array_escape",
+            "array_move",
+            "spline_copy",
+        ):
+            require_rejection(
+                ROOT / f"tests/reject_{name}.mojo",
+                directory / "rejected",
+                ROOT / "src",
+                diagnostics=("origin", "lifetime", "move", "uninitialized", "copy"),
+            )
         probe = directory / "probe"
         require_compile(ROOT / "tests" / "probe.mojo", probe, ROOT / "src")
         comparisons = sdk_comparison(probe, fixture)
         abi_boundaries(library, fixture, directory)
-        result = compile_consumer(
+        require_rejection(
             ROOT / "tests" / "reject_stage_copy.mojo",
             directory / "invalid-copy",
             ROOT / "src",
+            diagnostics=("copy",),
         )
-        assert result.returncode != 0, "Stage copying unexpectedly compiled"
-        assert "copy" in result.stderr.lower(), result.stderr
         # Consumer sees only the precompiled artifact, with no source import path.
         packages = directory / "packages"
         packages.mkdir()
@@ -294,16 +275,22 @@ def main() -> None:
         information_report = check_information(
             directory, require_compile, ROOT, packages
         )
+        expansion_report = check_expansion(directory, require_compile, ROOT, packages)
+        catalog_report = check_catalog(directory, require_compile, packages, library)
+        spline_report = check_splines(directory, require_compile, packages)
     report = {
         "status": "passed",
         "api": api_report,
         "typed_values": value_report,
         "graphics": graphics_report,
         "general_information": information_report,
+        "scene_expansion": expansion_report,
+        "sdk_type_catalog": catalog_report,
+        "splines": spline_report,
         "platform": platform.platform(),
         "machine": platform.machine(),
         "mojo": subprocess.check_output(["mojo", "--version"], text=True).strip(),
-        "openusd": "26.08",
+        "openusd": pins()["openusd"],
         "sdk_comparison_rows": comparisons,
         "source_sha256": source_hash(ROOT),
         "bridge_sha256": hashlib.sha256(library.read_bytes()).hexdigest(),

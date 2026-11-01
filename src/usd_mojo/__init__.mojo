@@ -58,10 +58,28 @@ from .composition import (
     register_plugins,
 )
 
+from .schema import SchemaSnapshot, schema_properties
+from .scene import (
+    visibility,
+    purpose,
+    world_bounds,
+    inherited_primvar,
+    instance_transforms,
+    instance_mask,
+    bound_material,
+    skeleton_joints,
+    joint_transforms,
+    skinning_transforms,
+    skinned_points,
+)
+from .assets import AssetDependency, dependencies, export_usdz
 
 from .snapshots import ChangeSet, poll_changes, SceneSnapshot
 
+from .scene import collection_members
+from .clips import clip_sets, clip_set, set_clip_set, clear_clip_set
 
+from .shading import ShaderGraph, ShaderConnection, shader_graph
 
 from .layers import LayerOffset, NamespaceEditor, NamespaceCheck
 
@@ -87,6 +105,8 @@ from .authoring import (
 from .arrays import ArraySnapshot, set_array
 from .catalog import ValueTypeInfo, value_types
 
+from .splines import Spline, SplineKnot, SplineExtrapolation, SplineLoop
+from .catalog import SchemaTypeInfo, schema_types
 from .composition import (
     set_reference_opinions,
     set_payload_opinions,

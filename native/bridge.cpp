@@ -867,16 +867,8 @@ USDM_API int32_t usdm_mesh_copy(uint64_t handle, float *points, int64_t np,
 
 #include "composition_bridge.h"
 
+#include "domains_bridge.h"
 
-
-namespace {
-std::unique_ptr<ValueOwner> domain_value(const VtValue &value, const std::string &type = {}) {
-    auto result = std::make_unique<ValueOwner>();
-    result->type = type.empty() ? SdfGetValueTypeNameForValue(value).GetAsToken().GetString() : type;
-    decode(*result, value);
-    return result;
-}
-}
 #include "snapshot_bridge.h"
 
 
@@ -889,4 +881,4 @@ std::unique_ptr<ValueOwner> domain_value(const VtValue &value, const std::string
 
 #include "catalog_bridge.h"
 
-
+#include "spline_bridge.h"

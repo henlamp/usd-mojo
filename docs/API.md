@@ -66,7 +66,22 @@ to retain the original opinions. A population mask may exclude unrelated objects
 | Editing | `EditTarget(stage, layer, reference_prim=...)` retains the SDK mapping; applying it to another stage fails. Ambiguous reference mappings are rejected. `NamespaceEditor` preflights prim/property edits and accepts explicitly registered dependent stages. Only composed, loaded dependencies are visible. |
 | Metadata | `Metadata` owns dictionaries, exact base values and opaque SDK values. Child snapshots are independent. Path/token/string list operations and references/payloads retain explicit/prepend/append/delete/add/order items and layer offsets. `set_metadata` authors composed-object metadata; `set_layer_field` edits raw Sdf opinions. Unsupported base conversions fail without discarding the opaque value. |
 | Composition | Masked stage construction, population-mask expansion, `LoadRule`, layer muting, inherits/specializes and `composition_arcs`. `ResolverContext` retains default search paths or delegates context-string parsing to the active SDK resolver. `register_plugins` uses the SDK plugin registry. |
+| Schemas | `SchemaSnapshot(stage, path, time)` owns all resolved attributes, missing/blocked-value names, forwarded relationship targets and authored connections. `schema_properties` inspects registered definitions. Applies to geometry, lights, render settings/products/vars, all standard physics schemas and installed plugin schemas. Custom value types outside `Value` raise `unsupported` on conversion. |
+| Geometry | `visibility`, `purpose`, aligned `world_bounds`, flattened `inherited_primvar`. `instance_transforms` retains every PointInstancer slot; `instance_mask` supplies 0/1 visibility in the same order. Prototype transforms are optional. Curves, NURBS, subsets and subdivision properties are data access, not tessellation. |
+| Shading | `bound_material` supports material purposes and SDK collection/inherited bindings. `shader_graph` captures reachable property connections for a render context, retaining cycles and unresolved sources. Node values come from schema snapshots; shaders are not evaluated by the core. |
+| Animation | Joint order, skeleton-space transforms, skinning transforms and `skinned_points` use UsdSkel. Blend shapes, inbetweens and joint-order mapping precede skinning. Clip dictionaries preserve explicit and template definitions; value/time mapping is evaluated by the SDK. |
+| Assets | `dependencies` distinguishes layers, assets and unresolved paths in the stage's resolver context. `export_usdz` uses UsdUtils, refuses unsaved edits, unresolved dependencies and existing destinations, and publishes the completed package atomically. Generated clip manifests are SDK caches. |
 | Runtime handoff | `SceneSnapshot` freezes composed opinions, including the session and selected working set. `paths`, `types` and `prototypes` align with contiguous borrowed Float64 world matrices. `value` reads the frozen description; external asset bytes are not copied. `poll_changes` consumes bounded SDK notice paths; `all_dirty` requires a full refresh. GPU transfers belong to runtime adapters. |
+
+`skinned_points` treats missing or blocked weights at the requested time as neutral.
+Malformed authored arrays raise `invalid_data`.
+
+The C ABI still delegates composition and schema evaluation to OpenUSD. These
+additions do not claim feature parity with every SDK class or plugin.
+
+Keep stages open across runtime updates and reuse a frozen snapshot until its
+description changes. Capturing a new `SceneSnapshot` performs CPU-side SDK
+flattening; it is not an incremental update or an allocation-free operation.
 
 ### Authoring and numeric streaming
 
@@ -98,6 +113,29 @@ explicitly. Boolean views use UInt8 components containing 0/1. `set_array` copie
 a compatible host span into SDK-owned storage once, without Float64 promotion.
 Caller storage can be reused after return. SDK decoding,
 small-array materialization and GPU uploads can still allocate or copy.
+
+`Layer.export("scene.usdc")` preserves layer structure; `Stage.export` flattens it.
+USDZ is read as a package. Editing through a stronger saved overlay and repackaging
+to a new USDZ preserves the original archive; in-place ZIP editing is not exposed.
+Packaging retains empty asset-array slots, including metadata and time samples.
+
+### Catalogs and splines
+
+`value_types()` lists the linked SDK's registered names, roles and array/view
+capabilities. `schema_types()` lists registered schemas and their property names.
+The generated value dispatch is checked by `tools/generate.py --check`. Opaque
+and group markers have no generic component representation; the catalog records
+this explicitly. Path expressions retain their SDK expression text, including
+relative paths and expression references.
+
+`Spline(type_name="double", curve="bezier")` owns a Ts spline.
+`Spline(stage, path, attribute)` captures a resolved spline; `Spline(other)`
+makes an independent copy. Knots support held/linear/curve/value-block interpolation,
+dual values, tangents and tangent algorithms. Evaluation returns Float64, including
+for Float16/32 knot storage. Extrapolation, loop settings and knot metadata are
+retained. `author(stage, path, name)` uses the current mapped edit target and USD
+unit/time conventions. USDA/USDC output can require a newer crate format for
+splines and timecode-valued splines; the SDK chooses that format.
 
 ## Native mesh snapshots
 

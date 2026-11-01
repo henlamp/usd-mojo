@@ -2,6 +2,7 @@
   "api_version": "0.2",
   "exports": [
     "ArraySnapshot",
+    "AssetDependency",
     "AssetPathData",
     "AttributeEdit",
     "BodyData",
@@ -28,6 +29,14 @@
     "Quaternion",
     "ResolverContext",
     "SceneSnapshot",
+    "SchemaSnapshot",
+    "SchemaTypeInfo",
+    "ShaderConnection",
+    "ShaderGraph",
+    "Spline",
+    "SplineExtrapolation",
+    "SplineKnot",
+    "SplineLoop",
     "Stage",
     "StageInfo",
     "TimeCode",
@@ -41,22 +50,34 @@
     "add_specialize",
     "block_attribute",
     "block_value_at",
+    "bound_material",
     "clear_arc_opinions",
     "clear_attribute_values",
+    "clear_clip_set",
     "clear_connection_opinions",
     "clear_layer_field",
     "clear_metadata",
     "clear_value_at",
+    "clip_set",
+    "clip_sets",
+    "collection_members",
     "composition_arcs",
     "create_attribute",
     "create_class_prim",
+    "dependencies",
     "expand_population_mask",
+    "export_usdz",
+    "inherited_primvar",
+    "instance_mask",
+    "instance_transforms",
+    "joint_transforms",
     "load_rules",
     "mute_layer",
     "muted_layers",
     "override_prim",
     "poll_changes",
     "population_mask",
+    "purpose",
     "read_body",
     "read_camera",
     "read_drive",
@@ -70,9 +91,12 @@
     "remove_property_opinion",
     "rename_prim",
     "save_layers",
+    "schema_properties",
+    "schema_types",
     "sdk_version",
     "set_active",
     "set_array",
+    "set_clip_set",
     "set_connections",
     "set_inherit_opinions",
     "set_layer_field",
@@ -84,7 +108,13 @@
     "set_relationship_targets",
     "set_specialize_opinions",
     "set_values",
-    "value_types"
+    "shader_graph",
+    "skeleton_joints",
+    "skinned_points",
+    "skinning_transforms",
+    "value_types",
+    "visibility",
+    "world_bounds"
   ],
   "declarations": {
     "arrays.ArraySnapshot": [
@@ -114,6 +144,21 @@
     ],
     "arrays.set_array": [
       "def set_array[ dtype: DType ]( mut stage: Stage, path: String, name: String, type_name: String, values: ImmSpan[Scalar[dtype], _], time: TimeCode = .default, ) raises UsdError"
+    ],
+    "assets.AssetDependency": [
+      "@fieldwise_init struct AssetDependency(Copyable)"
+    ],
+    "assets.AssetDependency.kind": [
+      "var kind: String"
+    ],
+    "assets.AssetDependency.path": [
+      "var path: String"
+    ],
+    "assets.dependencies": [
+      "def dependencies(stage: Stage) raises UsdError -> List[AssetDependency]"
+    ],
+    "assets.export_usdz": [
+      "def export_usdz(stage: Stage, filename: String) raises UsdError"
     ],
     "authoring.AttributeEdit": [
       "@fieldwise_init struct AttributeEdit(Copyable)"
@@ -169,6 +214,18 @@
     "authoring.set_values": [
       "def set_values(mut stage: Stage, edits: List[AttributeEdit]) raises UsdError"
     ],
+    "catalog.SchemaTypeInfo": [
+      "@fieldwise_init struct SchemaTypeInfo(Copyable)"
+    ],
+    "catalog.SchemaTypeInfo.kind": [
+      "var kind: String"
+    ],
+    "catalog.SchemaTypeInfo.name": [
+      "var name: String"
+    ],
+    "catalog.SchemaTypeInfo.properties": [
+      "var properties: List[String]"
+    ],
     "catalog.ValueTypeInfo": [
       "@fieldwise_init struct ValueTypeInfo(Copyable)"
     ],
@@ -190,8 +247,23 @@
     "catalog.ValueTypeInfo.role": [
       "var role: String"
     ],
+    "catalog.schema_types": [
+      "def schema_types() raises UsdError -> List[SchemaTypeInfo]"
+    ],
     "catalog.value_types": [
       "def value_types() raises UsdError -> List[ValueTypeInfo]"
+    ],
+    "clips.clear_clip_set": [
+      "def clear_clip_set( mut stage: Stage, path: String, name: String = \"default\" ) raises UsdError"
+    ],
+    "clips.clip_set": [
+      "def clip_set( stage: Stage, path: String, name: String = \"default\" ) raises UsdError -> Metadata"
+    ],
+    "clips.clip_sets": [
+      "def clip_sets(stage: Stage, path: String) raises UsdError -> List[String]"
+    ],
+    "clips.set_clip_set": [
+      "def set_clip_set( mut stage: Stage, path: String, data: Metadata, name: String = \"default\" ) raises UsdError"
     ],
     "composition.LoadRule": [
       "@fieldwise_init struct LoadRule(Copyable)"
@@ -811,6 +883,97 @@
       "def __init__(out self, configuration: String) raises UsdError",
       "def __init__(out self, paths: List[String]) raises UsdError"
     ],
+    "scene.bound_material": [
+      "def bound_material( stage: Stage, path: String, material_purpose: String = \"\" ) raises UsdError -> String"
+    ],
+    "scene.collection_members": [
+      "def collection_members( stage: Stage, path: String, name: String ) raises UsdError -> List[String]"
+    ],
+    "scene.inherited_primvar": [
+      "def inherited_primvar( stage: Stage, path: String, name: String, time: TimeCode = .default ) raises UsdError -> Value"
+    ],
+    "scene.instance_mask": [
+      "def instance_mask( stage: Stage, path: String, time: TimeCode = .default ) raises UsdError -> Value"
+    ],
+    "scene.instance_transforms": [
+      "def instance_transforms( stage: Stage, path: String, time: TimeCode = .default, *, include_prototype: Bool = True, ) raises UsdError -> Value"
+    ],
+    "scene.joint_transforms": [
+      "def joint_transforms( stage: Stage, path: String, time: TimeCode = .default ) raises UsdError -> Value"
+    ],
+    "scene.purpose": [
+      "def purpose(stage: Stage, path: String) raises UsdError -> String"
+    ],
+    "scene.skeleton_joints": [
+      "def skeleton_joints(stage: Stage, path: String) raises UsdError -> Value"
+    ],
+    "scene.skinned_points": [
+      "def skinned_points( stage: Stage, skeleton: String, mesh: String, time: TimeCode = .default ) raises UsdError -> Value"
+    ],
+    "scene.skinning_transforms": [
+      "def skinning_transforms( stage: Stage, path: String, time: TimeCode = .default ) raises UsdError -> Value"
+    ],
+    "scene.visibility": [
+      "def visibility( stage: Stage, path: String, time: TimeCode = .default ) raises UsdError -> String"
+    ],
+    "scene.world_bounds": [
+      "def world_bounds( stage: Stage, path: String, time: TimeCode = .default, *, purposes: List[String] = [String(\"default\")], ) raises UsdError -> Value"
+    ],
+    "schema.SchemaSnapshot": [
+      "struct SchemaSnapshot(Movable)"
+    ],
+    "schema.SchemaSnapshot.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "schema.SchemaSnapshot.__init__": [
+      "def __init__( out self, stage: Stage, path: String, time: TimeCode = .default ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)"
+    ],
+    "schema.SchemaSnapshot.attributes": [
+      "def attributes(self) raises UsdError -> List[String]"
+    ],
+    "schema.SchemaSnapshot.connections": [
+      "def connections(self, name: String) raises UsdError -> List[String]"
+    ],
+    "schema.SchemaSnapshot.missing_values": [
+      "def missing_values(self) raises UsdError -> List[String]"
+    ],
+    "schema.SchemaSnapshot.relationships": [
+      "def relationships(self) raises UsdError -> List[String]"
+    ],
+    "schema.SchemaSnapshot.targets": [
+      "def targets(self, name: String) raises UsdError -> List[String]"
+    ],
+    "schema.SchemaSnapshot.value": [
+      "def value(self, name: String) raises UsdError -> Value"
+    ],
+    "schema.schema_properties": [
+      "def schema_properties( name: String, *, api: Bool = False ) raises UsdError -> List[String]"
+    ],
+    "shading.ShaderConnection": [
+      "@fieldwise_init struct ShaderConnection(Copyable)"
+    ],
+    "shading.ShaderConnection.destination": [
+      "var destination: String"
+    ],
+    "shading.ShaderConnection.resolved": [
+      "var resolved: Bool"
+    ],
+    "shading.ShaderConnection.source": [
+      "var source: String"
+    ],
+    "shading.ShaderGraph": [
+      "@fieldwise_init struct ShaderGraph(Copyable)"
+    ],
+    "shading.ShaderGraph.connections": [
+      "var connections: List[ShaderConnection]"
+    ],
+    "shading.ShaderGraph.nodes": [
+      "var nodes: List[String]"
+    ],
+    "shading.shader_graph": [
+      "def shader_graph( stage: Stage, material: String, render_context: String = \"\" ) raises UsdError -> ShaderGraph"
+    ],
     "snapshots.ChangeSet": [
       "@fieldwise_init struct ChangeSet(Copyable)"
     ],
@@ -859,6 +1022,126 @@
     ],
     "snapshots.poll_changes": [
       "def poll_changes(mut stage: Stage) raises UsdError -> ChangeSet"
+    ],
+    "splines.Spline": [
+      "struct Spline(Movable)"
+    ],
+    "splines.Spline.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "splines.Spline.__init__": [
+      "def __init__( out self, type_name: String = \"double\", *, curve: String = \"bezier\" ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)",
+      "def __init__(out self, other: Self) raises UsdError",
+      "def __init__(out self, stage: Stage, path: String, name: String) raises UsdError"
+    ],
+    "splines.Spline.author": [
+      "def author(self, mut stage: Stage, path: String, name: String) raises UsdError"
+    ],
+    "splines.Spline.curve": [
+      "var curve: String"
+    ],
+    "splines.Spline.evaluate": [
+      "def evaluate( self, time: Float64, *, mode: String = \"value\" ) raises UsdError -> Float64"
+    ],
+    "splines.Spline.extrapolation": [
+      "def extrapolation( self, *, before: Bool = False ) raises UsdError -> SplineExtrapolation"
+    ],
+    "splines.Spline.inner_loop": [
+      "def inner_loop(self) raises UsdError -> SplineLoop"
+    ],
+    "splines.Spline.knot": [
+      "def knot(self, time: Float64) raises UsdError -> SplineKnot"
+    ],
+    "splines.Spline.knot_metadata": [
+      "def knot_metadata(self, time: Float64) raises UsdError -> Metadata"
+    ],
+    "splines.Spline.knot_times": [
+      "def knot_times(self) raises UsdError -> List[Float64]"
+    ],
+    "splines.Spline.remove_knot": [
+      "def remove_knot(mut self, time: Float64) raises UsdError"
+    ],
+    "splines.Spline.set_extrapolation": [
+      "def set_extrapolation( mut self, mode: String, *, before: Bool = False, slope: Float64 = 0, boundary: Optional[Float64] = None, ) raises UsdError"
+    ],
+    "splines.Spline.set_inner_loop": [
+      "def set_inner_loop( mut self, start: Float64, end: Float64, *, before: Int = 0, after: Int = 0, offset: Float64 = 0, ) raises UsdError"
+    ],
+    "splines.Spline.set_knot": [
+      "def set_knot(mut self, knot: SplineKnot) raises UsdError"
+    ],
+    "splines.Spline.set_knot_metadata": [
+      "def set_knot_metadata(mut self, time: Float64, data: Metadata) raises UsdError"
+    ],
+    "splines.Spline.type_name": [
+      "var type_name: String"
+    ],
+    "splines.SplineExtrapolation": [
+      "@fieldwise_init struct SplineExtrapolation(Copyable)"
+    ],
+    "splines.SplineExtrapolation.boundary": [
+      "var boundary: Optional[Float64]"
+    ],
+    "splines.SplineExtrapolation.mode": [
+      "var mode: String"
+    ],
+    "splines.SplineExtrapolation.slope": [
+      "var slope: Float64"
+    ],
+    "splines.SplineKnot": [
+      "struct SplineKnot(Copyable)"
+    ],
+    "splines.SplineKnot.__init__": [
+      "def __init__( out self, time: Float64, value: Float64, *, interpolation: String = \"curve\", pre_value: Optional[Float64] = None, pre_slope: Float64 = 0, post_slope: Float64 = 0, pre_width: Float64 = 0, post_width: Float64 = 0, pre_algorithm: String = \"none\", post_algorithm: String = \"none\", )"
+    ],
+    "splines.SplineKnot.interpolation": [
+      "var interpolation: String"
+    ],
+    "splines.SplineKnot.post_algorithm": [
+      "var post_algorithm: String"
+    ],
+    "splines.SplineKnot.post_slope": [
+      "var post_slope: Float64"
+    ],
+    "splines.SplineKnot.post_width": [
+      "var post_width: Float64"
+    ],
+    "splines.SplineKnot.pre_algorithm": [
+      "var pre_algorithm: String"
+    ],
+    "splines.SplineKnot.pre_slope": [
+      "var pre_slope: Float64"
+    ],
+    "splines.SplineKnot.pre_value": [
+      "var pre_value: Optional[Float64]"
+    ],
+    "splines.SplineKnot.pre_width": [
+      "var pre_width: Float64"
+    ],
+    "splines.SplineKnot.time": [
+      "var time: Float64"
+    ],
+    "splines.SplineKnot.value": [
+      "var value: Float64"
+    ],
+    "splines.SplineLoop": [
+      "@fieldwise_init struct SplineLoop(Copyable)"
+    ],
+    "splines.SplineLoop.after": [
+      "var after: Int"
+    ],
+    "splines.SplineLoop.before": [
+      "var before: Int"
+    ],
+    "splines.SplineLoop.end": [
+      "var end: Float64"
+    ],
+    "splines.SplineLoop.offset": [
+      "var offset: Float64"
+    ],
+    "splines.SplineLoop.start": [
+      "var start: Float64"
     ],
     "stage.MeshData": [
       "@fieldwise_init struct MeshData(Copyable)"
