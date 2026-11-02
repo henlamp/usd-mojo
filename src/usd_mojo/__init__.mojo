@@ -105,6 +105,13 @@ from .authoring import (
 from .arrays import ArraySnapshot, set_array
 from .catalog import ValueTypeInfo, value_types
 
+from .validation import (
+    ValidationSite,
+    ValidationIssue,
+    ValidationReport,
+    validator_names,
+    validate_stage,
+)
 from .splines import Spline, SplineKnot, SplineExtrapolation, SplineLoop
 from .catalog import SchemaTypeInfo, schema_types
 from .composition import (

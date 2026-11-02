@@ -43,6 +43,9 @@
     "TransformData",
     "UsdError",
     "UsdErrorKind",
+    "ValidationIssue",
+    "ValidationReport",
+    "ValidationSite",
     "Value",
     "ValueTypeInfo",
     "Vector3",
@@ -112,6 +115,8 @@
     "skeleton_joints",
     "skinned_points",
     "skinning_transforms",
+    "validate_stage",
+    "validator_names",
     "value_types",
     "visibility",
     "world_bounds"
@@ -1443,6 +1448,81 @@
     ],
     "stage.sdk_version": [
       "def sdk_version() -> Int"
+    ],
+    "validation.ValidationIssue": [
+      "@fieldwise_init struct ValidationIssue(Copyable)"
+    ],
+    "validation.ValidationIssue.identifier": [
+      "var identifier: String"
+    ],
+    "validation.ValidationIssue.message": [
+      "var message: String"
+    ],
+    "validation.ValidationIssue.severity": [
+      "var severity: String"
+    ],
+    "validation.ValidationIssue.sites": [
+      "var sites: List[ValidationSite]"
+    ],
+    "validation.ValidationReport": [
+      "@fieldwise_init struct ValidationReport(Copyable)"
+    ],
+    "validation.ValidationReport.error_count": [
+      "var error_count: UInt64"
+    ],
+    "validation.ValidationReport.info_count": [
+      "var info_count: UInt64"
+    ],
+    "validation.ValidationReport.is_valid": [
+      "def is_valid(self) -> Bool"
+    ],
+    "validation.ValidationReport.issues": [
+      "var issues: List[ValidationIssue]"
+    ],
+    "validation.ValidationReport.muted_layers": [
+      "var muted_layers: List[String]"
+    ],
+    "validation.ValidationReport.population_mask": [
+      "var population_mask: List[String]"
+    ],
+    "validation.ValidationReport.time": [
+      "var time: Optional[TimeCode]"
+    ],
+    "validation.ValidationReport.total_issues": [
+      "var total_issues: UInt64"
+    ],
+    "validation.ValidationReport.truncated": [
+      "def truncated(self) -> Bool"
+    ],
+    "validation.ValidationReport.unloaded_payloads": [
+      "var unloaded_payloads: List[String]"
+    ],
+    "validation.ValidationReport.validators": [
+      "var validators: List[String]"
+    ],
+    "validation.ValidationReport.warning_count": [
+      "var warning_count: UInt64"
+    ],
+    "validation.ValidationSite": [
+      "@fieldwise_init struct ValidationSite(Copyable)"
+    ],
+    "validation.ValidationSite.layer_identifier": [
+      "var layer_identifier: String"
+    ],
+    "validation.ValidationSite.object_path": [
+      "var object_path: String"
+    ],
+    "validation.ValidationSite.stage_identifier": [
+      "var stage_identifier: String"
+    ],
+    "validation.ValidationSite.valid": [
+      "var valid: Bool"
+    ],
+    "validation.validate_stage": [
+      "def validate_stage( stage: Stage, *, validators: List[String] = List[String](), time: Optional[TimeCode] = None, max_issues: Int = 1000, ) raises UsdError -> ValidationReport"
+    ],
+    "validation.validator_names": [
+      "def validator_names() raises UsdError -> List[String]"
     ],
     "value.Value": [
       "struct Value(Copyable)"

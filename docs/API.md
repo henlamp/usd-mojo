@@ -137,6 +137,22 @@ retained. `author(stage, path, name)` uses the current mapped edit target and US
 unit/time conventions. USDA/USDC output can require a newer crate format for
 splines and timecode-valued splines; the SDK chooses that format.
 
+### Validation
+
+`validate_stage` returns owned, sorted findings with identifiers, severity and
+sites, plus selected rules, population mask, unloaded payloads and muted layers.
+An empty rule list selects available SDK validators and local mesh/mass checks.
+The local rules check mesh topology/finite points and MassAPI numeric validity,
+retaining zero-derived values and USD's derived-center sentinel. They do not
+certify solver behavior or every physical constraint.
+
+`time=None` requests all authored samples; an explicit `TimeCode` narrows the check.
+`max_issues` limits returned detail, while total/error counts remain complete.
+`is_valid()` concerns those rules on the composed working set; it does not inspect
+inactive, masked, unloaded or unselected contents. Validators do not fix/save data.
+The SDK can omit an invalid site's raw path; such a site retains an empty path.
+Use `examples/validate_scene.mojo` for a failing exit status when errors are found.
+
 ## Native mesh snapshots
 
 `Stage.mesh_snapshot(path, time)` or `MeshSnapshot(stage, path, time)` captures

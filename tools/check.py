@@ -16,6 +16,7 @@ from check_api import check as check_api
 from evidence import SCOPE, source_hash
 from information_checks import check_information
 from expansion_checks import check as check_expansion
+from maturity_checks import check as check_maturity
 from catalog_check import check as check_catalog
 from spline_check import check as check_splines
 from pxr import Usd, UsdGeom
@@ -276,6 +277,9 @@ def main() -> None:
             directory, require_compile, ROOT, packages
         )
         expansion_report = check_expansion(directory, require_compile, ROOT, packages)
+        maturity_report = check_maturity(
+            directory, require_compile, ROOT, packages, library
+        )
         catalog_report = check_catalog(directory, require_compile, packages, library)
         spline_report = check_splines(directory, require_compile, packages)
     report = {
@@ -285,6 +289,7 @@ def main() -> None:
         "graphics": graphics_report,
         "general_information": information_report,
         "scene_expansion": expansion_report,
+        "authoring_streaming_validation": maturity_report,
         "sdk_type_catalog": catalog_report,
         "splines": spline_report,
         "platform": platform.platform(),

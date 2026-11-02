@@ -8,7 +8,7 @@ import tempfile
 from pathlib import Path
 
 from build import BUILD, ROOT
-from package import package
+from package import package, compile_installed
 
 
 def main():
@@ -23,6 +23,8 @@ def main():
         "licenses/OpenUSD-NOTICE.txt",
     ):
         assert (installed / relative).is_file(), relative
+    assert not (installed / "docs/evidence").exists()
+    assert not (installed / "docs/PACKAGE_README.md").exists()
     with tempfile.TemporaryDirectory(prefix="foreign-project-", dir=BUILD) as temp:
         parent = Path(temp)
         project = parent / "original"
@@ -30,26 +32,22 @@ def main():
         source = project / "consumer.mojo"
         source.write_text("""from std.sys import argv
 from std.testing import assert_equal
-from usd_mojo import Stage
+from usd_mojo import Stage, SchemaSnapshot, SceneSnapshot
 
 def main() raises:
     var args = argv()
     var stage = Stage(args[1])
     assert_equal(stage.mesh("/World/Robot/Triangle").point_count(), 3)
+    var schema = SchemaSnapshot(stage, "/World/Robot/Triangle")
+    assert_equal(len(schema.value("points").numbers), 9)
+    var frozen = SceneSnapshot(stage)
+    assert_equal(len(frozen.transforms()), len(frozen.paths()) * 16)
     print("PASS independent relocated package")
 """)
         for path in (ROOT / "tests/fixtures").glob("*.usda"):
             shutil.copy2(path, project / path.name)
-        compiler = project / "vendor/usd-mojo/compile.py"
-        subprocess.run(
-            [
-                sys.executable,
-                str(compiler),
-                str(source),
-                "-o",
-                str(project / "bin/consumer"),
-            ],
-            check=True,
+        compile_installed(
+            project / "vendor/usd-mojo", source, project / "bin/consumer"
         )
         subprocess.run(
             [str(project / "bin/consumer"), str(project / "composed.usda")], check=True

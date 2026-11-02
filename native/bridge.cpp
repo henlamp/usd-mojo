@@ -877,7 +877,7 @@ USDM_API int32_t usdm_mesh_copy(uint64_t handle, float *points, int64_t np,
 
 #include "array_bridge.h"
 
-
+#include "validation_bridge.h"
 
 #include "catalog_bridge.h"
 
