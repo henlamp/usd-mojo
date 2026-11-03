@@ -871,7 +871,8 @@ USDM_API int32_t usdm_mesh_copy(uint64_t handle, float *points, int64_t np,
 
 #include "snapshot_bridge.h"
 
-
+// C++-only handoff to the optional renderer; no SDK types cross the Mojo ABI.
+UsdStageRefPtr usdm_internal_stage(uint64_t h) { return owner(h).stage; }
 
 #include "authoring_bridge.h"
 

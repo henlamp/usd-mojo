@@ -444,6 +444,69 @@
     "graphics.read_primvar": [
       "def read_primvar( stage: Stage, path: String, name: String, time: TimeCode = .default ) raises UsdError -> PrimvarData"
     ],
+    "imaging.RenderImage": [
+      "struct RenderImage(Movable)"
+    ],
+    "imaging.RenderImage.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "imaging.RenderImage.__init__": [
+      "def __init__( out self, stage: Stage, camera: String, width: Int, height: Int, time: TimeCode = .default, *, renderer: String = \"\", max_iterations: Int = 8, lighting: Bool = True, ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)",
+      "def __init__(out self, mut session: RenderSession) raises UsdError"
+    ],
+    "imaging.RenderImage.converged": [
+      "var converged: Bool"
+    ],
+    "imaging.RenderImage.height": [
+      "var height: Int"
+    ],
+    "imaging.RenderImage.pixels": [
+      "def pixels(self) -> ImmSpan[Float32, origin_of(self)]"
+    ],
+    "imaging.RenderImage.width": [
+      "var width: Int"
+    ],
+    "imaging.RenderSession": [
+      "struct RenderSession(Movable)"
+    ],
+    "imaging.RenderSession.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "imaging.RenderSession.__init__": [
+      "def __init__( out self, stage: Stage, width: Int, height: Int, *, renderer: String = \"\" ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)"
+    ],
+    "imaging.RenderSession.backend": [
+      "def backend(self) raises UsdError -> String"
+    ],
+    "imaging.RenderSession.converged": [
+      "var converged: Bool"
+    ],
+    "imaging.RenderSession.frame": [
+      "var frame: UInt64"
+    ],
+    "imaging.RenderSession.height": [
+      "var height: Int"
+    ],
+    "imaging.RenderSession.read_into": [
+      "def read_into(mut self, pixels: MutSpan[Float32, _]) raises UsdError"
+    ],
+    "imaging.RenderSession.readback": [
+      "def readback(mut self) raises UsdError -> RenderImage"
+    ],
+    "imaging.RenderSession.render": [
+      "def render( mut self, camera: String, time: TimeCode = .default, *, max_iterations: Int = 8, lighting: Bool = True, ) raises UsdError"
+    ],
+    "imaging.RenderSession.renderer": [
+      "def renderer(self) raises UsdError -> String"
+    ],
+    "imaging.RenderSession.width": [
+      "var width: Int"
+    ],
+    "imaging.renderer_plugins": [
+      "def renderer_plugins() raises UsdError -> List[String]"
+    ],
     "information.AssetPathData": [
       "@fieldwise_init struct AssetPathData(Copyable)"
     ],

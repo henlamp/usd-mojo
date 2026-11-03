@@ -139,6 +139,7 @@ def Mesh "Bad" {
 
 def main() -> None:
     api_report = check_api()
+    subprocess.run([sys.executable, str(ROOT / "tests/rendering.py")], check=True)
     library = build()
     subprocess.run(
         [
@@ -217,6 +218,7 @@ def main() -> None:
         for name in (
             "scene_escape",
             "scene_move",
+            "image_escape",
             "array_escape",
             "array_move",
             "spline_copy",

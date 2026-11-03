@@ -153,6 +153,53 @@ inactive, masked, unloaded or unselected contents. Validators do not fix/save da
 The SDK can omit an invalid site's raw path; such a site retains an empty path.
 Use `examples/validate_scene.mojo` for a failing exit status when errors are found.
 
+## Optional Hydra imaging
+
+`from usd_mojo.imaging import RenderSession, RenderImage, renderer_plugins` uses
+an opt-in native library, built with `USD_MOJO_IMAGING=ON`.
+
+`RenderSession(stage, width, height, renderer="")` retains the stage, Hgi and Hydra
+engine. `render(camera, time, max_iterations=8, lighting=True)` submits a frame;
+`converged` reports the bounded render result. `readback()` creates an independent
+`RenderImage`; `read_into(MutSpan[Float32])` copies into exact-sized caller storage
+without retaining its pointer. A failed render invalidates readback until the next
+successful render. Session size is fixed; viewport fitting preserves vertical
+aperture and conforms horizontal framing to the output aspect ratio. Use and
+destroy sessions on the main thread; concurrent stage edits or rendering are unsupported.
+Additional camera-space clipping planes follow the selected camera and time.
+SDK rendering warnings raise an error, including shader fallback and missing textures.
+
+```mojo
+var session = RenderSession(stage, 640, 480)
+session.render("/Camera", TimeCode.at(1))
+print(session.backend(), session.renderer())
+var image = session.readback()
+var pixels = image.pixels()
+```
+
+`RenderImage(stage, camera, width, height, ...)` remains the one-shot convenience
+API. Images own linear Float32 RGBA and lend `ImmSpan` views tied to their lifetime.
+Later renders do not mutate earlier images. Readback maps/synchronizes the renderer
+buffer and copies/converts its data; borrowing an image adds no further copy.
+Channels and row order are retained without display color conversion. There is no
+window presentation or shared GPU-texture handle. The default core package does
+not link Hydra, OpenGL or a platform GPU backend.
+Linux applications must supply a current OpenGL 4.5+ context. For local tests,
+`USD_MOJO_TEST_GL_CONTEXT=1` builds and preloads the registered SDK shared context.
+The helper is not installed or required by the core library.
+On the qualified WSLg/Mesa 25 stack, `GALLIUM_DRIVER=d3d12` selects hardware
+rendering. The embedding application supplies a registered shared SDK context;
+the exact qualification setup is in [Linux evidence](https://github.com/henlamp/usd-mojo/blob/development/docs/evidence/020-linux.json).
+
+Run `pixi run python tools/imaging_check.py` for the one-shot path and
+`pixi run python tools/render_session_check.py` for sequences and buffer reuse. To build
+an archive with the renderer, run `pixi run python tools/package.py --imaging` and
+compile its consumer with `compile.py --imaging`. Plugin availability depends on
+the installed SDK; platform results apply to the recorded driver and SDK setup.
+
+See [compatibility](COMPATIBILITY.md) for error categories,
+versioning and acceptance requirements.
+
 ## Native mesh snapshots
 
 `Stage.mesh_snapshot(path, time)` or `MeshSnapshot(stage, path, time)` captures
