@@ -200,6 +200,26 @@ the installed SDK; platform results apply to the recorded driver and SDK setup.
 See [compatibility](COMPATIBILITY.md) for error categories,
 versioning and acceptance requirements.
 
+## Optional MaterialX
+
+`usd_mojo.materialx` is optional. `MaterialXDocument(filename, library_path)` uses
+the native MaterialX SDK for XML, standard/custom libraries, validation, typed
+input edits and saving. `shader(element, target="msl")` generates MSL; use
+`target="glsl"` for GLSL. Shaders own their sources independently of the document.
+Texture-space Metal readbacks own Float32 pixels and lend lifetime-bound spans. These are value-output renders;
+surface materials are evaluated by the separate MaterialX-enabled Hydra path.
+Hydra surface shading is qualified on Metal and NVIDIA/WSLg; see the
+[MaterialX evidence](https://github.com/henlamp/usd-mojo/blob/development/docs/evidence/020-materialx.json) for SDK configuration and cases.
+The MaterialX platform helper uses a hidden window; rendering requires the main
+thread. File access and XML version upgrades follow MaterialX, without an asset
+sandbox. The original file changes only when explicitly saved.
+
+Use `python tools/bootstrap_optional.py` inside Pixi to build the checksum-pinned
+MaterialX SDK; `--openusd` additionally builds OpenUSD with MaterialX enabled.
+Set `USD_MOJO_MATERIALX_PREFIX` for MaterialX archives and `USD_MOJO_SDK_PREFIX`
+when selecting that separate OpenUSD build. The core Conda package remains linked
+to its pinned external SDK, without an imaging or MaterialX renderer dependency.
+
 ## Native mesh snapshots
 
 `Stage.mesh_snapshot(path, time)` or `MeshSnapshot(stage, path, time)` captures

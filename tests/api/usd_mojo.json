@@ -725,6 +725,72 @@
     "layers.save_layers": [
       "def save_layers(mut stage: Stage, *, session: Bool = False) raises UsdError"
     ],
+    "materialx.MaterialXDocument": [
+      "struct MaterialXDocument(Movable)"
+    ],
+    "materialx.MaterialXDocument.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "materialx.MaterialXDocument.__init__": [
+      "def __init__(out self, *, deinit move: Self)",
+      "def __init__(out self, filename: String, library_path: String) raises UsdError"
+    ],
+    "materialx.MaterialXDocument.content": [
+      "def content(self) raises UsdError -> String"
+    ],
+    "materialx.MaterialXDocument.nodes": [
+      "def nodes(self) raises UsdError -> List[String]"
+    ],
+    "materialx.MaterialXDocument.renderables": [
+      "def renderables(self) raises UsdError -> List[String]"
+    ],
+    "materialx.MaterialXDocument.save": [
+      "def save(self, filename: String) raises UsdError"
+    ],
+    "materialx.MaterialXDocument.set_input": [
+      "def set_input( mut self, node: String, name: String, type_name: String, value: String ) raises UsdError"
+    ],
+    "materialx.MaterialXDocument.shader": [
+      "def shader( self, element: String, *, target: String = \"msl\" ) raises UsdError -> MaterialXShader"
+    ],
+    "materialx.MaterialXDocument.validate": [
+      "def validate(self) raises UsdError -> List[String]"
+    ],
+    "materialx.MaterialXImage": [
+      "struct MaterialXImage(Movable)"
+    ],
+    "materialx.MaterialXImage.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "materialx.MaterialXImage.__init__": [
+      "def __init__( out self, shader: MaterialXShader, width: Int, height: Int ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)"
+    ],
+    "materialx.MaterialXImage.height": [
+      "var height: Int"
+    ],
+    "materialx.MaterialXImage.pixels": [
+      "def pixels(self) -> ImmSpan[Float32, origin_of(self)]"
+    ],
+    "materialx.MaterialXImage.width": [
+      "var width: Int"
+    ],
+    "materialx.MaterialXShader": [
+      "struct MaterialXShader(Movable)"
+    ],
+    "materialx.MaterialXShader.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "materialx.MaterialXShader.__init__": [
+      "def __init__( out self, document: MaterialXDocument, element: String, *, target: String = \"msl\", ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)"
+    ],
+    "materialx.MaterialXShader.render": [
+      "def render(self, width: Int, height: Int) raises UsdError -> MaterialXImage"
+    ],
+    "materialx.MaterialXShader.source": [
+      "def source(self, stage: String = \"pixel\") raises UsdError -> String"
+    ],
     "metadata.CompositionArc": [
       "struct CompositionArc(Copyable)"
     ],
