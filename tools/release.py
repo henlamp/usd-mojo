@@ -12,11 +12,24 @@ import tarfile
 import tempfile
 import time
 from pathlib import Path
+from urllib.parse import urlsplit
+
+from release_gate import require_release_acceptance
+from config import pins
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / ".build/distributions"
 RECIPE = ROOT / "conda.recipe/recipe.yaml"
 CHANNELS = ["https://conda.modular.com/max", "conda-forge"]
+
+
+def native_subdir():
+    host = (platform.system(), platform.machine().lower())
+    if host == ("Darwin", "arm64"):
+        return "osx-arm64"
+    if host[0] == "Linux" and host[1] in {"x86_64", "amd64"}:
+        return "linux-64"
+    raise ValueError("Supported package hosts are macOS ARM64 and Linux x86-64")
 
 
 def run(command, **kwargs):
@@ -54,7 +67,10 @@ def checked_artifact(tag=None):
     name = report["artifact"]
     if Path(name).name != name or not name.endswith(".conda"):
         raise ValueError("Invalid package filename")
-    artifact = OUTPUT / "osx-arm64" / name
+    subdir = report["subdir"]
+    if subdir != native_subdir():
+        raise ValueError("Package platform differs from this host")
+    artifact = OUTPUT / subdir / name
     if (
         artifact.is_symlink()
         or hashlib.sha256(artifact.read_bytes()).hexdigest() != report["sha256"]
@@ -68,6 +84,35 @@ def checked_artifact(tag=None):
     return artifact, report
 
 
+def check_linux_abi(metadata, bridge):
+    """Reject a bridge that needs a newer glibc than its declared floor."""
+    if metadata["subdir"] != "linux-64":
+        return
+
+    def version(text):
+        parts = tuple(map(int, text.split(".")))
+        return parts + (0,) * (3 - len(parts))
+
+    floors = [
+        version(match[1])
+        for dependency in metadata["depends"]
+        if (match := re.match(r"__glibc >=([0-9.]+)", dependency))
+    ]
+    if not floors:
+        raise ValueError("Linux package must declare its glibc floor")
+    required = max(
+        (
+            version(text.decode())
+            for text in re.findall(rb"\bGLIBC_([0-9.]+)\b", bridge.read_bytes())
+        ),
+        default=(0, 0, 0),
+    )
+    if required > max(floors):
+        raise ValueError(
+            f"Bridge requires glibc {required}, above package floor {max(floors)}"
+        )
+
+
 def inspect(artifact, rattler, destination):
     subprocess.run(
         [rattler, "package", "extract", str(artifact), "--dest", str(destination)],
@@ -78,14 +123,15 @@ def inspect(artifact, rattler, destination):
     if (metadata["name"], metadata["version"], metadata["subdir"]) != (
         recipe["package"]["name"],
         recipe["package"]["version"],
-        "osx-arm64",
+        native_subdir(),
     ):
         raise ValueError("Unexpected package metadata")
     if (
-        "mojo-compiler ==1.1.0" not in metadata["depends"]
+        ("mojo-compiler ==" + pins()["mojo"]) not in metadata["depends"]
         or metadata["license"] != "MIT"
     ):
         raise ValueError("Compiler or license metadata mismatch")
+    check_linux_abi(metadata, destination / "lib/libusd_mojo_bridge.so")
     for filename in recipe["about"]["license_file"]:
         if (destination / "info/licenses" / filename).read_bytes() != (
             ROOT / filename
@@ -105,16 +151,13 @@ def inspect(artifact, rattler, destination):
 
 def build(rattler="rattler-build", tag=None):
     recipe = check_tag(tag) if tag else spec()
-    if platform.system() != "Darwin" or platform.machine() != "arm64":
-        raise ValueError("This release recipe currently requires native macOS ARM64")
+    subdir = native_subdir()
     if run(["git", "status", "--porcelain"], cwd=ROOT):
         raise ValueError("Build requires a clean committed source tree")
     if run([rattler, "--version"]) != "rattler-build 0.76.1":
         raise ValueError("Use rattler-build 0.76.1")
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(
-        prefix="mojo-release-", dir="/private/tmp"
-    ) as directory:
+    with tempfile.TemporaryDirectory(prefix="mojo-release-", dir="/tmp") as directory:
         work = Path(directory)
         source = work / "source"
         source.mkdir()
@@ -148,17 +191,18 @@ def build(rattler="rattler-build", tag=None):
                 "Package build or installed tests failed; see .build/distributions/build.log"
             )
         candidates = list(
-            (work / "output/osx-arm64").glob(recipe["package"]["name"] + "-*.conda")
+            (work / "output" / subdir).glob(recipe["package"]["name"] + "-*.conda")
         )
         if len(candidates) != 1:
             raise ValueError("Expected exactly one package")
         metadata = inspect(candidates[0], rattler, work / "inspected")
-        target = OUTPUT / "osx-arm64" / candidates[0].name
+        target = OUTPUT / subdir / candidates[0].name
         target.parent.mkdir(exist_ok=True)
         shutil.copy2(candidates[0], target)
     report = {
         "name": metadata["name"],
         "version": metadata["version"],
+        "subdir": metadata["subdir"],
         "source_commit": head(),
         "recipe_sha256": hashlib.sha256(RECIPE.read_bytes()).hexdigest(),
         "artifact": target.name,
@@ -169,39 +213,58 @@ def build(rattler="rattler-build", tag=None):
         "depends": metadata["depends"],
     }
     (OUTPUT / "release.json").write_text(json.dumps(report, indent=2) + "\n")
+    record = dict(metadata, sha256=report["sha256"], size=target.stat().st_size)
+    for channel_subdir in (subdir, "noarch"):
+        directory = OUTPUT / channel_subdir
+        directory.mkdir(exist_ok=True)
+        index = {
+            "info": {"subdir": channel_subdir},
+            "packages": {},
+            "packages.conda": {target.name: record} if channel_subdir == subdir else {},
+            "repodata_version": 1,
+        }
+        (directory / "repodata.json").write_text(json.dumps(index) + "\n")
     return target, report
 
 
 def installed(channel, pixi="pixi", tag=None):
+    (OUTPUT / "installed.json").unlink(missing_ok=True)
     _, report = checked_artifact(tag)
-    with tempfile.TemporaryDirectory(
-        prefix="mojo-consumer-", dir="/private/tmp"
-    ) as directory:
+    local = urlsplit(channel).scheme == "file"
+    attempts = 1 if local else 6
+    with tempfile.TemporaryDirectory(prefix="mojo-consumer-", dir="/tmp") as directory:
         project = Path(directory)
+        install_env = os.environ.copy()
+        if not local:
+            install_env["PIXI_CACHE_DIR"] = str(project / "cache/pixi")
+            install_env["RATTLER_CACHE_DIR"] = str(project / "cache/rattler")
         commands = [
             [pixi, "init", "--format", "pixi", "."],
             [pixi, "workspace", "channel", "add", "--prepend", channel, *CHANNELS],
         ]
         for command in commands:
-            subprocess.run(command, cwd=project, check=True)
+            subprocess.run(command, cwd=project, env=install_env, check=True)
         package = (
             report["name"] + "==" + report["version"] + "=" + spec()["build"]["string"]
         )
-        for attempt in range(6):
-            install_env = os.environ.copy()
-            install_env["PIXI_CACHE_DIR"] = str(project / f"cache-{attempt}" / "pixi")
-            install_env["RATTLER_CACHE_DIR"] = str(
-                project / f"cache-{attempt}" / "rattler"
-            )
+        for attempt in range(attempts):
             installed = subprocess.run(
                 [pixi, "add", package], cwd=project, env=install_env, check=False
             )
             if installed.returncode == 0:
                 break
-            if attempt == 5:
+            if attempt == attempts - 1:
                 raise RuntimeError(
-                    "Published build was not installable after six attempts"
+                    f"Package was not installable after {attempts} attempts"
                 )
+            # Refresh only this consumer's channel metadata. Downloaded immutable
+            # dependencies remain reusable between propagation retries.
+            subprocess.run(
+                [pixi, "clean", "cache", "--repodata", "--yes"],
+                cwd=project,
+                env=install_env,
+                check=True,
+            )
             print(
                 "Published build not yet installable; retrying with fresh index metadata",
                 flush=True,
@@ -226,7 +289,15 @@ def installed(channel, pixi="pixi", tag=None):
             )
     (OUTPUT / "installed.json").write_text(
         json.dumps(
-            {"status": "passed", "channel": channel, "sha256": report["sha256"]},
+            {
+                "status": "passed",
+                "channel": channel,
+                "source_commit": report["source_commit"],
+                "sha256": report["sha256"],
+                "fresh_environment": True,
+                "package_cache": "shared" if local else "isolated",
+                "install_attempts": attempt + 1,
+            },
             indent=2,
         )
         + "\n"
@@ -252,6 +323,18 @@ def community(destination, commit=None, build_number=0):
     (destination / "recipe.yaml").write_text(json.dumps(recipe, indent=2) + "\n")
 
 
+def publish(tag, acceptance_root, rattler):
+    artifact, report = checked_artifact(tag)
+    if tag is None or os.environ.get("GITHUB_REPOSITORY") != "henlamp/" + report["name"]:
+        raise ValueError("Publishing requires the matching henlamp release workflow")
+    require_release_acceptance(acceptance_root)
+    subprocess.run(
+        [rattler, "upload", "prefix", "--skip-existing", "--channel", "henlamp/mojo", str(artifact)],
+        check=True,
+    )
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -261,6 +344,7 @@ def main():
     parser.add_argument("--rattler-build", default="rattler-build")
     parser.add_argument("--pixi", default="pixi")
     parser.add_argument("--channel")
+    parser.add_argument("--acceptance-root", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--build-number", type=int, default=0)
     args = parser.parse_args()
@@ -276,27 +360,12 @@ def main():
             parser.error("installed requires --channel")
         installed(args.channel, args.pixi, args.tag)
     else:
-        artifact, report = checked_artifact(args.tag)
         if args.command == "publish":
-            if (
-                args.tag is None
-                or os.environ.get("GITHUB_REPOSITORY") != "henlamp/" + report["name"]
-            ):
-                raise ValueError(
-                    "Publishing requires the matching henlamp release workflow"
-                )
-            subprocess.run(
-                [
-                    args.rattler_build,
-                    "upload",
-                    "prefix",
-                    "--skip-existing",
-                    "--channel",
-                    "henlamp/mojo",
-                    str(artifact),
-                ],
-                check=True,
-            )
+            report = publish(args.tag, args.acceptance_root, args.rattler_build)
+        else:
+            _, report = checked_artifact(args.tag)
+            if args.acceptance_root is not None:
+                require_release_acceptance(args.acceptance_root)
         print(json.dumps(report, indent=2))
 
 

@@ -1,0 +1,103 @@
+name: Toolchain update proposal
+on:
+  workflow_dispatch:
+    inputs:
+      detect_latest:
+        description: Discover stable releases; explicit version inputs override discovery
+        type: boolean
+        default: false
+      openusd:
+        description: Exact OpenUSD version (blank keeps the current pin)
+        type: string
+      mojo:
+        description: Exact stable Mojo version (blank keeps the current pin)
+        type: string
+      nightly:
+        description: Exact nightly Mojo version (blank keeps the current pin)
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: toolchain-update
+  cancel-in-progress: false
+jobs:
+  proposal:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      DETECT_LATEST: ${{ inputs.detect_latest }}
+      UPDATE_USD: ${{ inputs.openusd }}
+      UPDATE_MOJO: ${{ inputs.mojo }}
+      UPDATE_NIGHTLY: ${{ inputs.nightly }}
+      PXR_WORK_THREAD_LIMIT: '2'
+      CMAKE_BUILD_PARALLEL_LEVEL: '2'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: development
+      - uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
+        with:
+          pixi-version: v0.81.0
+          run-install: false
+      - name: Update exact pins and lockfile
+        id: pins
+        run: |
+          extra=()
+          if [ "$DETECT_LATEST" = true ]; then extra+=(--latest); fi
+          pixi exec --spec python=3.12.13 -- python tools/update.py "${extra[@]}" --openusd "$UPDATE_USD" --mojo "$UPDATE_MOJO" --nightly "$UPDATE_NIGHTLY"
+          pixi lock
+          if git diff --quiet; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.pins.outputs.changed == 'true'
+        run: pixi run --locked python tools/generate.py
+      - if: steps.pins.outputs.changed == 'true'
+        run: pixi run --locked python tools/corpus.py .local/corpus --fetch
+      - id: stable
+        if: steps.pins.outputs.changed == 'true'
+        continue-on-error: true
+        run: pixi run --locked -e default acceptance --execution-kind native --corpus .local/corpus
+        env:
+          USD_MOJO_BUILD_DIR: .build/update-default
+      - id: nightly
+        if: steps.pins.outputs.changed == 'true'
+        continue-on-error: true
+        run: pixi run --locked -e nightly acceptance --execution-kind native --corpus .local/corpus
+        env:
+          USD_MOJO_BUILD_DIR: .build/update-nightly
+      - name: Open draft proposal
+        if: steps.pins.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STABLE_OUTCOME: ${{ steps.stable.outcome }}
+          NIGHTLY_OUTCOME: ${{ steps.nightly.outcome }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet; then exit 0; fi
+          branch="updates/toolchain-$GITHUB_RUN_ID"
+          git switch -c "$branch"
+          git add pixi.toml pixi.lock conda.recipe/recipe.yaml native/value_types.inc native/sdk_pin.h src/usd_mojo/_sdk_pin.mojo
+          git commit -m 'Propose pinned toolchain update [skip ci]'
+          git push origin "$branch"
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          Path('/tmp/update-pr.txt').write_text(
+              'Updates exact toolchain pins and the lockfile.\n\n'
+              'Native Linux stable: '+os.environ['STABLE_OUTCOME']+'\n'
+              'Native Linux nightly: '+os.environ['NIGHTLY_OUTCOME']+'\n\n'
+              'Mac and installed Conda qualification remain required. No publication is authorized.\n')
+          PY
+          gh pr create --draft --base development --head "$branch" --title 'Update pinned OpenUSD/Mojo toolchain' --body-file /tmp/update-pr.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: toolchain-update-evidence
+          path: |
+            .build/update-*/*.json
+            .build/update-*/*.log
+          include-hidden-files: true

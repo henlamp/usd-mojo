@@ -1,7 +1,9 @@
 # Compatibility
 
-Version 0.1.0 uses the documented API with native macOS ARM64 acceptance.
-Linux remains experimental until a native runner executes the current source.
+Development 0.2.0 retains the reviewed 0.1 API. The original declarations remain
+in `tests/api/usd_mojo-0.1.json` and are checked as a subset of the expanded API.
+Platform checks and installed-package qualification are recorded separately in
+[validation](VALIDATION.md), with the exact source tested on each platform.
 
 ## Supported API
 
@@ -17,10 +19,11 @@ and physics schema data. Float16/32 values preserve their USD precision even whe
 the generic `Value.numbers` channel exposes them as Float64. Int64 and UInt64 do
 not pass through floating storage. Matrices and time codes retain USD conventions.
 
-`Stage` is move-only. Owned returned data and `MeshSnapshot` outlive the stage. Immutable mesh views
-borrow their snapshot owner and must not outlive or be used after moving it. Independent stages
-can be used independently; concurrent access to one stage is unsupported. Raw
-bridge handles and underscore-prefixed fields are implementation details.
+`Stage` is move-only. Owned values and `MeshSnapshot` outlive the stage. Immutable
+views borrow their snapshot and cannot outlive or be used after moving it.
+Concurrent access to one stage is unsupported; shared SDK layers must not be
+written concurrently with readers. Raw handles and underscore-prefixed fields
+are implementation details.
 `save()` persists root edits; `export()` flattens composition. Neither operation
 promises rollback after an SDK or filesystem failure.
 
@@ -50,15 +53,11 @@ The native bridge uses ABI 2. Compile consumers against the matching bridge.
 
 Patch versions correct documented behavior without changing public signatures,
 ownership, error categories or accepted inputs. Minor versions can add compatible
-operations. Within 0.1.x the reviewed behavior remains compatible. During 0.x development,
-breaking changes require a new minor version and migration instructions. Precompiled `.mojoc` files are tied to the exact compiler. Another compiler needs
-a new package and its own acceptance run, even when source remains compatible.
+operations. Within 0.1.x the reviewed behavior remains compatible. During 0.x,
+breaking changes require a new minor version and migration instructions.
+Precompiled `.mojoc` files require the exact compiler. Another compiler needs a
+new package and acceptance run, even when source remains compatible.
 
 The pinned targets are OpenUSD 26.08, Mojo 1.1.0 and the explicitly listed 1.2
 nightly; macOS ARM64 and Linux x86-64. SDK dependencies stay external. Package
 integrity and relocation checks do not establish support for another SDK build.
-
-## Validation
-
-[Recorded checks](VALIDATION.md) cover SDK semantics, ownership, malformed input,
-installed consumers and geometry applications. Native Linux remains pending.

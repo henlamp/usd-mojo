@@ -1,7 +1,5 @@
 # usd-mojo
 
-[![CodeQL](https://github.com/henlamp/usd-mojo/actions/workflows/codeql.yml/badge.svg)](https://github.com/henlamp/usd-mojo/actions/workflows/codeql.yml)
-
 OpenUSD scene access from Mojo through the official C++ SDK: composition,
 typed values, animation, meshes, transforms, materials, cameras and physics
 schema data. Returned values own their storage; mesh snapshots offer borrowed views.
@@ -33,13 +31,17 @@ pixi run usd-mojo-build example.mojo -o example
 pixi run ./example
 ```
 
-Version 0.1.0 packages target Mojo 1.1.0, OpenUSD 26.08 and macOS ARM64.
+Published 0.1.0 packages target Mojo 1.1.0, OpenUSD 26.08 and macOS ARM64.
 Pixi installs the SDK and CPython library; the Mojo API makes no Python
-calls. Source checks also cover 1.2.0.dev2026100905; Linux is experimental.
+calls. Source checks also cover 1.2.0.dev2026100905.
+Unreleased 0.2.0 adds Linux x86-64 alongside macOS ARM64, layer/edit-target APIs,
+metadata/schema snapshots, working-set controls, splines, skeleton evaluation,
+USDZ export and optional Hydra/MaterialX rendering.
+[Validation](docs/VALIDATION.md) records tested sources, platforms and packages.
 
 Stages are move-only and cannot be accessed concurrently. Units, matrices and
-time codes retain USD conventions. Rendering, physics execution, subdivision
-evaluation and USDZ packaging are outside the API. Referenced assets and plugins
+time codes retain USD conventions. Physics execution and subdivision evaluation
+belong to the application's backends. Referenced assets and plugins
 use the SDK resolver; scenes are not sandboxed.
 
 [API](docs/API.md) · [Compatibility](docs/COMPATIBILITY.md) ·

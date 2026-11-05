@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: MIT
 // All storage crossing the ABI is owned; no SDK objects escape.
 #include <pxr/base/gf/half.h>
+#include <pxr/base/gf/traits.h>
 #include <pxr/usd/sdf/assetPath.h>
 #include <pxr/usd/sdf/timeCode.h>
+#include <pxr/usd/sdf/pathExpression.h>
 #include <pxr/usd/usd/references.h>
 #include <pxr/usd/usd/variantSets.h>
 #include <pxr/usd/usd/editTarget.h>
@@ -58,584 +60,130 @@ template <class T, class S> T checked_number(S x) {
     }
     return T(x);
 }
+template <auto Member> struct WireStorage {
+    static constexpr size_t width = 1;
+    static auto &values(ValueOwner &o) { return o.*Member; }
+    static const auto &values(const ValueOwner &o) { return o.*Member; }
+    static size_t count(const ValueOwner &o) {
+        const auto size = values(o).size();
+        require(o.numbers.size() + o.signed_values.size() +
+                    o.unsigned_values.size() + o.texts.size() == size,
+                "Wrong value storage channel");
+        return size;
+    }
+};
+using NumberStorage = WireStorage<&ValueOwner::numbers>;
+using SignedStorage = WireStorage<&ValueOwner::signed_values>;
+using UnsignedStorage = WireStorage<&ValueOwner::unsigned_values>;
+using TextStorage = WireStorage<&ValueOwner::texts>;
+
+template <class T> using NumericStorage = std::conditional_t<
+    std::is_integral_v<T>,
+    std::conditional_t<std::is_unsigned_v<T>, UnsignedStorage, SignedStorage>,
+    NumberStorage>;
+
 template <class T> struct Wire;
-template <> struct Wire<bool> {
-    static constexpr size_t width = 1;
-    static bool get(const ValueOwner &o, size_t i) {
-        return checked_number<bool>(o.unsigned_values.at(i));
+template <class T> struct ScalarWire : NumericStorage<T> {
+    static_assert(std::is_arithmetic_v<T> || std::is_same_v<T, GfHalf>,
+                  "USD values require an explicitly supported wire layout");
+    using Component = std::conditional_t<std::is_same_v<T, bool>, uint8_t, T>;
+    static constexpr bool native_view = true;
+    static T get(const ValueOwner &o, size_t i) {
+        return checked_number<T>(NumericStorage<T>::values(o).at(i));
     }
-    static void put(ValueOwner &o, const bool &v) {
-        o.unsigned_values.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.unsigned_values.size(),
-                "Wrong value storage channel");
-        return o.unsigned_values.size();
+    static void put(ValueOwner &o, const T &v) {
+        NumericStorage<T>::values(o).push_back(v);
     }
 };
-template <> struct Wire<uint8_t> {
-    static constexpr size_t width = 1;
-    static uint8_t get(const ValueOwner &o, size_t i) {
-        return checked_number<uint8_t>(o.unsigned_values.at(i));
+template <class T> struct VectorWire : NumericStorage<typename T::ScalarType> {
+    using Component = typename T::ScalarType;
+    static constexpr size_t width = T::dimension;
+    static constexpr bool native_view = true;
+    static T get(const ValueOwner &o, size_t i) {
+        T value;
+        for (size_t k = 0; k < width; ++k)
+            value[k] = Wire<Component>::get(o, i + k);
+        return value;
     }
-    static void put(ValueOwner &o, const uint8_t &v) {
-        o.unsigned_values.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.unsigned_values.size(),
-                "Wrong value storage channel");
-        return o.unsigned_values.size();
-    }
-};
-template <> struct Wire<int32_t> {
-    static constexpr size_t width = 1;
-    static int32_t get(const ValueOwner &o, size_t i) {
-        return checked_number<int32_t>(o.signed_values.at(i));
-    }
-    static void put(ValueOwner &o, const int32_t &v) {
-        o.signed_values.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.signed_values.size(),
-                "Wrong value storage channel");
-        return o.signed_values.size();
+    static void put(ValueOwner &o, const T &v) {
+        for (size_t k = 0; k < width; ++k)
+            Wire<Component>::put(o, v[k]);
     }
 };
-template <> struct Wire<uint32_t> {
-    static constexpr size_t width = 1;
-    static uint32_t get(const ValueOwner &o, size_t i) {
-        return checked_number<uint32_t>(o.unsigned_values.at(i));
+template <class T> struct MatrixWire : NumberStorage {
+    using Component = typename T::ScalarType;
+    static constexpr size_t width = T::numRows * T::numColumns;
+    static constexpr bool native_view = true;
+    static T get(const ValueOwner &o, size_t i) {
+        T value(0.0);
+        for (size_t r = 0; r < T::numRows; ++r)
+            for (size_t c = 0; c < T::numColumns; ++c)
+                value[r][c] = o.numbers.at(i + r * T::numColumns + c);
+        return value;
     }
-    static void put(ValueOwner &o, const uint32_t &v) {
-        o.unsigned_values.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.unsigned_values.size(),
-                "Wrong value storage channel");
-        return o.unsigned_values.size();
-    }
-};
-template <> struct Wire<int64_t> {
-    static constexpr size_t width = 1;
-    static int64_t get(const ValueOwner &o, size_t i) {
-        return checked_number<int64_t>(o.signed_values.at(i));
-    }
-    static void put(ValueOwner &o, const int64_t &v) {
-        o.signed_values.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.signed_values.size(),
-                "Wrong value storage channel");
-        return o.signed_values.size();
+    static void put(ValueOwner &o, const T &v) {
+        for (size_t r = 0; r < T::numRows; ++r)
+            for (size_t c = 0; c < T::numColumns; ++c)
+                o.numbers.push_back(v[r][c]);
     }
 };
-template <> struct Wire<uint64_t> {
-    static constexpr size_t width = 1;
-    static uint64_t get(const ValueOwner &o, size_t i) {
-        return checked_number<uint64_t>(o.unsigned_values.at(i));
+template <class T> struct QuaternionWire : NumberStorage {
+    static constexpr size_t width = 4;
+    static constexpr bool native_view = false;
+    static T get(const ValueOwner &o, size_t i) {
+        return T(Wire<typename T::ScalarType>::get(o, i),
+                 Wire<typename T::ImaginaryType>::get(o, i + 1));
     }
-    static void put(ValueOwner &o, const uint64_t &v) {
-        o.unsigned_values.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.unsigned_values.size(),
-                "Wrong value storage channel");
-        return o.unsigned_values.size();
+    static void put(ValueOwner &o, const T &v) {
+        Wire<typename T::ScalarType>::put(o, v.GetReal());
+        Wire<typename T::ImaginaryType>::put(o, v.GetImaginary());
     }
 };
-template <> struct Wire<GfHalf> {
-    static constexpr size_t width = 1;
-    static GfHalf get(const ValueOwner &o, size_t i) {
-        return checked_number<GfHalf>(o.numbers.at(i));
-    }
-    static void put(ValueOwner &o, const GfHalf &v) {
-        o.numbers.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<float> {
-    static constexpr size_t width = 1;
-    static float get(const ValueOwner &o, size_t i) {
-        return checked_number<float>(o.numbers.at(i));
-    }
-    static void put(ValueOwner &o, const float &v) {
-        o.numbers.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<double> {
-    static constexpr size_t width = 1;
-    static double get(const ValueOwner &o, size_t i) {
-        return checked_number<double>(o.numbers.at(i));
-    }
-    static void put(ValueOwner &o, const double &v) {
-        o.numbers.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<SdfTimeCode> {
-    static constexpr size_t width = 1;
+template <class T> struct Wire : std::conditional_t<
+    GfIsGfVec<T>::value, VectorWire<T>,
+    std::conditional_t<GfIsGfMatrix<T>::value, MatrixWire<T>,
+    std::conditional_t<GfIsGfQuat<T>::value, QuaternionWire<T>, ScalarWire<T>>>> {};
+
+template <> struct Wire<SdfTimeCode> : NumberStorage {
+    static constexpr bool native_view = false;
     static SdfTimeCode get(const ValueOwner &o, size_t i) {
         return SdfTimeCode(o.numbers.at(i));
     }
     static void put(ValueOwner &o, const SdfTimeCode &v) {
         o.numbers.push_back(v.GetValue());
     }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
 };
-template <> struct Wire<std::string> {
-    static constexpr size_t width = 1;
-    static std::string get(const ValueOwner &o, size_t i) {
-        return o.texts.at(i);
-    }
-    static void put(ValueOwner &o, const std::string &v) {
-        o.texts.push_back(v);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.texts.size(),
-                "Wrong value storage channel");
-        return o.texts.size();
-    }
+template <> struct Wire<std::string> : TextStorage {
+    static constexpr bool native_view = false;
+    static std::string get(const ValueOwner &o, size_t i) { return o.texts.at(i); }
+    static void put(ValueOwner &o, const std::string &v) { o.texts.push_back(v); }
 };
-template <> struct Wire<TfToken> {
-    static constexpr size_t width = 1;
-    static TfToken get(const ValueOwner &o, size_t i) {
-        return TfToken(o.texts.at(i));
-    }
-    static void put(ValueOwner &o, const TfToken &v) {
-        o.texts.push_back(v.GetString());
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.texts.size(),
-                "Wrong value storage channel");
-        return o.texts.size();
-    }
+template <> struct Wire<TfToken> : TextStorage {
+    static constexpr bool native_view = false;
+    static TfToken get(const ValueOwner &o, size_t i) { return TfToken(o.texts.at(i)); }
+    static void put(ValueOwner &o, const TfToken &v) { o.texts.push_back(v.GetString()); }
 };
-template <> struct Wire<SdfAssetPath> {
-    static constexpr size_t width = 1;
-    static SdfAssetPath get(const ValueOwner &o, size_t i) {
-        return SdfAssetPath(o.texts.at(i));
-    }
-    static void put(ValueOwner &o, const SdfAssetPath &v) {
-        o.texts.push_back(v.GetAuthoredPath());
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.texts.size(),
-                "Wrong value storage channel");
-        return o.texts.size();
-    }
+template <> struct Wire<SdfAssetPath> : TextStorage {
+    static constexpr bool native_view = false;
+    static SdfAssetPath get(const ValueOwner &o, size_t i) { return SdfAssetPath(o.texts.at(i)); }
+    static void put(ValueOwner &o, const SdfAssetPath &v) { o.texts.push_back(v.GetAuthoredPath()); }
 };
-template <> struct Wire<GfMatrix2d> {
-    static constexpr size_t width = 4;
-    static GfMatrix2d get(const ValueOwner &o, size_t i) {
-        GfMatrix2d v(0.0);
-        for (int a = 0; a < 2; ++a)
-            for (int b = 0; b < 2; ++b)
-                v[a][b] = o.numbers.at(i + a * 2 + b);
-        return v;
+template <> struct Wire<SdfPathExpression> : TextStorage {
+    static constexpr bool native_view = false;
+    static SdfPathExpression get(const ValueOwner &o, size_t i) {
+        SdfPathExpression result(o.texts.at(i));
+        require(result.GetParseError().empty(), result.GetParseError());
+        return result;
     }
-    static void put(ValueOwner &o, const GfMatrix2d &v) {
-        for (int a = 0; a < 2; ++a)
-            for (int b = 0; b < 2; ++b)
-                o.numbers.push_back(v[a][b]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
+    static void put(ValueOwner &o, const SdfPathExpression &v) { o.texts.push_back(v.GetText()); }
 };
-template <> struct Wire<GfMatrix3d> {
-    static constexpr size_t width = 9;
-    static GfMatrix3d get(const ValueOwner &o, size_t i) {
-        GfMatrix3d v(0.0);
-        for (int a = 0; a < 3; ++a)
-            for (int b = 0; b < 3; ++b)
-                v[a][b] = o.numbers.at(i + a * 3 + b);
-        return v;
-    }
-    static void put(ValueOwner &o, const GfMatrix3d &v) {
-        for (int a = 0; a < 3; ++a)
-            for (int b = 0; b < 3; ++b)
-                o.numbers.push_back(v[a][b]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfMatrix4d> {
-    static constexpr size_t width = 16;
-    static GfMatrix4d get(const ValueOwner &o, size_t i) {
-        GfMatrix4d v(0.0);
-        for (int a = 0; a < 4; ++a)
-            for (int b = 0; b < 4; ++b)
-                v[a][b] = o.numbers.at(i + a * 4 + b);
-        return v;
-    }
-    static void put(ValueOwner &o, const GfMatrix4d &v) {
-        for (int a = 0; a < 4; ++a)
-            for (int b = 0; b < 4; ++b)
-                o.numbers.push_back(v[a][b]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfQuatd> {
-    static constexpr size_t width = 4;
-    static GfQuatd get(const ValueOwner &o, size_t i) {
-        return GfQuatd(checked_number<double>(o.numbers.at(i)),
-                       GfVec3d(checked_number<double>(o.numbers.at(i + 1)),
-                               checked_number<double>(o.numbers.at(i + 2)),
-                               checked_number<double>(o.numbers.at(i + 3))));
-    }
-    static void put(ValueOwner &o, const GfQuatd &v) {
-        o.numbers.push_back(v.GetReal());
-        for (int k = 0; k < 3; ++k)
-            o.numbers.push_back(v.GetImaginary()[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfQuatf> {
-    static constexpr size_t width = 4;
-    static GfQuatf get(const ValueOwner &o, size_t i) {
-        return GfQuatf(checked_number<float>(o.numbers.at(i)),
-                       GfVec3f(checked_number<float>(o.numbers.at(i + 1)),
-                               checked_number<float>(o.numbers.at(i + 2)),
-                               checked_number<float>(o.numbers.at(i + 3))));
-    }
-    static void put(ValueOwner &o, const GfQuatf &v) {
-        o.numbers.push_back(v.GetReal());
-        for (int k = 0; k < 3; ++k)
-            o.numbers.push_back(v.GetImaginary()[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfQuath> {
-    static constexpr size_t width = 4;
-    static GfQuath get(const ValueOwner &o, size_t i) {
-        return GfQuath(checked_number<GfHalf>(o.numbers.at(i)),
-                       GfVec3h(checked_number<GfHalf>(o.numbers.at(i + 1)),
-                               checked_number<GfHalf>(o.numbers.at(i + 2)),
-                               checked_number<GfHalf>(o.numbers.at(i + 3))));
-    }
-    static void put(ValueOwner &o, const GfQuath &v) {
-        o.numbers.push_back(v.GetReal());
-        for (int k = 0; k < 3; ++k)
-            o.numbers.push_back(v.GetImaginary()[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec2d> {
-    static constexpr size_t width = 2;
-    static GfVec2d get(const ValueOwner &o, size_t i) {
-        GfVec2d v;
-        for (int k = 0; k < 2; ++k)
-            v[k] = checked_number<double>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec2d &v) {
-        for (int k = 0; k < 2; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec2f> {
-    static constexpr size_t width = 2;
-    static GfVec2f get(const ValueOwner &o, size_t i) {
-        GfVec2f v;
-        for (int k = 0; k < 2; ++k)
-            v[k] = checked_number<float>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec2f &v) {
-        for (int k = 0; k < 2; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec2h> {
-    static constexpr size_t width = 2;
-    static GfVec2h get(const ValueOwner &o, size_t i) {
-        GfVec2h v;
-        for (int k = 0; k < 2; ++k)
-            v[k] = checked_number<GfHalf>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec2h &v) {
-        for (int k = 0; k < 2; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec2i> {
-    static constexpr size_t width = 2;
-    static GfVec2i get(const ValueOwner &o, size_t i) {
-        GfVec2i v;
-        for (int k = 0; k < 2; ++k)
-            v[k] = checked_number<int32_t>(o.signed_values.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec2i &v) {
-        for (int k = 0; k < 2; ++k)
-            o.signed_values.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.signed_values.size(),
-                "Wrong value storage channel");
-        return o.signed_values.size();
-    }
-};
-template <> struct Wire<GfVec3d> {
-    static constexpr size_t width = 3;
-    static GfVec3d get(const ValueOwner &o, size_t i) {
-        GfVec3d v;
-        for (int k = 0; k < 3; ++k)
-            v[k] = checked_number<double>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec3d &v) {
-        for (int k = 0; k < 3; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec3f> {
-    static constexpr size_t width = 3;
-    static GfVec3f get(const ValueOwner &o, size_t i) {
-        GfVec3f v;
-        for (int k = 0; k < 3; ++k)
-            v[k] = checked_number<float>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec3f &v) {
-        for (int k = 0; k < 3; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec3h> {
-    static constexpr size_t width = 3;
-    static GfVec3h get(const ValueOwner &o, size_t i) {
-        GfVec3h v;
-        for (int k = 0; k < 3; ++k)
-            v[k] = checked_number<GfHalf>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec3h &v) {
-        for (int k = 0; k < 3; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec3i> {
-    static constexpr size_t width = 3;
-    static GfVec3i get(const ValueOwner &o, size_t i) {
-        GfVec3i v;
-        for (int k = 0; k < 3; ++k)
-            v[k] = checked_number<int32_t>(o.signed_values.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec3i &v) {
-        for (int k = 0; k < 3; ++k)
-            o.signed_values.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.signed_values.size(),
-                "Wrong value storage channel");
-        return o.signed_values.size();
-    }
-};
-template <> struct Wire<GfVec4d> {
-    static constexpr size_t width = 4;
-    static GfVec4d get(const ValueOwner &o, size_t i) {
-        GfVec4d v;
-        for (int k = 0; k < 4; ++k)
-            v[k] = checked_number<double>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec4d &v) {
-        for (int k = 0; k < 4; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec4f> {
-    static constexpr size_t width = 4;
-    static GfVec4f get(const ValueOwner &o, size_t i) {
-        GfVec4f v;
-        for (int k = 0; k < 4; ++k)
-            v[k] = checked_number<float>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec4f &v) {
-        for (int k = 0; k < 4; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec4h> {
-    static constexpr size_t width = 4;
-    static GfVec4h get(const ValueOwner &o, size_t i) {
-        GfVec4h v;
-        for (int k = 0; k < 4; ++k)
-            v[k] = checked_number<GfHalf>(o.numbers.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec4h &v) {
-        for (int k = 0; k < 4; ++k)
-            o.numbers.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.numbers.size(),
-                "Wrong value storage channel");
-        return o.numbers.size();
-    }
-};
-template <> struct Wire<GfVec4i> {
-    static constexpr size_t width = 4;
-    static GfVec4i get(const ValueOwner &o, size_t i) {
-        GfVec4i v;
-        for (int k = 0; k < 4; ++k)
-            v[k] = checked_number<int32_t>(o.signed_values.at(i + k));
-        return v;
-    }
-    static void put(ValueOwner &o, const GfVec4i &v) {
-        for (int k = 0; k < 4; ++k)
-            o.signed_values.push_back(v[k]);
-    }
-    static size_t count(const ValueOwner &o) {
-        require(o.numbers.size() + o.signed_values.size() + o.unsigned_values.size() +
-                        o.texts.size() ==
-                    o.signed_values.size(),
-                "Wrong value storage channel");
-        return o.signed_values.size();
-    }
-};
+#define USDM_VALUE_TYPE(T, Width, Member) \
+    static_assert(Wire<T>::width == Width, "Reviewed USD component width changed"); \
+    static_assert(std::is_base_of_v<WireStorage<&ValueOwner::Member>, Wire<T>>, \
+                  "Reviewed USD storage channel changed");
+#include "value_types.inc"
+#undef USDM_VALUE_TYPE
+
 template <class T> VtValue pack_value(const ValueOwner &o, bool array) {
     const size_t size = Wire<T>::count(o), width = Wire<T>::width;
     require(size % width == 0, "Invalid component count");
@@ -654,16 +202,7 @@ template <class T> void unpack_value(ValueOwner &o, const VtValue &v, bool array
                 ErrorKind::TypeMismatch);
         const auto &values = v.UncheckedGet<VtArray<T>>();
         const size_t size = values.size() * Wire<T>::width;
-        if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, TfToken> ||
-                      std::is_same_v<T, SdfAssetPath>)
-            o.texts.reserve(size);
-        else if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>)
-            o.unsigned_values.reserve(size);
-        else if constexpr (std::is_integral_v<T> || std::is_same_v<T, GfVec2i> ||
-                           std::is_same_v<T, GfVec3i> || std::is_same_v<T, GfVec4i>)
-            o.signed_values.reserve(size);
-        else
-            o.numbers.reserve(size);
+        Wire<T>::values(o).reserve(size);
         for (const auto &item : values)
             Wire<T>::put(o, item);
     } else {
@@ -678,68 +217,9 @@ VtValue encode(const ValueOwner &o) {
     require(bool(t), "Unknown USD value type: " + o.type, ErrorKind::Unsupported);
     bool array = t.IsArray();
     auto base = t.GetScalarType().GetType();
-    if (base == TfType::Find<bool>())
-        return pack_value<bool>(o, array);
-    if (base == TfType::Find<uint8_t>())
-        return pack_value<uint8_t>(o, array);
-    if (base == TfType::Find<int32_t>())
-        return pack_value<int32_t>(o, array);
-    if (base == TfType::Find<uint32_t>())
-        return pack_value<uint32_t>(o, array);
-    if (base == TfType::Find<int64_t>())
-        return pack_value<int64_t>(o, array);
-    if (base == TfType::Find<uint64_t>())
-        return pack_value<uint64_t>(o, array);
-    if (base == TfType::Find<GfHalf>())
-        return pack_value<GfHalf>(o, array);
-    if (base == TfType::Find<float>())
-        return pack_value<float>(o, array);
-    if (base == TfType::Find<double>())
-        return pack_value<double>(o, array);
-    if (base == TfType::Find<SdfTimeCode>())
-        return pack_value<SdfTimeCode>(o, array);
-    if (base == TfType::Find<std::string>())
-        return pack_value<std::string>(o, array);
-    if (base == TfType::Find<TfToken>())
-        return pack_value<TfToken>(o, array);
-    if (base == TfType::Find<SdfAssetPath>())
-        return pack_value<SdfAssetPath>(o, array);
-    if (base == TfType::Find<GfMatrix2d>())
-        return pack_value<GfMatrix2d>(o, array);
-    if (base == TfType::Find<GfMatrix3d>())
-        return pack_value<GfMatrix3d>(o, array);
-    if (base == TfType::Find<GfMatrix4d>())
-        return pack_value<GfMatrix4d>(o, array);
-    if (base == TfType::Find<GfQuatd>())
-        return pack_value<GfQuatd>(o, array);
-    if (base == TfType::Find<GfQuatf>())
-        return pack_value<GfQuatf>(o, array);
-    if (base == TfType::Find<GfQuath>())
-        return pack_value<GfQuath>(o, array);
-    if (base == TfType::Find<GfVec2d>())
-        return pack_value<GfVec2d>(o, array);
-    if (base == TfType::Find<GfVec2f>())
-        return pack_value<GfVec2f>(o, array);
-    if (base == TfType::Find<GfVec2h>())
-        return pack_value<GfVec2h>(o, array);
-    if (base == TfType::Find<GfVec2i>())
-        return pack_value<GfVec2i>(o, array);
-    if (base == TfType::Find<GfVec3d>())
-        return pack_value<GfVec3d>(o, array);
-    if (base == TfType::Find<GfVec3f>())
-        return pack_value<GfVec3f>(o, array);
-    if (base == TfType::Find<GfVec3h>())
-        return pack_value<GfVec3h>(o, array);
-    if (base == TfType::Find<GfVec3i>())
-        return pack_value<GfVec3i>(o, array);
-    if (base == TfType::Find<GfVec4d>())
-        return pack_value<GfVec4d>(o, array);
-    if (base == TfType::Find<GfVec4f>())
-        return pack_value<GfVec4f>(o, array);
-    if (base == TfType::Find<GfVec4h>())
-        return pack_value<GfVec4h>(o, array);
-    if (base == TfType::Find<GfVec4i>())
-        return pack_value<GfVec4i>(o, array);
+#define USDM_VALUE_TYPE(T, Width, Member) if (base == TfType::Find<T>()) return pack_value<T>(o, array);
+#include "value_types.inc"
+#undef USDM_VALUE_TYPE
     throw BridgeError(ErrorKind::Unsupported, "Unsupported USD value type");
 }
 void decode(ValueOwner &o, const VtValue &v) {
@@ -747,130 +227,9 @@ void decode(ValueOwner &o, const VtValue &v) {
     require(bool(t), "Unknown USD value type: " + o.type, ErrorKind::Unsupported);
     bool array = t.IsArray();
     auto base = t.GetScalarType().GetType();
-    if (base == TfType::Find<bool>()) {
-        unpack_value<bool>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<uint8_t>()) {
-        unpack_value<uint8_t>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<int32_t>()) {
-        unpack_value<int32_t>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<uint32_t>()) {
-        unpack_value<uint32_t>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<int64_t>()) {
-        unpack_value<int64_t>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<uint64_t>()) {
-        unpack_value<uint64_t>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfHalf>()) {
-        unpack_value<GfHalf>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<float>()) {
-        unpack_value<float>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<double>()) {
-        unpack_value<double>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<SdfTimeCode>()) {
-        unpack_value<SdfTimeCode>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<std::string>()) {
-        unpack_value<std::string>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<TfToken>()) {
-        unpack_value<TfToken>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<SdfAssetPath>()) {
-        unpack_value<SdfAssetPath>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfMatrix2d>()) {
-        unpack_value<GfMatrix2d>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfMatrix3d>()) {
-        unpack_value<GfMatrix3d>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfMatrix4d>()) {
-        unpack_value<GfMatrix4d>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfQuatd>()) {
-        unpack_value<GfQuatd>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfQuatf>()) {
-        unpack_value<GfQuatf>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfQuath>()) {
-        unpack_value<GfQuath>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec2d>()) {
-        unpack_value<GfVec2d>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec2f>()) {
-        unpack_value<GfVec2f>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec2h>()) {
-        unpack_value<GfVec2h>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec2i>()) {
-        unpack_value<GfVec2i>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec3d>()) {
-        unpack_value<GfVec3d>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec3f>()) {
-        unpack_value<GfVec3f>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec3h>()) {
-        unpack_value<GfVec3h>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec3i>()) {
-        unpack_value<GfVec3i>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec4d>()) {
-        unpack_value<GfVec4d>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec4f>()) {
-        unpack_value<GfVec4f>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec4h>()) {
-        unpack_value<GfVec4h>(o, v, array);
-        return;
-    }
-    if (base == TfType::Find<GfVec4i>()) {
-        unpack_value<GfVec4i>(o, v, array);
-        return;
-    }
+#define USDM_VALUE_TYPE(T, Width, Member) if (base == TfType::Find<T>()) { unpack_value<T>(o, v, array); return; }
+#include "value_types.inc"
+#undef USDM_VALUE_TYPE
     throw BridgeError(ErrorKind::Unsupported, "Unsupported USD value type");
 }
 } // namespace

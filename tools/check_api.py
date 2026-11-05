@@ -71,7 +71,7 @@ def snapshot(root=ROOT):
         }
     )
     return {
-        "api_version": "0.1",
+        "api_version": "0.2",
         "exports": exports,
         "declarations": {k: sorted(v) for k, v in sorted(declarations.items())},
     }
@@ -88,6 +88,13 @@ def canonical(declarations):
 
 def check():
     actual = snapshot()
+    previous = json.loads((ROOT / "tests/api/usd_mojo-0.1.json").read_text())
+    current_signatures = canonical(actual["declarations"])
+    for name, signatures in canonical(previous["declarations"]).items():
+        if any(signature not in current_signatures.get(name, []) for signature in signatures):
+            raise RuntimeError(f"Removed or changed 0.1 declaration: {name}")
+    if not set(previous["exports"]) <= set(actual["exports"]):
+        raise RuntimeError("Removed 0.1 public exports")
     expected = json.loads((ROOT / "tests/api/usd_mojo.json").read_text())
     if actual["exports"] != expected["exports"] or canonical(
         actual["declarations"]

@@ -1,0 +1,262 @@
+{
+  "status": "passed",
+  "checked_on": "2026-11-05",
+  "source_commit": "1d5240ad8e05590750191f7d59cf2c1623867dec",
+  "source_sha256": "98aca91ec505b9916674704612c4c921970d1a8b2996b818b39e5cb91d9cbc0b",
+  "frame_names": [
+    "base",
+    "animated",
+    "color",
+    "camera",
+    "removed",
+    "restored",
+    "clipped",
+    "clip_moved",
+    "clip_rotated",
+    "clip_cleared",
+    "mesh_before",
+    "mesh_after"
+  ],
+  "width": 96,
+  "height": 64,
+  "preview": "020-render-session.png",
+  "timing_columns": {
+    "retained": [
+      "render_call_ns",
+      "readback_ns",
+      "render_readback_ns"
+    ],
+    "new": [
+      "render_call_ns",
+      "readback_ns",
+      "creation_render_readback_ns",
+      "creation_ns"
+    ]
+  },
+  "limits": [
+    "CPU wall timings include synchronization in readback, not GPU timestamps.",
+    "Both timing paths alternate the same camera positions; warm process/driver caches, small generated scene.",
+    "No direct window presentation, shared GPU texture, NVIDIA or Linux imaging qualification.",
+    "RSS/default allocator sampling is bounded, not a GPU-heap or unbounded-lifetime guarantee."
+  ],
+  "hardware": {
+    "cpu": "Apple M4 Pro",
+    "physical_memory_bytes": 25769803776
+  },
+  "camera": "SDK scene camera with vertical viewport fit; clipping in camera space, including removal and camera changes",
+  "observations": {
+    "completed": true,
+    "platform": "macOS-27.2-arm64-arm-64bit",
+    "rendering": {
+      "backend": "Hydra/HdStormRendererPlugin/Metal",
+      "hgi_api": "Metal",
+      "renderer_plugin": "HdStormRendererPlugin"
+    },
+    "native_boundaries": [
+      "legacy-image-abi",
+      "stage-owner-retained",
+      "read-before-render-rejected",
+      "wrong-extents-and-null-preserve-output",
+      "thread-affinity",
+      "failed-render-invalidates-readback",
+      "image-outlives-session",
+      "typed-error-contract"
+    ],
+    "width": 96,
+    "height": 64,
+    "frames": {
+      "base": {
+        "foreground_pixels": 1260,
+        "x_bounds": [11, 45],
+        "expected_x_bounds": [10.666666666666664, 46.54545454545455],
+        "dominant_rgb": 0
+      },
+      "animated": {
+        "foreground_pixels": 1260,
+        "x_bounds": [50, 84],
+        "expected_x_bounds": [49.45454545454545, 85.33333333333334],
+        "dominant_rgb": 0
+      },
+      "color": {
+        "foreground_pixels": 1260,
+        "x_bounds": [50, 84],
+        "expected_x_bounds": [49.45454545454545, 85.33333333333334],
+        "dominant_rgb": 1
+      },
+      "camera": {
+        "foreground_pixels": 1260,
+        "x_bounds": [34, 68],
+        "expected_x_bounds": [33.77777777777778, 69.33333333333334],
+        "dominant_rgb": 1
+      },
+      "restored": {
+        "foreground_pixels": 1292,
+        "x_bounds": [30, 65],
+        "expected_x_bounds": [30.22222222222222, 65.77777777777777],
+        "dominant_rgb": 2
+      },
+      "mesh_before": {
+        "foreground_pixels": 992,
+        "x_bounds": [15, 45],
+        "expected_x_bounds": [14.399999999999999, 46.4],
+        "dominant_rgb": 0
+      },
+      "mesh_after": {
+        "foreground_pixels": 992,
+        "x_bounds": [50, 80],
+        "expected_x_bounds": [49.6, 81.6],
+        "dominant_rgb": 0
+      },
+      "clip_cleared": {
+        "foreground_pixels": 1292,
+        "x_bounds": [30, 65],
+        "expected_x_bounds": [30.22222222222222, 65.77777777777777],
+        "dominant_rgb": 2
+      },
+      "clipped": {
+        "foreground_pixels": 646,
+        "x_bounds": [48, 65],
+        "y_bounds": [14, 49],
+        "expected_right": 65.77777777777777
+      },
+      "clip_moved": {
+        "foreground_pixels": 324,
+        "x_bounds": [48, 56],
+        "y_bounds": [14, 49],
+        "expected_right": 56.888888888888886
+      },
+      "clip_rotated": {
+        "foreground_pixels": 646,
+        "x_bounds": [48, 65],
+        "y_bounds": [14, 49],
+        "expected_right": 65.77777777777777
+      },
+      "timed_camera_centroids": {
+        "retained": [47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0],
+        "new": [47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0]
+      }
+    },
+    "installed_consumer": "passed",
+    "source_scene_unchanged": true,
+    "scope": "Moving-camera frames with warm caches; render-call CPU time and synchronized readback, not GPU timestamps.",
+    "one_shot_receipt_sha256": "1468b6fb9fcdfb6dfa37f92f0ae145fb28a0fdcddabafcdad2db0aebfdfffb2a",
+    "one_shot_backend": "Hydra/HdStormRendererPlugin/Metal",
+    "sequence_png_sha256": "89be59cf77475adab2cc84d7b5c1fd0a857d15f1bd862b61a6963bd58e906c64"
+  },
+  "compilers": {
+    "Mojo 1.1.0 (8189361e)": {
+      "timing_ns": {
+        "retained": [
+          [180000, 258000, 438000],
+          [234000, 257000, 491000],
+          [215000, 217000, 432000],
+          [286000, 234000, 520000],
+          [197000, 411000, 608000],
+          [164000, 257000, 421000],
+          [169000, 300000, 469000],
+          [289000, 250000, 539000],
+          [197000, 225000, 422000],
+          [146000, 264000, 410000],
+          [254000, 237000, 491000],
+          [199000, 234000, 433000],
+          [197000, 245000, 442000],
+          [194000, 255000, 449000],
+          [173000, 227000, 400000],
+          [178000, 251000, 429000],
+          [159000, 264000, 423000],
+          [176000, 260000, 436000],
+          [190000, 276000, 466000],
+          [179000, 235000, 414000],
+          [201000, 295000, 496000],
+          [253000, 278000, 531000],
+          [171000, 238000, 409000],
+          [138000, 276000, 414000],
+          [156000, 301000, 457000],
+          [191000, 230000, 421000],
+          [163000, 247000, 410000],
+          [187000, 267000, 454000],
+          [164000, 247000, 411000],
+          [161000, 294000, 455000]
+        ],
+        "new": [
+          [6812000, 836000, 9809000, 2161000],
+          [7060000, 918000, 9665000, 1687000],
+          [6014000, 1007000, 8328000, 1307000],
+          [6289000, 900000, 8557000, 1368000],
+          [7129000, 928000, 9502000, 1445000],
+          [6232000, 2544000, 12317000, 3541000],
+          [6065000, 877000, 8087000, 1145000],
+          [5836000, 821000, 8114000, 1457000],
+          [6158000, 1440000, 8868000, 1270000],
+          [6070000, 854000, 8214000, 1290000]
+        ]
+      },
+      "memory_bytes": [97959936, 98041856, 10715344, 9927088],
+      "median_retained_render_readback_ns": 437000.0,
+      "median_new_session_render_readback_ns": 8712500.0,
+      "receipt_sha256": "c3c994b58d22069bd00d460f7878c9816481834acc23beee8cab28f6161d6133"
+    },
+    "Mojo 1.2.0.dev2026100905 (3b71af75)": {
+      "timing_ns": {
+        "retained": [
+          [275000, 231000, 506000],
+          [200000, 395000, 595000],
+          [232000, 375000, 607000],
+          [216000, 379000, 595000],
+          [223000, 406000, 629000],
+          [236000, 239000, 475000],
+          [216000, 227000, 443000],
+          [178000, 243000, 421000],
+          [184000, 2187000, 2371000],
+          [322000, 242000, 564000],
+          [235000, 237000, 472000],
+          [153000, 290000, 443000],
+          [176000, 271000, 447000],
+          [202000, 240000, 442000],
+          [160000, 259000, 419000],
+          [183000, 291000, 474000],
+          [172000, 446000, 618000],
+          [169000, 326000, 495000],
+          [179000, 285000, 464000],
+          [186000, 284000, 470000],
+          [174000, 288000, 462000],
+          [153000, 278000, 431000],
+          [181000, 264000, 445000],
+          [184000, 257000, 441000],
+          [191000, 256000, 447000],
+          [192000, 242000, 434000],
+          [176000, 264000, 440000],
+          [188000, 256000, 444000],
+          [195000, 250000, 445000],
+          [177000, 243000, 420000]
+        ],
+        "new": [
+          [6499000, 815000, 8900000, 1586000],
+          [6356000, 915000, 8578000, 1307000],
+          [6546000, 795000, 8651000, 1310000],
+          [5780000, 888000, 7985000, 1317000],
+          [6421000, 895000, 8589000, 1273000],
+          [6139000, 837000, 8370000, 1394000],
+          [6645000, 801000, 11546000, 4100000],
+          [6674000, 2274000, 10194000, 1246000],
+          [6488000, 812000, 8815000, 1515000],
+          [6046000, 865000, 8207000, 1296000]
+        ]
+      },
+      "memory_bytes": [97878016, 97943552, 10606240, 9817984],
+      "median_retained_render_readback_ns": 454500.0,
+      "median_new_session_render_readback_ns": 8620000.0,
+      "receipt_sha256": "f814721b9ae83962d008ae371b8dc83d7e9f749752053cb998ef8ec9348849b8"
+    }
+  },
+  "nvidia_wslg": {
+    "status": "passed",
+    "record": "020-linux.json",
+    "source_sha256": "98aca91ec505b9916674704612c4c921970d1a8b2996b818b39e5cb91d9cbc0b",
+    "context_helper": {
+      "source": "tests/imaging_context.cpp",
+      "selector": "USD_MOJO_TEST_GL_CONTEXT=1",
+      "external_harness": false
+    }
+  }
+}

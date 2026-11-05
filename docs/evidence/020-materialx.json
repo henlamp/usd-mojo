@@ -1,0 +1,393 @@
+{
+  "status": "passed",
+  "checked_on": "2026-11-05",
+  "source_commit": "1d5240ad8e05590750191f7d59cf2c1623867dec",
+  "source_sha256": "98aca91ec505b9916674704612c4c921970d1a8b2996b818b39e5cb91d9cbc0b",
+  "sdk_sources": {
+    "materialx": {
+      "version": "1.39.5",
+      "url": "https://codeload.github.com/AcademySoftwareFoundation/MaterialX/tar.gz/refs/tags/v1.39.5",
+      "sha256": "c0d739b70a36f6f72888a0e8e66db5c83ae87c40737cc9b51c108166804f3a3b",
+      "source": "MaterialX-1.39.5"
+    },
+    "openusd": {
+      "version": "26.08",
+      "url": "https://codeload.github.com/PixarAnimationStudios/OpenUSD/tar.gz/refs/tags/v26.08",
+      "sha256": "4bccbb95cddda1dbeef2f74a08b9456352f2aa91bfd4578c0c613009c7950149",
+      "source": "OpenUSD-26.08",
+      "patches": [
+        {
+          "file": "pxr/imaging/hdSt/materialXShaderGen.cpp",
+          "before_sha256": "1ed4ce7a103ce3e181ae9bf77cdf26e7b5e197cbacc2207024b1b6b7d0eee124",
+          "after_sha256": "b9409b4863178a89d500761b78edb068dd4310dfbdd3e8568cfb4b04258fbf3a",
+          "patch": "tools/patches/openusd-26.08-materialx-unlit.patch",
+          "patch_sha256": "cd0a266b5067c6846d2ee473e682b8f27a29b9e05c548dc77e8cfd54987b668e"
+        }
+      ]
+    }
+  },
+  "unpatched_diagnostic_sha256": "64861506d60cf1c8f3472ef1d477d02eafa59c6e780ce19cd8c2deefdd268ca6",
+  "limits": [
+    "Texture-space Metal images and Hydra surface shading are distinct paths.",
+    "Lit standard-surface, opacity, texture/UV and unlit cases are bounded checks, not every BSDF or production asset.",
+    "NVIDIA surface checks cover the recorded WSLg/D3D12 stack; direct texture-space MaterialXShader.render() remains Metal-only."
+  ],
+  "metal": {
+    "materialx": {
+      "status": "passed",
+      "materialx": "1.39.5",
+      "native_document_validation": true,
+      "independent_shader_sources": [
+        "glsl",
+        "msl"
+      ],
+      "rendered_frames": [
+        "original",
+        "edited",
+        "retained",
+        "detached",
+        "old_image"
+      ],
+      "width": 32,
+      "height": 24,
+      "installed_consumer": "passed",
+      "source_unchanged": true,
+      "pixel_sha256": {
+        "original": "6be7afeefc27462d711e0ce9f04323e5459410ebe13d0809e37a333864dec712",
+        "edited": "89985b4741ec450f1111a57fd59c2d88afdb3313357884f6305efbbeccff9a91",
+        "retained": "6be7afeefc27462d711e0ce9f04323e5459410ebe13d0809e37a333864dec712",
+        "detached": "6be7afeefc27462d711e0ce9f04323e5459410ebe13d0809e37a333864dec712",
+        "old_image": "6be7afeefc27462d711e0ce9f04323e5459410ebe13d0809e37a333864dec712"
+      },
+      "scope": "Metal texture-space pixels, GLSL/MSL source parity and installed-archive parity.",
+      "receipt_sha256": "e5276a3276e2480e075da8b285cd9ad48bd22c3bec1b6ac8d388363a9ba1389e",
+      "preview_sha256": {
+        "detached.png": "fca421c32af555c8ff1cbb1059b2c3c9561deef00de7918f568b967a0dbdca7a",
+        "edited.png": "bda47ecb607390938b849bec1cfe07b2e8bd68b614991f2d108d281d40dd3706",
+        "old_image.png": "fca421c32af555c8ff1cbb1059b2c3c9561deef00de7918f568b967a0dbdca7a",
+        "original.png": "fca421c32af555c8ff1cbb1059b2c3c9561deef00de7918f568b967a0dbdca7a",
+        "retained.png": "fca421c32af555c8ff1cbb1059b2c3c9561deef00de7918f568b967a0dbdca7a"
+      }
+    },
+    "hydra-materialx": {
+      "status": "passed",
+      "openusd": {
+        "version": "26.08",
+        "url": "https://codeload.github.com/PixarAnimationStudios/OpenUSD/tar.gz/refs/tags/v26.08",
+        "sha256": "4bccbb95cddda1dbeef2f74a08b9456352f2aa91bfd4578c0c613009c7950149",
+        "source": "OpenUSD-26.08",
+        "patches": [
+          {
+            "file": "pxr/imaging/hdSt/materialXShaderGen.cpp",
+            "before_sha256": "1ed4ce7a103ce3e181ae9bf77cdf26e7b5e197cbacc2207024b1b6b7d0eee124",
+            "after_sha256": "b9409b4863178a89d500761b78edb068dd4310dfbdd3e8568cfb4b04258fbf3a",
+            "patch": "tools/patches/openusd-26.08-materialx-unlit.patch",
+            "patch_sha256": "cd0a266b5067c6846d2ee473e682b8f27a29b9e05c548dc77e8cfd54987b668e"
+          }
+        ]
+      },
+      "materialx": {
+        "version": "1.39.5",
+        "url": "https://codeload.github.com/AcademySoftwareFoundation/MaterialX/tar.gz/refs/tags/v1.39.5",
+        "sha256": "c0d739b70a36f6f72888a0e8e66db5c83ae87c40737cc9b51c108166804f3a3b",
+        "source": "MaterialX-1.39.5"
+      },
+      "backend": "Hydra/HdStormRendererPlugin/Metal",
+      "hgi_api": "Metal",
+      "renderer_plugin": "HdStormRendererPlugin",
+      "width": 64,
+      "height": 64,
+      "frames": [
+        "material",
+        "edited"
+      ],
+      "installed_consumer": "passed",
+      "source_unchanged": true,
+      "scope": "Unlit MaterialX import, binding, input edits and installed-archive parity.",
+      "receipt_sha256": "5dc98f57a936eae1a744d95eeb8de33192e5ad56b285eb57fdbe64add3ba406b",
+      "preview_sha256": {
+        "edited.png": "4130ec6bbdeb293a158dcf51e6622e83fa18eda14417b595167fed26b7286757",
+        "material.png": "d2a58ae32adbcce9e426dd30a08c89b734078db05728a78c56ccfc3636a9e578"
+      }
+    },
+    "surface-pipeline": {
+      "status": "passed",
+      "backend": "Hydra/HdStormRendererPlugin/Metal",
+      "hgi_api": "Metal",
+      "renderer_plugin": "HdStormRendererPlugin",
+      "cases": {
+        "lit": {
+          "frames": [
+            "base",
+            "dark",
+            "edited",
+            "rough",
+            "retained"
+          ],
+          "center_rgba": {
+            "base": [0.2697754, 0.29833984, 0.27392578, 1.0],
+            "dark": [0.0, 0.0, 0.0, 1.0],
+            "edited": [0.30249024, 0.2697754, 0.2697754, 1.0],
+            "rough": [0.03845215, 0.0048828125, 0.0048828125, 1.0],
+            "retained": [0.2697754, 0.29833984, 0.27392578, 1.0]
+          }
+        },
+        "opacity": {
+          "frames": [
+            "base",
+            "opaque",
+            "retained"
+          ],
+          "center_rgba": {
+            "base": [0.06744385, 0.07458496, 0.068481445, 0.25],
+            "opaque": [0.2697754, 0.29833984, 0.27392578, 1.0],
+            "retained": [0.06744385, 0.07458496, 0.068481445, 0.25]
+          }
+        },
+        "texture": {
+          "frames": [
+            "base",
+            "uv_shift",
+            "retained"
+          ],
+          "center_rgba": {
+            "base": [0.25, 0.75, 0.0, 1.0],
+            "uv_shift": [0.75, 0.25, 0.0, 1.0],
+            "retained": [0.25, 0.75, 0.0, 1.0]
+          }
+        }
+      },
+      "independent_shader_sources": [
+        "glsl",
+        "msl"
+      ],
+      "installed_consumer": "passed",
+      "missing_texture_rejected": true,
+      "sdk_identity": "7ee9a0aba5ef7150866d72610600baf6bc62c9f3588177ed940d6b7cfbf29a4b",
+      "scope": "Lit standard-surface, opacity, texture/UV edits and installed-archive parity.",
+      "receipt_sha256": "97aada509ce4f0444ced1d457fda52b8d81b0b80dd258713a264931aebe4706d",
+      "preview_sha256": {
+        "checker.png": "821ce5258df4047256d6f6dc67ce896253cdb38a6188bbe1966a2578e58e5710",
+        "lit-base.png": "c8e17ccd32f6a582702c4cf328557a5ebab6d41d035309fed4e6ed25ca2dba44",
+        "lit-dark.png": "360d6dcf96a8206ae1538d13fd1d5c692bf69ecad52a2d2f259a11314772600e",
+        "lit-edited.png": "944c3e564eb585e001bd3aa268775210d58fd2cca8ef343684b0312621156571",
+        "lit-retained.png": "c8e17ccd32f6a582702c4cf328557a5ebab6d41d035309fed4e6ed25ca2dba44",
+        "lit-rough.png": "dcdd77b76798ab33b3b078de467a4ea40066a5806f09c8728b55afc0550e1af0",
+        "opacity-base.png": "d6a87f9efcf613f924ab12ddf9fde6388db08d4408762bd34b79dbe600e04f1a",
+        "opacity-opaque.png": "c8e17ccd32f6a582702c4cf328557a5ebab6d41d035309fed4e6ed25ca2dba44",
+        "opacity-retained.png": "d6a87f9efcf613f924ab12ddf9fde6388db08d4408762bd34b79dbe600e04f1a",
+        "texture-base.png": "aa87023caec2067e6a28f88fab7c9e66ada16d79ae677b6b542d4b1a2cf69813",
+        "texture-retained.png": "aa87023caec2067e6a28f88fab7c9e66ada16d79ae677b6b542d4b1a2cf69813",
+        "texture-uv_shift.png": "20baf2dc9c36f17bb46bcf08317591b8f7449caa0224f1abccf068b22a61ae87"
+      }
+    }
+  },
+  "compilers": {
+    "Mojo 1.1.0 (8189361e)": {
+      "materialx": {},
+      "hydra-materialx": {},
+      "surface-pipeline": {}
+    },
+    "Mojo 1.2.0.dev2026100905 (3b71af75)": {
+      "materialx": {},
+      "hydra-materialx": {},
+      "surface-pipeline": {}
+    }
+  },
+  "nvidia_wslg": {
+    "status": "passed",
+    "checked_on": "2026-11-05",
+    "source_commit": "1d5240ad8e05590750191f7d59cf2c1623867dec",
+    "source_sha256": "98aca91ec505b9916674704612c4c921970d1a8b2996b818b39e5cb91d9cbc0b",
+    "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+    "context_helper": {
+      "source": "tests/imaging_context.cpp",
+      "selector": "USD_MOJO_TEST_GL_CONTEXT=1",
+      "external_harness": false
+    },
+    "environment": {
+      "GALLIUM_DRIVER": "d3d12",
+      "MESA_D3D12_DEFAULT_ADAPTER_NAME": "NVIDIA",
+      "USD_MOJO_EXPECT_GPU": "NVIDIA"
+    },
+    "sdk_identity_sha256": "e8c837e1d367966249e8395f6d7187917ea842bbcba9e7add71eebebd5e3ce58",
+    "sdk_build": {
+      "configuration": "Release",
+      "exec_support": false,
+      "materialx_render_platforms": false,
+      "optional_bake_patch": {
+        "after": "if (${PXR_ENABLE_MATERIALX_SUPPORT} AND TARGET MaterialXRenderGlsl)",
+        "after_sha256": "b609dfe2d57396843193e8d94451fda181bddc090c224a2708f003837e97b2d9",
+        "before": "if (${PXR_ENABLE_MATERIALX_SUPPORT})",
+        "before_sha256": "7357d06e274641fe50cfd21256cca4404a65e7319f0b02eff5230d14e6788ffe",
+        "file": "pxr/usdImaging/bin/CMakeLists.txt",
+        "scope": "Skip optional usdBakeMtlx when MaterialXRenderGlsl was not built; Hydra/Storm targets unchanged.",
+        "archive": "020-nvidia-materialx-build.patch",
+        "patch_sha256": "c2565846ff1f18bd202d4581203c794a65d2e36bbf7fe479a090286130489471"
+      },
+      "python_support": false,
+      "source_commit": "8d083207dcc85a352911e821b9ac0082d0e94c3a",
+      "system": "Linux"
+    },
+    "compilers": {
+      "Mojo 1.1.0 (8189361e)": {
+        "hydra-materialx": {},
+        "surface-pipeline": {}
+      },
+      "Mojo 1.2.0.dev2026100905 (3b71af75)": {
+        "hydra-materialx": {},
+        "surface-pipeline": {}
+      }
+    },
+    "hydra-materialx": {
+      "status": "passed",
+      "openusd": {
+        "version": "26.08",
+        "url": "https://codeload.github.com/PixarAnimationStudios/OpenUSD/tar.gz/refs/tags/v26.08",
+        "sha256": "4bccbb95cddda1dbeef2f74a08b9456352f2aa91bfd4578c0c613009c7950149",
+        "source": "OpenUSD-26.08",
+        "patches": [
+          {
+            "file": "pxr/imaging/hdSt/materialXShaderGen.cpp",
+            "before_sha256": "1ed4ce7a103ce3e181ae9bf77cdf26e7b5e197cbacc2207024b1b6b7d0eee124",
+            "after_sha256": "b9409b4863178a89d500761b78edb068dd4310dfbdd3e8568cfb4b04258fbf3a",
+            "patch": "tools/patches/openusd-26.08-materialx-unlit.patch",
+            "patch_sha256": "cd0a266b5067c6846d2ee473e682b8f27a29b9e05c548dc77e8cfd54987b668e"
+          }
+        ]
+      },
+      "materialx": {
+        "version": "1.39.5",
+        "url": "https://codeload.github.com/AcademySoftwareFoundation/MaterialX/tar.gz/refs/tags/v1.39.5",
+        "sha256": "c0d739b70a36f6f72888a0e8e66db5c83ae87c40737cc9b51c108166804f3a3b",
+        "source": "MaterialX-1.39.5"
+      },
+      "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+      "hgi_api": "OpenGL",
+      "renderer_plugin": "HdStormRendererPlugin",
+      "gpu_renderer": "D3D12 (NVIDIA GeForce RTX 3070)",
+      "gpu_version": "4.6 (Compatibility Profile) Mesa 25.0.7 - kisak-mesa PPA",
+      "width": 64,
+      "height": 64,
+      "frames": [
+        "material",
+        "edited"
+      ],
+      "installed_consumer": "passed",
+      "source_unchanged": true,
+      "scope": "Unlit MaterialX import, binding, input edits and installed-archive parity.",
+      "receipt_sha256": "df3313710424026ad60a20e0d4566f1fd31da7cea293286f755964641f711688",
+      "log_sha256": {
+        "installed.log": "e1bcf799137a81ff18a75364403531b0ee1c7b71570ab096f794e3d5ad565fc1",
+        "source.log": "e1bcf799137a81ff18a75364403531b0ee1c7b71570ab096f794e3d5ad565fc1"
+      },
+      "preview_sha256": {
+        "edited.png": "4130ec6bbdeb293a158dcf51e6622e83fa18eda14417b595167fed26b7286757",
+        "material.png": "d2a58ae32adbcce9e426dd30a08c89b734078db05728a78c56ccfc3636a9e578"
+      }
+    },
+    "surface-pipeline": {
+      "status": "passed",
+      "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+      "hgi_api": "OpenGL",
+      "renderer_plugin": "HdStormRendererPlugin",
+      "gpu_renderer": "D3D12 (NVIDIA GeForce RTX 3070)",
+      "gpu_version": "4.6 (Compatibility Profile) Mesa 25.0.7 - kisak-mesa PPA",
+      "cases": {
+        "lit": {
+          "frames": [
+            "base",
+            "dark",
+            "edited",
+            "rough",
+            "retained"
+          ],
+          "center_rgba": {
+            "base": [0.2697754, 0.29833984, 0.27392578, 1.0],
+            "dark": [0.0, 0.0, 0.0, 1.0],
+            "edited": [0.30249024, 0.2697754, 0.2697754, 1.0],
+            "rough": [0.03845215, 0.0048828125, 0.0048828125, 1.0],
+            "retained": [0.2697754, 0.29833984, 0.27392578, 1.0]
+          }
+        },
+        "opacity": {
+          "frames": [
+            "base",
+            "opaque",
+            "retained"
+          ],
+          "center_rgba": {
+            "base": [0.06744385, 0.07458496, 0.068481445, 0.25],
+            "opaque": [0.2697754, 0.29833984, 0.27392578, 1.0],
+            "retained": [0.06744385, 0.07458496, 0.068481445, 0.25]
+          }
+        },
+        "texture": {
+          "frames": [
+            "base",
+            "uv_shift",
+            "retained"
+          ],
+          "center_rgba": {
+            "base": [0.25, 0.7495117, 0.0, 1.0],
+            "uv_shift": [0.7495117, 0.25, 0.0, 1.0],
+            "retained": [0.25, 0.7495117, 0.0, 1.0]
+          }
+        }
+      },
+      "independent_shader_sources": [
+        "glsl",
+        "msl"
+      ],
+      "installed_consumer": "passed",
+      "missing_texture_rejected": true,
+      "sdk_identity": "e8c837e1d367966249e8395f6d7187917ea842bbcba9e7add71eebebd5e3ce58",
+      "scope": "Lit standard-surface, opacity, texture/UV edits and installed-archive parity.",
+      "receipt_sha256": "2d201d1f4b9828716c40eedc8376545e3dec569d2735976a98cb2dfc86b49d95",
+      "log_sha256": {
+        "lit-installed.log": "20d68fa29536faa4e0740116a1de57eea8e45321cec10275cf67663dc0556ca0",
+        "lit.log": "20d68fa29536faa4e0740116a1de57eea8e45321cec10275cf67663dc0556ca0",
+        "missing.log": "9e0161cc984b1a00c6f75a37b9823d65e0a77fccbe3958e41df194d605bffde7",
+        "opacity-installed.log": "515404b66c772f02bf57d98f8d533dedf5e7be29fe395ff153247f1dbcc62f48",
+        "opacity.log": "515404b66c772f02bf57d98f8d533dedf5e7be29fe395ff153247f1dbcc62f48",
+        "texture-installed.log": "e2346bcf45423056b761fe9ac970167bd911c51339ef7009ff1887135240e664",
+        "texture.log": "e2346bcf45423056b761fe9ac970167bd911c51339ef7009ff1887135240e664"
+      },
+      "preview_sha256": {
+        "checker.png": "821ce5258df4047256d6f6dc67ce896253cdb38a6188bbe1966a2578e58e5710",
+        "lit-base.png": "c8e17ccd32f6a582702c4cf328557a5ebab6d41d035309fed4e6ed25ca2dba44",
+        "lit-dark.png": "360d6dcf96a8206ae1538d13fd1d5c692bf69ecad52a2d2f259a11314772600e",
+        "lit-edited.png": "944c3e564eb585e001bd3aa268775210d58fd2cca8ef343684b0312621156571",
+        "lit-retained.png": "c8e17ccd32f6a582702c4cf328557a5ebab6d41d035309fed4e6ed25ca2dba44",
+        "lit-rough.png": "dcdd77b76798ab33b3b078de467a4ea40066a5806f09c8728b55afc0550e1af0",
+        "opacity-base.png": "d6a87f9efcf613f924ab12ddf9fde6388db08d4408762bd34b79dbe600e04f1a",
+        "opacity-opaque.png": "c8e17ccd32f6a582702c4cf328557a5ebab6d41d035309fed4e6ed25ca2dba44",
+        "opacity-retained.png": "d6a87f9efcf613f924ab12ddf9fde6388db08d4408762bd34b79dbe600e04f1a",
+        "texture-base.png": "aa87023caec2067e6a28f88fab7c9e66ada16d79ae677b6b542d4b1a2cf69813",
+        "texture-retained.png": "aa87023caec2067e6a28f88fab7c9e66ada16d79ae677b6b542d4b1a2cf69813",
+        "texture-uv_shift.png": "20baf2dc9c36f17bb46bcf08317591b8f7449caa0224f1abccf068b22a61ae87"
+      }
+    },
+    "qualification_archive_sha256": "ab36352f3c12f4c44f94cacd58b642863172c4aac39dcf31496eaaeddb46210d",
+    "error_contract": {
+      "status": "passed",
+      "source_sha256": "98aca91ec505b9916674704612c4c921970d1a8b2996b818b39e5cb91d9cbc0b",
+      "checks": {
+        "missing-file": 6,
+        "malformed-xml": 5,
+        "missing-element": 2,
+        "invalid-target": 1,
+        "input-type": 3,
+        "unwritable-output": 6,
+        "unsupported-readback": 4,
+        "recovery-after-errors": true
+      }
+    },
+    "scope": "Unlit and lit standard-surface, light/color/roughness edits, opacity, texture/UV edits and installed-archive parity. Direct MaterialXShader.render() remains Metal-only; not every BSDF, driver or production workload.",
+    "preview": {
+      "file": "020-nvidia-materialx.png",
+      "sha256": "00d9e10d3454906b2fe9b87722f857539fb0a9bf918f4466e7fcf6c3cdcf4acb",
+      "layout": "Top: lit base, dark, edited, rough. Bottom: opacity base, opaque, texture base, UV shift."
+    }
+  }
+}

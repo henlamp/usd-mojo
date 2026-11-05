@@ -1,0 +1,236 @@
+{
+  "version": "0.2.0",
+  "release_published": false,
+  "api": {
+    "status": "passed",
+    "public_exports": 119,
+    "public_declarations": 528
+  },
+  "required_checks": [
+    "sdk",
+    "hardening",
+    "applications",
+    "workloads",
+    "release_gate_tests",
+    "native_benchmark",
+    "sdk_benchmark",
+    "scene_handoff_benchmark",
+    "mutation_array_benchmark",
+    "package"
+  ],
+  "limits": [
+    "Marker types group/opaque have no generic component representation; arbitrary plugin types remain capability-reported.",
+    "MaterialX rendering uses a separately built, source/patch-pinned SDK. Bounded cases do not establish every BSDF, asset or unbounded production stability.",
+    "NVIDIA qualification covers the recorded WSLg/D3D12 stack, basic Hydra sessions and bounded MaterialX surfaces. Direct MaterialX texture-space readback remains Metal-only."
+  ],
+  "current": {
+    "status": "native_cpu_gpu_and_packages_qualified",
+    "checked_on": "2026-11-05",
+    "source_commit": "1d5240ad8e05590750191f7d59cf2c1623867dec",
+    "source_sha256": "98aca91ec505b9916674704612c4c921970d1a8b2996b818b39e5cb91d9cbc0b",
+    "native_acceptance": [
+      {
+        "configuration": "macos-default",
+        "system": "darwin",
+        "platform": "macOS-27.2-arm64-arm-64bit",
+        "compiler": "Mojo 1.1.0 (8189361e)",
+        "checks_passed": 10,
+        "receipt_sha256": "fdcdb96f9b5b9216f39fe38e53e34072e9cf511ca0918dff04d4001c413c5e0d",
+        "external_corpus_checked": true
+      },
+      {
+        "configuration": "macos-nightly",
+        "system": "darwin",
+        "platform": "macOS-27.2-arm64-arm-64bit",
+        "compiler": "Mojo 1.2.0.dev2026100905 (3b71af75)",
+        "checks_passed": 10,
+        "receipt_sha256": "be1b8d17e4a8e9c2e76a3fbf422cfaa9af099538fe9c4f4087ffc205bddcd740",
+        "external_corpus_checked": true
+      },
+      {
+        "configuration": "linux-default",
+        "system": "linux",
+        "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+        "compiler": "Mojo 1.1.0 (8189361e)",
+        "checks_passed": 10,
+        "receipt_sha256": "0a338c3a058af277230b39d7d2b08dab49337176cdb3cfb9ffc2a6f16dfcd01a",
+        "external_corpus_checked": true
+      },
+      {
+        "configuration": "linux-nightly",
+        "system": "linux",
+        "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+        "compiler": "Mojo 1.2.0.dev2026100905 (3b71af75)",
+        "checks_passed": 10,
+        "receipt_sha256": "0d65fd75d39013f88fadb4dee20c60eb25504239b4aa6f92d178b2a7522f7eb8",
+        "external_corpus_checked": true
+      }
+    ],
+    "native_cpu_blocks_passed": 40,
+    "optional_checks_passed": {
+      "metal": 10,
+      "nvidia": 8
+    },
+    "conda": {
+      "osx-arm64": {
+        "status": "passed",
+        "artifact": "usd-mojo-0.2.0-mojo110_17.conda",
+        "sha256": "9dbaa02d308f736bebf3969131750241fe6367dfcc4108b7ce5110af90e9524d",
+        "source_commit": "1d5240ad8e05590750191f7d59cf2c1623867dec",
+        "source_sha256": "98aca91ec505b9916674704612c4c921970d1a8b2996b818b39e5cb91d9cbc0b",
+        "installed_tests": "passed",
+        "privacy_scan": "passed",
+        "fresh_environment": true,
+        "package_cache": "shared",
+        "release_receipt_sha256": "32379d74b390145aaa14ebad0e51cbf80b18f096e7fb40583e236d43964985a6",
+        "installed_receipt_sha256": "fde20dffec0412963cc50de1becb9cd50688333496a09dec7d82fafa5c9e5801"
+      },
+      "linux-64": {
+        "status": "passed",
+        "artifact": "usd-mojo-0.2.0-mojo110_17.conda",
+        "sha256": "e7b3c83bbb4dac0e01235ecf5bb53d71cc927fb3706db15398148f3a925afeaf",
+        "source_commit": "1d5240ad8e05590750191f7d59cf2c1623867dec",
+        "source_sha256": "98aca91ec505b9916674704612c4c921970d1a8b2996b818b39e5cb91d9cbc0b",
+        "installed_tests": "passed",
+        "privacy_scan": "passed",
+        "fresh_environment": true,
+        "package_cache": "shared",
+        "release_receipt_sha256": "9fa6895d804b438f01e0544ee059da09829c059eb6a02224c376156e94792d5f",
+        "installed_receipt_sha256": "d5b5aaf0721ba4bdf26d6c7bb51f4be29193253a9185340dd15b572e9533f888"
+      }
+    },
+    "catalog": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "registered_names": 172,
+        "concrete_roundtrips": 170,
+        "persisted_sample_comparisons": 5100,
+        "formats": [
+          "usda",
+          "usdc",
+          "usdz"
+        ],
+        "marker_types": [
+          "group",
+          "opaque"
+        ],
+        "schema_definitions": 138
+      }
+    },
+    "splines": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "status": "passed",
+        "sdk_samples": 528,
+        "typed_roundtrips": [
+          "double",
+          "float",
+          "half",
+          "timecode"
+        ],
+        "hermite_analytic": true
+      }
+    },
+    "vtarray": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "sdk_storage_sharing": {
+          "low_composed": false,
+          "low_usdc": false,
+          "high_usdc": true
+        },
+        "lifetime": {
+          "low": {
+            "points": 3,
+            "source_edit_and_close": "passed",
+            "oracle_released_before_native_open": true,
+            "retained_components_sha256": "d8b87038ed2ace74ed183166f6b0a541eab77f7184d50e65edc4bca5ccb5445a",
+            "source_file_unchanged": true
+          },
+          "high": {
+            "points": 300000,
+            "source_edit_and_close": "passed",
+            "oracle_released_before_native_open": true,
+            "retained_components_sha256": "df7ea1b2dc63b43606005152a7bbe2282646bf4012aa425a1cf30035d3f455ad",
+            "source_file_unchanged": true
+          }
+        }
+      }
+    },
+    "compound_pipeline": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "status": "passed",
+        "nested_reference_offsets": true,
+        "variants_payloads_inherits_overrides": true,
+        "face_varying_uv_normals": true,
+        "animated_point_components": 54,
+        "weaker_files_unchanged": true,
+        "formats": [
+          "usda",
+          "usdc",
+          "usdz"
+        ]
+      }
+    },
+    "skinning": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "status": "passed",
+        "neutral_and_animated_cases": [
+          "rest",
+          "joints",
+          "order_only",
+          "blocked",
+          "zero",
+          "active",
+          "sparse",
+          "empty",
+          "sampled",
+          "sampled_default",
+          "blocked_sample"
+        ],
+        "invalid_weight_cases": [
+          "wrong_length",
+          "empty_mismatch",
+          "nan",
+          "infinity"
+        ],
+        "sdk_samples": 19,
+        "sdk_point_components": 171,
+        "source_files_unchanged": true
+      }
+    },
+    "render_sessions": "020-render-session.json",
+    "materialx": "020-materialx.json",
+    "linux": "020-linux.json",
+    "release_gate": "passed",
+    "pending": []
+  },
+  "previous_qualification_record": "https://github.com/henlamp/usd-mojo/blob/8701fff468dd323b1d1490b550ce8e49145b6ed0/docs/evidence/020-candidate.json"
+}

@@ -1,8 +1,13 @@
 # usd-mojo compiled package
 
 This archive contains a compiler/platform-specific Mojo module and the native
-OpenUSD bridge. It is consumed by another Mojo project; it has no physics engine
-or renderer dependency.
+OpenUSD bridge. The core archive has no physics engine or renderer dependency.
+Archives with the `-imaging` suffix add the optional Hydra library; link them
+with `compile.py --imaging` to use `usd_mojo.imaging`.
+Archives with `-materialx` add `usd_mojo.materialx`;
+use `compile.py --materialx --materialx-prefix PATH` with MaterialX 1.39.5.
+Hydra MaterialX archives additionally require their matching `--sdk-prefix`;
+the optional SDK's source/patch identity is checked before compilation.
 
 Activate the matching Mojo/OpenUSD environment, unpack the package as
 `vendor/usd-mojo`, and compile a program in your project:
@@ -17,7 +22,7 @@ To provision dependencies, use the pinned Pixi environment from the
 bundle OpenUSD or the compiler. Their exact versions and the platform are in
 `manifest.json`. A custom SDK prefix can be passed with `--sdk-prefix` or
 `USD_MOJO_SDK_PREFIX`; otherwise the active Python environment supplies it.
-The current SDK also requires its matching CPython shared library.
+The Conda SDK requires its matching CPython shared library.
 
 The helper rejects compiler/platform/SDK mismatches and modified components.
 Executables and packages can relocate together; the matching external SDK must

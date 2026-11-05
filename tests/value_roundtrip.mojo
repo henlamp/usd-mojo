@@ -51,7 +51,8 @@ def main() raises:
         assert_equal(copied.unsigned_integers, value.unsigned_integers)
         assert_equal(copied.texts, value.texts)
         count += 1
-    assert_equal(count, 93)
+    assert_equal(count, 96)
+    rejects(output, Value.text("pathExpression", [String("/World(")]))
     rejects(
         output,
         Value.signed("int", List[Int64](length=1, fill=Int64(2147483648))),

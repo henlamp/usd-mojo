@@ -1,5 +1,6 @@
 """Semantic composition, time, ownership and save/export acceptance."""
 from std.sys import argv
+from usd_mojo._sdk_pin import EXPECTED_SDK_VERSION
 from std.testing import assert_equal, assert_true
 from usd_mojo import MeshData, Stage, TimeCode, sdk_version
 
@@ -14,7 +15,7 @@ def main() raises:
     var args = argv()
     var stage = Stage(args[1])
     var path = String("/World/Robot/Triangle")
-    assert_equal(sdk_version(), 2608)
+    assert_equal(sdk_version(), EXPECTED_SDK_VERSION)
     assert_equal(stage.up_axis(), String("Z"))
     assert_equal(stage.meters_per_unit(), Float64(1))
     assert_equal(stage.time_codes_per_second(), Float64(60))
