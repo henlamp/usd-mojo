@@ -1,0 +1,289 @@
+{
+  "version": "0.2.0",
+  "release_published": false,
+  "api": {
+    "status": "passed",
+    "public_exports": 119,
+    "public_declarations": 528
+  },
+  "required_checks": [
+    "sdk",
+    "hardening",
+    "applications",
+    "workloads",
+    "release_gate_tests",
+    "native_benchmark",
+    "sdk_benchmark",
+    "scene_handoff_benchmark",
+    "mutation_array_benchmark",
+    "package"
+  ],
+  "limits": [
+    "Marker types group/opaque have no generic component representation; arbitrary plugin types remain capability-reported.",
+    "MaterialX rendering uses a separately built, source/patch-pinned SDK. Bounded cases do not establish every BSDF, asset or unbounded production stability.",
+    "NVIDIA qualification covers the recorded WSLg/D3D12 stack, basic Hydra sessions and bounded MaterialX surfaces. Direct MaterialX texture-space readback remains Metal-only."
+  ],
+  "current": {
+    "status": "macos_qualified_linux_pending",
+    "source_sha256": "970956f81913a92aba66f3ba1c28f13a3300c67ebac9ba8b76b82a32453a1d25",
+    "checked_on": "2026-11-05",
+    "native_library_lines_removed_net": 481,
+    "type_layouts": 32,
+    "catalog_entries_unchanged": 172,
+    "c_abi_exports_unchanged": 200,
+    "public_api_unchanged": true,
+    "macos_acceptance_sha256": {
+      "Mojo 1.1.0 (8189361e)": "2fde1213e7be6c5ba200c7eebdcb7e73724e2cbb4e876bdc7fe92f936ca0fc8f",
+      "Mojo 1.2.0.dev2026100905 (3b71af75)": "f890359d52fc2cac12b52c59240caf802acabc7869a5c7fe254b5912fe3924a2"
+    },
+    "macos_cpu_blocks_passed": 20,
+    "metal_checks_passed": 10,
+    "metal_receipts_sha256": "9cd05f5b20cd54b1f41fb03f3b9a7e04626128a479ce4ce5f4b3b90fc4f8b088",
+    "installed_three_library_consumer_sha256": "d685d17cad6dfd04aa351b47555b96d6425395c16a399209d90ae814917b4a7a",
+    "invalid_registry_width_and_channel_rejected": true,
+    "registry_mutations_receipt_sha256": "ed6bf19fc4804d793c6ddfcee5cd7b0faa0afd1103ef12246158194ff7648125",
+    "catalog_and_c_abi_receipt_sha256": "c502bc731d2d198706786dd54f72a0653ae926f642cbc06baff25d65033cc2ce",
+    "pending": [
+      "Linux x86-64 acceptance with both compilers",
+      "NVIDIA rendering",
+      "Conda rebuild and fresh Pixi installation"
+    ],
+    "asymmetric_matrix_arrays_receipt_sha256": "e16caa6df3f5aa5b539d91d16345a2fd618bdc151bff437926a0415dbcf25876"
+  },
+  "previous_full_qualification": {
+    "status": "historical_native_cpu_and_packages_qualified",
+    "checked_on": "2026-11-05",
+    "source_commit": "417ddb019f0c3953c00f2aaf323af07860bee594",
+    "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+    "openusd": "26.08",
+    "native_acceptance": [
+      {
+        "system": "darwin",
+        "platform": "macOS-27.2-arm64-arm-64bit",
+        "compiler": "Mojo 1.1.0 (8189361e)",
+        "completed": true,
+        "checks_passed": 10,
+        "receipt_sha256": "5bd137420049ce5ab94e4f9b2b75188c47903aa0955f690795333a07235c297f",
+        "external_corpus_checked": true
+      },
+      {
+        "system": "darwin",
+        "platform": "macOS-27.2-arm64-arm-64bit",
+        "compiler": "Mojo 1.2.0.dev2026100905 (3b71af75)",
+        "completed": true,
+        "checks_passed": 10,
+        "receipt_sha256": "d496e9e7c565621d20349e2767afbbd70ead0a78dbc53622c9f1f1155ab70074",
+        "external_corpus_checked": true
+      },
+      {
+        "system": "linux",
+        "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+        "compiler": "Mojo 1.1.0 (8189361e)",
+        "completed": true,
+        "checks_passed": 10,
+        "receipt_sha256": "4a76609447851926839235d15af08f4c0a3a9684dfd835ff6512ed98ee9341d9",
+        "external_corpus_checked": true
+      },
+      {
+        "system": "linux",
+        "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+        "compiler": "Mojo 1.2.0.dev2026100905 (3b71af75)",
+        "completed": true,
+        "checks_passed": 10,
+        "receipt_sha256": "b85537e28fded806ac7c5e6f3a287b58d4ec5bea82dc2a1949afd897e4f9fb70",
+        "external_corpus_checked": true
+      }
+    ],
+    "render_sessions": "020-render-session.json",
+    "materialx": "020-materialx.json",
+    "linux": "020-linux.json",
+    "update_rehearsal": "020-update.json",
+    "vtarray": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "sdk_storage_sharing": {
+          "low_composed": false,
+          "low_usdc": false,
+          "high_usdc": true
+        },
+        "lifetime": {
+          "low": {
+            "points": 3,
+            "source_edit_and_close": "passed",
+            "oracle_released_before_native_open": true,
+            "retained_components_sha256": "d8b87038ed2ace74ed183166f6b0a541eab77f7184d50e65edc4bca5ccb5445a",
+            "source_file_unchanged": true
+          },
+          "high": {
+            "points": 300000,
+            "source_edit_and_close": "passed",
+            "oracle_released_before_native_open": true,
+            "retained_components_sha256": "df7ea1b2dc63b43606005152a7bbe2282646bf4012aa425a1cf30035d3f455ad",
+            "source_file_unchanged": true
+          }
+        }
+      }
+    },
+    "catalog": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "registered_names": 172,
+        "concrete_roundtrips": 170,
+        "non_default_animated_types": 170,
+        "persisted_sample_comparisons": 5100,
+        "formats": [
+          "usda",
+          "usdc",
+          "usdz"
+        ],
+        "marker_types": [
+          "group",
+          "opaque"
+        ],
+        "schema_definitions": 138
+      }
+    },
+    "splines": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "status": "passed",
+        "sdk_samples": 528,
+        "typed_roundtrips": [
+          "double",
+          "float",
+          "half",
+          "timecode"
+        ],
+        "hermite_analytic": true
+      }
+    },
+    "compound_pipeline": {
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "status": "passed",
+        "nested_reference_offsets": true,
+        "variants_payloads_inherits_overrides": true,
+        "face_varying_uv_normals": true,
+        "animated_point_components": 54,
+        "weaker_files_unchanged": true,
+        "formats": [
+          "usda",
+          "usdc",
+          "usdz"
+        ]
+      }
+    },
+    "conda": {
+      "osx-arm64": {
+        "status": "passed",
+        "artifact": "usd-mojo-0.2.0-mojo110_16.conda",
+        "sha256": "632125f4322c4bc4227a18c72d3a7fbfd1c6b279846dada70cb4a34d5afc13e5",
+        "source_commit": "417ddb019f0c3953c00f2aaf323af07860bee594",
+        "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+        "installed_tests": "passed",
+        "privacy_scan": "passed",
+        "fresh_environment": true,
+        "package_cache": "shared",
+        "release_receipt_sha256": "7ae3b7794a64c0bd90db59b3084e782fdb4ace12197b7b6d0dd71ba2d8735d70",
+        "installed_receipt_sha256": "342825b298cd371cfd662c12921a685be866ce23b195ebde431f9991cf86e825"
+      },
+      "linux-64": {
+        "status": "passed",
+        "artifact": "usd-mojo-0.2.0-mojo110_16.conda",
+        "sha256": "ac799a626dbc079aa48349c50d3479b72982fe791189a31a121319bc448189de",
+        "source_commit": "417ddb019f0c3953c00f2aaf323af07860bee594",
+        "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+        "installed_tests": "passed",
+        "privacy_scan": "passed",
+        "fresh_environment": true,
+        "package_cache": "shared",
+        "release_receipt_sha256": "e9557878ce59685c714c10394fcfe8f3d48dd6ba53db6dfb1d1f0548b9dabcfc",
+        "installed_receipt_sha256": "9b74a78338a53097f4f499329385f6f099686584e1c1288bc280d0e7a53fe822"
+      }
+    },
+    "update_workflow": {
+      "local_proposal_and_patch_tests": 6,
+      "installed_launcher_and_cache_tests": 6,
+      "local_rehearsal": "020-update.json",
+      "dispatched": false,
+      "scheduled": false,
+      "published": false,
+      "rehearsal_source_sha256": "90dc9cd566c98a2e26dadba9dd8eba472826e9faa58c7b9a00c9f57035af6282"
+    },
+    "nvidia_hydra": {
+      "status": "passed",
+      "record": "020-linux.json",
+      "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+      "renderer": "D3D12 (NVIDIA GeForce RTX 3070)",
+      "opengl": "4.6 (Compatibility Profile) Mesa 25.0.7 - kisak-mesa PPA",
+      "caller_context": "built-in registered SDK shared context helper"
+    },
+    "nvidia_materialx": {
+      "status": "passed",
+      "record": "020-materialx.json",
+      "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+      "compiler_runs": 2,
+      "installed_consumers": "passed",
+      "independent_shader_oracle": "passed",
+      "missing_texture_rejected": true
+    },
+    "review_fixes": {
+      "status": "passed",
+      "record": "020-error-and-render-contract.json"
+    },
+    "skinning": {
+      "neutral_and_animated_cases": [
+        "rest",
+        "joints",
+        "order_only",
+        "blocked",
+        "zero",
+        "active",
+        "sparse",
+        "empty",
+        "sampled",
+        "sampled_default",
+        "blocked_sample"
+      ],
+      "invalid_weight_cases": [
+        "wrong_length",
+        "empty_mismatch",
+        "nan",
+        "infinity"
+      ],
+      "configurations": [
+        "macos-default",
+        "macos-nightly",
+        "linux-default",
+        "linux-nightly"
+      ],
+      "results": {
+        "status": "passed",
+        "sdk_samples": 19,
+        "sdk_point_components": 171,
+        "source_files_unchanged": true
+      }
+    }
+  },
+  "previous_refactoring_record": "https://github.com/henlamp/usd-mojo/blob/fb422903db29d8eddfd7c84ee4859b8c39d4429f/docs/evidence/020-candidate.json"
+}

@@ -19,7 +19,7 @@ def source_hash(root: Path):
             for p in (root / component).rglob("*")
             if p.is_file()
             and p.suffix
-            in {".mojo", ".cpp", ".py", ".usda", ".toml", ".txt", ".h", ".json"}
+            in {".mojo", ".cpp", ".py", ".usda", ".toml", ".txt", ".h", ".json", ".inc", ".mtlx", ".mm", ".patch"}
         )
     result = hashlib.sha256()
     for path in sorted(sources):

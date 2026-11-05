@@ -1,0 +1,263 @@
+{
+  "status": "passed",
+  "checked_on": "2026-11-05",
+  "source_commit": "417ddb019f0c3953c00f2aaf323af07860bee594",
+  "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+  "frame_names": [
+    "base",
+    "animated",
+    "color",
+    "camera",
+    "removed",
+    "restored",
+    "clipped",
+    "clip_moved",
+    "clip_rotated",
+    "clip_cleared",
+    "mesh_before",
+    "mesh_after"
+  ],
+  "width": 96,
+  "height": 64,
+  "preview": "020-render-session.png",
+  "observations": {
+    "completed": true,
+    "platform": "macOS-27.2-arm64-arm-64bit",
+    "rendering": {
+      "backend": "Hydra/HdStormRendererPlugin/Metal",
+      "hgi_api": "Metal",
+      "renderer_plugin": "HdStormRendererPlugin"
+    },
+    "native_boundaries": [
+      "legacy-image-abi",
+      "stage-owner-retained",
+      "read-before-render-rejected",
+      "wrong-extents-and-null-preserve-output",
+      "thread-affinity",
+      "failed-render-invalidates-readback",
+      "image-outlives-session",
+      "typed-error-contract"
+    ],
+    "width": 96,
+    "height": 64,
+    "frames": {
+      "base": {
+        "foreground_pixels": 1260,
+        "x_bounds": [11, 45],
+        "expected_x_bounds": [10.666666666666664, 46.54545454545455],
+        "dominant_rgb": 0
+      },
+      "animated": {
+        "foreground_pixels": 1260,
+        "x_bounds": [50, 84],
+        "expected_x_bounds": [49.45454545454545, 85.33333333333334],
+        "dominant_rgb": 0
+      },
+      "color": {
+        "foreground_pixels": 1260,
+        "x_bounds": [50, 84],
+        "expected_x_bounds": [49.45454545454545, 85.33333333333334],
+        "dominant_rgb": 1
+      },
+      "camera": {
+        "foreground_pixels": 1260,
+        "x_bounds": [34, 68],
+        "expected_x_bounds": [33.77777777777778, 69.33333333333334],
+        "dominant_rgb": 1
+      },
+      "restored": {
+        "foreground_pixels": 1292,
+        "x_bounds": [30, 65],
+        "expected_x_bounds": [30.22222222222222, 65.77777777777777],
+        "dominant_rgb": 2
+      },
+      "mesh_before": {
+        "foreground_pixels": 992,
+        "x_bounds": [15, 45],
+        "expected_x_bounds": [14.399999999999999, 46.4],
+        "dominant_rgb": 0
+      },
+      "mesh_after": {
+        "foreground_pixels": 992,
+        "x_bounds": [50, 80],
+        "expected_x_bounds": [49.6, 81.6],
+        "dominant_rgb": 0
+      },
+      "clip_cleared": {
+        "foreground_pixels": 1292,
+        "x_bounds": [30, 65],
+        "expected_x_bounds": [30.22222222222222, 65.77777777777777],
+        "dominant_rgb": 2
+      },
+      "clipped": {
+        "foreground_pixels": 646,
+        "x_bounds": [48, 65],
+        "y_bounds": [14, 49],
+        "expected_right": 65.77777777777777
+      },
+      "clip_moved": {
+        "foreground_pixels": 324,
+        "x_bounds": [48, 56],
+        "y_bounds": [14, 49],
+        "expected_right": 56.888888888888886
+      },
+      "clip_rotated": {
+        "foreground_pixels": 646,
+        "x_bounds": [48, 65],
+        "y_bounds": [14, 49],
+        "expected_right": 65.77777777777777
+      },
+      "timed_camera_centroids": {
+        "retained": [47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0],
+        "new": [47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0]
+      }
+    },
+    "installed_consumer": "passed",
+    "source_scene_unchanged": true,
+    "scope": "Moving-camera frames with warm caches; render-call CPU time and synchronized readback, not GPU timestamps.",
+    "one_shot_backend": "Hydra/HdStormRendererPlugin/Metal",
+    "sequence_png_sha256": "89be59cf77475adab2cc84d7b5c1fd0a857d15f1bd862b61a6963bd58e906c64"
+  },
+  "compilers": {
+    "Mojo 1.1.0 (8189361e)": {
+      "timing_ns": {
+        "retained": [
+          [124000, 254000, 378000],
+          [180000, 267000, 447000],
+          [161000, 289000, 450000],
+          [133000, 260000, 393000],
+          [132000, 240000, 372000],
+          [116000, 310000, 426000],
+          [118000, 238000, 356000],
+          [149000, 295000, 444000],
+          [137000, 240000, 377000],
+          [158000, 287000, 445000],
+          [147000, 244000, 391000],
+          [191000, 311000, 502000],
+          [148000, 290000, 438000],
+          [137000, 220000, 357000],
+          [134000, 262000, 396000],
+          [126000, 263000, 389000],
+          [130000, 307000, 437000],
+          [141000, 270000, 411000],
+          [195000, 267000, 462000],
+          [153000, 267000, 420000],
+          [126000, 279000, 405000],
+          [122000, 283000, 405000],
+          [145000, 283000, 428000],
+          [120000, 285000, 405000],
+          [135000, 340000, 475000],
+          [316000, 627000, 943000],
+          [216000, 364000, 580000],
+          [464000, 260000, 724000],
+          [221000, 326000, 547000],
+          [236000, 286000, 522000]
+        ],
+        "new": [
+          [5847000, 754000, 9638000, 3037000],
+          [5453000, 778000, 7378000, 1147000],
+          [5540000, 751000, 7486000, 1195000],
+          [5425000, 789000, 7286000, 1072000],
+          [6113000, 919000, 8023000, 991000],
+          [6870000, 986000, 12046000, 4190000],
+          [5455000, 888000, 8003000, 1660000],
+          [6515000, 818000, 9133000, 1800000],
+          [5290000, 723000, 7683000, 1670000],
+          [5320000, 805000, 7189000, 1064000]
+        ]
+      },
+      "memory_bytes": [97779712, 97976320, 10779056, 9990800],
+      "median_retained_render_readback_ns": 427000.0,
+      "median_new_session_render_readback_ns": 7843000.0,
+      "receipt_sha256": "c47cde665b80ce15f165754573b8c696a5f17f481beecec01aaf516188a346d4",
+      "one_shot_receipt_sha256": "16ad423d9088c62d99c6157118eaa070a167747dfa09e41e6124c18a659ef854"
+    },
+    "Mojo 1.2.0.dev2026100905 (3b71af75)": {
+      "timing_ns": {
+        "retained": [
+          [156000, 358000, 514000],
+          [182000, 294000, 476000],
+          [161000, 292000, 453000],
+          [139000, 311000, 450000],
+          [133000, 235000, 368000],
+          [125000, 189000, 314000],
+          [123000, 217000, 340000],
+          [116000, 304000, 420000],
+          [156000, 259000, 415000],
+          [132000, 278000, 410000],
+          [134000, 251000, 385000],
+          [152000, 268000, 420000],
+          [155000, 277000, 432000],
+          [133000, 324000, 457000],
+          [139000, 290000, 429000],
+          [138000, 278000, 416000],
+          [140000, 295000, 435000],
+          [140000, 250000, 390000],
+          [139000, 315000, 454000],
+          [127000, 222000, 349000],
+          [118000, 195000, 313000],
+          [113000, 191000, 304000],
+          [125000, 202000, 327000],
+          [146000, 284000, 430000],
+          [138000, 279000, 417000],
+          [136000, 261000, 397000],
+          [123000, 237000, 360000],
+          [151000, 241000, 392000],
+          [156000, 270000, 426000],
+          [124000, 276000, 400000]
+        ],
+        "new": [
+          [13378000, 818000, 16628000, 2432000],
+          [12768000, 753000, 18642000, 5121000],
+          [12863000, 688000, 15689000, 2138000],
+          [12953000, 693000, 18724000, 5078000],
+          [13611000, 682000, 16466000, 2173000],
+          [20373000, 766000, 26534000, 5395000],
+          [20692000, 1031000, 24721000, 2998000],
+          [21064000, 827000, 27092000, 5201000],
+          [21106000, 763000, 25270000, 3401000],
+          [20817000, 1068000, 28241000, 6356000]
+        ]
+      },
+      "memory_bytes": [97419264, 97484800, 10627952, 9839696],
+      "median_retained_render_readback_ns": 415500.0,
+      "median_new_session_render_readback_ns": 21722500.0,
+      "receipt_sha256": "8304d92a8113c07cc886da6e797ff9fb0fd36698a7ca9aaece12f68bb2783877",
+      "one_shot_receipt_sha256": "16ad423d9088c62d99c6157118eaa070a167747dfa09e41e6124c18a659ef854"
+    }
+  },
+  "timing_columns": {
+    "retained": [
+      "render_call_ns",
+      "readback_ns",
+      "render_readback_ns"
+    ],
+    "new": [
+      "render_call_ns",
+      "readback_ns",
+      "creation_render_readback_ns",
+      "creation_ns"
+    ]
+  },
+  "limits": [
+    "CPU wall timings include synchronization in readback, not GPU timestamps.",
+    "Both timing paths alternate the same camera positions; warm process/driver caches, small generated scene.",
+    "No direct window presentation, shared GPU texture, NVIDIA or Linux imaging qualification.",
+    "RSS/default allocator sampling is bounded, not a GPU-heap or unbounded-lifetime guarantee."
+  ],
+  "hardware": {
+    "cpu": "Apple M4 Pro",
+    "physical_memory_bytes": 25769803776
+  },
+  "camera": "SDK scene camera with vertical viewport fit; clipping in camera space, including removal and camera changes",
+  "nvidia_wslg": {
+    "status": "passed",
+    "record": "020-linux.json",
+    "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+    "context_helper": {
+      "source": "tests/imaging_context.cpp",
+      "selector": "USD_MOJO_TEST_GL_CONTEXT=1",
+      "external_harness": false
+    }
+  }
+}

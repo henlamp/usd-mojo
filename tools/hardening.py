@@ -10,10 +10,8 @@ import platform
 import struct
 import subprocess
 
-from build import BUILD, ROOT, build
-from check import require_compile
+from build import BUILD, ROOT, build, lifetime_metrics, require_compile
 from evidence import SCOPE, source_hash
-from link import linker_flags
 
 
 def main():
@@ -52,35 +50,20 @@ def main():
     binary = directory / "stress"
     require_compile(ROOT / "tests/stress.mojo", binary, ROOT / "src")
     subprocess.run([str(binary), str(large), str(nul)], check=True, timeout=180)
-    metrics = directory / "lifetime_metrics.o"
+    metrics = lifetime_metrics(directory)
+    for name, filename in (
+        ("expansion-lifetime", "expansion_lifetime.mojo"),
+        ("lifetime", "lifetime.mojo"),
+    ):
+        require_compile(
+            ROOT / "tests" / filename, directory / name, ROOT / "src",
+            extra_flags=("-Xlinker", str(metrics)),
+        )
     subprocess.run(
-        [
-            "c++",
-            "-std=c++17",
-            "-c",
-            str(ROOT / "tests/lifetime_metrics.cpp"),
-            "-o",
-            str(metrics),
-        ],
-        check=True,
+        [str(directory / "expansion-lifetime"), str(ROOT / "conda.recipe/scene.usda")],
+        check=True, timeout=120,
     )
     worker = directory / "lifetime"
-    subprocess.run(
-        [
-            "mojo",
-            "build",
-            "--Werror",
-            "-I",
-            str(ROOT / "src"),
-            *linker_flags(BUILD / "native"),
-            "-Xlinker",
-            str(metrics),
-            str(ROOT / "tests/lifetime.mojo"),
-            "-o",
-            str(worker),
-        ],
-        check=True,
-    )
     process = subprocess.run(
         [str(worker), "stress", str(small)],
         text=True,

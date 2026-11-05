@@ -1,0 +1,747 @@
+{
+  "api_version": "0.1",
+  "exports": [
+    "AssetPathData",
+    "BodyData",
+    "CameraData",
+    "DriveData",
+    "JointData",
+    "MassData",
+    "MaterialData",
+    "MeshData",
+    "MeshSnapshot",
+    "PrimInfo",
+    "PrimvarData",
+    "PrimvarInfo",
+    "Quaternion",
+    "Stage",
+    "StageInfo",
+    "TimeCode",
+    "TransformData",
+    "UsdError",
+    "UsdErrorKind",
+    "Value",
+    "Vector3",
+    "read_body",
+    "read_camera",
+    "read_drive",
+    "read_joint",
+    "read_mass",
+    "read_material",
+    "read_normals",
+    "read_primvar",
+    "sdk_version"
+  ],
+  "declarations": {
+    "errors.UsdError": [
+      "@fieldwise_init struct UsdError(Copyable, Writable)"
+    ],
+    "errors.UsdError.kind": [
+      "var kind: UsdErrorKind"
+    ],
+    "errors.UsdError.message": [
+      "var message: String"
+    ],
+    "errors.UsdError.write_to": [
+      "def write_to(self, mut writer: Some[Writer])"
+    ],
+    "errors.UsdErrorKind": [
+      "@fieldwise_init struct UsdErrorKind(Equatable, ImplicitlyCopyable, Writable)"
+    ],
+    "errors.UsdErrorKind.code": [
+      "def code(self) -> Int"
+    ],
+    "errors.UsdErrorKind.incompatible": [
+      "comptime incompatible = Self(8)"
+    ],
+    "errors.UsdErrorKind.internal": [
+      "comptime internal = Self(9)"
+    ],
+    "errors.UsdErrorKind.invalid_argument": [
+      "comptime invalid_argument = Self(1)"
+    ],
+    "errors.UsdErrorKind.invalid_data": [
+      "comptime invalid_data = Self(5)"
+    ],
+    "errors.UsdErrorKind.io": [
+      "comptime io = Self(6)"
+    ],
+    "errors.UsdErrorKind.not_found": [
+      "comptime not_found = Self(2)"
+    ],
+    "errors.UsdErrorKind.resource": [
+      "comptime resource = Self(10)"
+    ],
+    "errors.UsdErrorKind.sdk": [
+      "comptime sdk = Self(7)"
+    ],
+    "errors.UsdErrorKind.type_mismatch": [
+      "comptime type_mismatch = Self(3)"
+    ],
+    "errors.UsdErrorKind.unsupported": [
+      "comptime unsupported = Self(4)"
+    ],
+    "errors.UsdErrorKind.write_to": [
+      "def write_to(self, mut writer: Some[Writer])"
+    ],
+    "graphics.CameraData": [
+      "@fieldwise_init struct CameraData(Copyable)"
+    ],
+    "graphics.CameraData.clipping_range": [
+      "var clipping_range: List[Float64]"
+    ],
+    "graphics.CameraData.f_stop": [
+      "var f_stop: Float64"
+    ],
+    "graphics.CameraData.focal_length": [
+      "var focal_length: Float64"
+    ],
+    "graphics.CameraData.focus_distance": [
+      "var focus_distance: Float64"
+    ],
+    "graphics.CameraData.horizontal_aperture": [
+      "var horizontal_aperture: Float64"
+    ],
+    "graphics.CameraData.horizontal_aperture_offset": [
+      "var horizontal_aperture_offset: Float64"
+    ],
+    "graphics.CameraData.projection": [
+      "var projection: String"
+    ],
+    "graphics.CameraData.vertical_aperture": [
+      "var vertical_aperture: Float64"
+    ],
+    "graphics.CameraData.vertical_aperture_offset": [
+      "var vertical_aperture_offset: Float64"
+    ],
+    "graphics.CameraData.world_matrix": [
+      "var world_matrix: List[Float64]"
+    ],
+    "graphics.PrimvarData": [
+      "@fieldwise_init struct PrimvarData(Copyable)"
+    ],
+    "graphics.PrimvarData.element_size": [
+      "var element_size: Int"
+    ],
+    "graphics.PrimvarData.indices": [
+      "var indices: List[Int32]"
+    ],
+    "graphics.PrimvarData.interpolation": [
+      "var interpolation: String"
+    ],
+    "graphics.PrimvarData.unauthored_values_index": [
+      "var unauthored_values_index: Int"
+    ],
+    "graphics.PrimvarData.values": [
+      "var values: Value"
+    ],
+    "graphics.read_camera": [
+      "def read_camera( stage: Stage, path: String, time: TimeCode = .default ) raises UsdError -> CameraData"
+    ],
+    "graphics.read_normals": [
+      "def read_normals( stage: Stage, path: String, time: TimeCode = .default ) raises UsdError -> PrimvarData"
+    ],
+    "graphics.read_primvar": [
+      "def read_primvar( stage: Stage, path: String, name: String, time: TimeCode = .default ) raises UsdError -> PrimvarData"
+    ],
+    "information.AssetPathData": [
+      "@fieldwise_init struct AssetPathData(Copyable)"
+    ],
+    "information.AssetPathData.authored": [
+      "var authored: String"
+    ],
+    "information.AssetPathData.evaluated": [
+      "var evaluated: String"
+    ],
+    "information.AssetPathData.resolved": [
+      "var resolved: String"
+    ],
+    "information.PrimInfo": [
+      "@fieldwise_init struct PrimInfo(Copyable)"
+    ],
+    "information.PrimInfo.abstract": [
+      "var abstract: Bool"
+    ],
+    "information.PrimInfo.active": [
+      "var active: Bool"
+    ],
+    "information.PrimInfo.defined": [
+      "var defined: Bool"
+    ],
+    "information.PrimInfo.has_payload": [
+      "var has_payload: Bool"
+    ],
+    "information.PrimInfo.instance": [
+      "var instance: Bool"
+    ],
+    "information.PrimInfo.instance_proxy": [
+      "var instance_proxy: Bool"
+    ],
+    "information.PrimInfo.loaded": [
+      "var loaded: Bool"
+    ],
+    "information.PrimInfo.prototype_path": [
+      "var prototype_path: String"
+    ],
+    "information.PrimInfo.type_name": [
+      "var type_name: String"
+    ],
+    "information.PrimvarInfo": [
+      "@fieldwise_init struct PrimvarInfo(Copyable)"
+    ],
+    "information.PrimvarInfo.element_size": [
+      "var element_size: Int"
+    ],
+    "information.PrimvarInfo.interpolation": [
+      "var interpolation: String"
+    ],
+    "information.PrimvarInfo.unauthored_values_index": [
+      "var unauthored_values_index: Int"
+    ],
+    "information.StageInfo": [
+      "@fieldwise_init struct StageInfo(ImplicitlyCopyable)"
+    ],
+    "information.StageInfo.end_time": [
+      "var end_time: Float64"
+    ],
+    "information.StageInfo.frames_per_second": [
+      "var frames_per_second: Float64"
+    ],
+    "information.StageInfo.has_authored_range": [
+      "var has_authored_range: Bool"
+    ],
+    "information.StageInfo.start_time": [
+      "var start_time: Float64"
+    ],
+    "information.StageInfo.time_codes_per_second": [
+      "var time_codes_per_second: Float64"
+    ],
+    "physics.BodyData": [
+      "@fieldwise_init struct BodyData(ImplicitlyCopyable)"
+    ],
+    "physics.BodyData.angular_velocity": [
+      "var angular_velocity: Vector3"
+    ],
+    "physics.BodyData.enabled": [
+      "var enabled: Bool"
+    ],
+    "physics.BodyData.kinematic": [
+      "var kinematic: Bool"
+    ],
+    "physics.BodyData.mass": [
+      "var mass: MassData"
+    ],
+    "physics.BodyData.velocity": [
+      "var velocity: Vector3"
+    ],
+    "physics.DriveData": [
+      "@fieldwise_init struct DriveData(Copyable)"
+    ],
+    "physics.DriveData.damping": [
+      "var damping: Float64"
+    ],
+    "physics.DriveData.enabled": [
+      "var enabled: Bool"
+    ],
+    "physics.DriveData.maximum_force": [
+      "var maximum_force: Float64"
+    ],
+    "physics.DriveData.mode": [
+      "var mode: String"
+    ],
+    "physics.DriveData.stiffness": [
+      "var stiffness: Float64"
+    ],
+    "physics.DriveData.target_position": [
+      "var target_position: Float64"
+    ],
+    "physics.DriveData.target_velocity": [
+      "var target_velocity: Float64"
+    ],
+    "physics.JointData": [
+      "@fieldwise_init struct JointData(Copyable)"
+    ],
+    "physics.JointData.axis": [
+      "var axis: String"
+    ],
+    "physics.JointData.body0": [
+      "var body0: String"
+    ],
+    "physics.JointData.body1": [
+      "var body1: String"
+    ],
+    "physics.JointData.collision_enabled": [
+      "var collision_enabled: Bool"
+    ],
+    "physics.JointData.drive": [
+      "var drive: DriveData"
+    ],
+    "physics.JointData.enabled": [
+      "var enabled: Bool"
+    ],
+    "physics.JointData.has_limits": [
+      "var has_limits: Bool"
+    ],
+    "physics.JointData.kind": [
+      "var kind: String"
+    ],
+    "physics.JointData.local_position0": [
+      "var local_position0: Vector3"
+    ],
+    "physics.JointData.local_position1": [
+      "var local_position1: Vector3"
+    ],
+    "physics.JointData.local_rotation0": [
+      "var local_rotation0: Quaternion"
+    ],
+    "physics.JointData.local_rotation1": [
+      "var local_rotation1: Quaternion"
+    ],
+    "physics.JointData.lower_limit": [
+      "var lower_limit: Float64"
+    ],
+    "physics.JointData.upper_limit": [
+      "var upper_limit: Float64"
+    ],
+    "physics.MassData": [
+      "@fieldwise_init struct MassData(ImplicitlyCopyable)"
+    ],
+    "physics.MassData.center_of_mass": [
+      "var center_of_mass: Vector3"
+    ],
+    "physics.MassData.density": [
+      "var density: Float64"
+    ],
+    "physics.MassData.diagonal_inertia": [
+      "var diagonal_inertia: Vector3"
+    ],
+    "physics.MassData.has_center_of_mass": [
+      "var has_center_of_mass: Bool"
+    ],
+    "physics.MassData.mass": [
+      "var mass: Float64"
+    ],
+    "physics.MassData.principal_axes": [
+      "var principal_axes: Quaternion"
+    ],
+    "physics.MaterialData": [
+      "@fieldwise_init struct MaterialData(Copyable)"
+    ],
+    "physics.MaterialData.density": [
+      "var density: Float64"
+    ],
+    "physics.MaterialData.dynamic_friction": [
+      "var dynamic_friction: Float64"
+    ],
+    "physics.MaterialData.path": [
+      "var path: String"
+    ],
+    "physics.MaterialData.restitution": [
+      "var restitution: Float64"
+    ],
+    "physics.MaterialData.specified": [
+      "var specified: Bool"
+    ],
+    "physics.MaterialData.static_friction": [
+      "var static_friction: Float64"
+    ],
+    "physics.read_body": [
+      "def read_body( stage: Stage, var path: String, time: TimeCode = .default ) raises UsdError -> BodyData"
+    ],
+    "physics.read_drive": [
+      "def read_drive( stage: Stage, var path: String, instance: String, time: TimeCode = .default ) raises UsdError -> DriveData"
+    ],
+    "physics.read_joint": [
+      "def read_joint( stage: Stage, var path: String, time: TimeCode = .default ) raises UsdError -> JointData"
+    ],
+    "physics.read_mass": [
+      "def read_mass( stage: Stage, var path: String, time: TimeCode = .default ) raises UsdError -> MassData"
+    ],
+    "physics.read_material": [
+      "def read_material( stage: Stage, var collider_path: String, time: TimeCode = .default ) raises UsdError -> MaterialData"
+    ],
+    "stage.MeshData": [
+      "@fieldwise_init struct MeshData(Copyable)"
+    ],
+    "stage.MeshData.face_count": [
+      "def face_count(self) -> Int"
+    ],
+    "stage.MeshData.face_vertex_counts": [
+      "var face_vertex_counts: List[Int32]"
+    ],
+    "stage.MeshData.face_vertex_indices": [
+      "var face_vertex_indices: List[Int32]"
+    ],
+    "stage.MeshData.point_count": [
+      "def point_count(self) -> Int"
+    ],
+    "stage.MeshData.points": [
+      "var points: List[Float32]"
+    ],
+    "stage.MeshSnapshot": [
+      "struct MeshSnapshot(Movable)"
+    ],
+    "stage.MeshSnapshot.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "stage.MeshSnapshot.__init__": [
+      "def __init__( out self, stage: Stage, path: String, time: TimeCode = .default ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)"
+    ],
+    "stage.MeshSnapshot.copy_into": [
+      "def copy_into( self, points: MutSpan[Float32, _], counts: MutSpan[Int32, _], indices: MutSpan[Int32, _], ) raises UsdError"
+    ],
+    "stage.MeshSnapshot.face_count": [
+      "def face_count(self) raises UsdError -> Int"
+    ],
+    "stage.MeshSnapshot.face_vertex_counts": [
+      "def face_vertex_counts( self, ) raises UsdError -> ImmSpan[Int32, origin_of(self)]"
+    ],
+    "stage.MeshSnapshot.face_vertex_indices": [
+      "def face_vertex_indices( self, ) raises UsdError -> ImmSpan[Int32, origin_of(self)]"
+    ],
+    "stage.MeshSnapshot.materialize": [
+      "def materialize(self) raises UsdError -> MeshData"
+    ],
+    "stage.MeshSnapshot.point_count": [
+      "def point_count(self) raises UsdError -> Int"
+    ],
+    "stage.MeshSnapshot.points": [
+      "def points(self) raises UsdError -> ImmSpan[Float32, origin_of(self)]"
+    ],
+    "stage.Stage": [
+      "struct Stage(Movable)"
+    ],
+    "stage.Stage.__deinit__": [
+      "def __deinit__(deinit self)"
+    ],
+    "stage.Stage.__init__": [
+      "def __init__( out self, var filename: String, *, create: Bool = False, load_payloads: Bool = True, ) raises UsdError",
+      "def __init__(out self, *, deinit move: Self)"
+    ],
+    "stage.Stage.add_payload": [
+      "def add_payload( mut self, path: String, asset: String, prim_path: String = \"\" ) raises UsdError"
+    ],
+    "stage.Stage.add_reference": [
+      "def add_reference( mut self, var path: String, var asset_path: String, var prim_path: String = \"\", offset: Float64 = 0, scale: Float64 = 1, ) raises UsdError"
+    ],
+    "stage.Stage.add_relationship_target": [
+      "def add_relationship_target( mut self, var path: String, var name: String, var target: String ) raises UsdError"
+    ],
+    "stage.Stage.add_sublayer": [
+      "def add_sublayer( mut self, var asset_path: String, offset: Float64 = 0, scale: Float64 = 1, ) raises UsdError"
+    ],
+    "stage.Stage.all_prim_paths": [
+      "def all_prim_paths(self) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.applied_schemas": [
+      "def applied_schemas(self, var path: String) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.apply_schema": [
+      "def apply_schema( mut self, var path: String, var schema: String, var instance: String = \"\", ) raises UsdError"
+    ],
+    "stage.Stage.asset_path": [
+      "def asset_path( self, path: String, name: String, time: TimeCode = .default, index: Int = 0, ) raises UsdError -> AssetPathData"
+    ],
+    "stage.Stage.attribute_names": [
+      "def attribute_names(self, var path: String) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.attribute_type": [
+      "def attribute_type( self, path: String, name: String ) raises UsdError -> String"
+    ],
+    "stage.Stage.clear_relationship_targets": [
+      "def clear_relationship_targets( mut self, var path: String, var name: String ) raises UsdError"
+    ],
+    "stage.Stage.closest_schema": [
+      "def closest_schema( self, var path: String, var schema: String ) raises UsdError -> String"
+    ],
+    "stage.Stage.composition_errors": [
+      "def composition_errors(self) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.connections": [
+      "def connections( self, path: String, name: String ) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.default_prim": [
+      "def default_prim(self) raises UsdError -> String"
+    ],
+    "stage.Stage.define_prim": [
+      "def define_prim( mut self, var path: String, var type_name: String = \"\" ) raises UsdError"
+    ],
+    "stage.Stage.edit_root": [
+      "def edit_root(mut self) raises UsdError"
+    ],
+    "stage.Stage.edit_variant": [
+      "def edit_variant( mut self, var path: String, var set_name: String ) raises UsdError"
+    ],
+    "stage.Stage.export": [
+      "def export(self, var filename: String) raises UsdError"
+    ],
+    "stage.Stage.has_attribute": [
+      "def has_attribute( self, var path: String, var name: String ) raises UsdError -> Bool"
+    ],
+    "stage.Stage.has_authored_value": [
+      "def has_authored_value( self, var path: String, var name: String ) raises UsdError -> Bool"
+    ],
+    "stage.Stage.has_schema": [
+      "def has_schema( self, var path: String, name: String ) raises UsdError -> Bool"
+    ],
+    "stage.Stage.instance_paths": [
+      "def instance_paths(self) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.interpolation": [
+      "def interpolation( self, var path: String, var name: String ) raises UsdError -> String"
+    ],
+    "stage.Stage.is_instance": [
+      "def is_instance(self, var path: String) raises UsdError -> Bool"
+    ],
+    "stage.Stage.kilograms_per_unit": [
+      "def kilograms_per_unit(self) raises UsdError -> Float64"
+    ],
+    "stage.Stage.layer_identifiers": [
+      "def layer_identifiers(self) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.loadable_paths": [
+      "def loadable_paths(self) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.loaded_paths": [
+      "def loaded_paths(self) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.material_path": [
+      "def material_path( self, var path: String, var purpose: String = \"\" ) raises UsdError -> String"
+    ],
+    "stage.Stage.mesh": [
+      "def mesh( self, var path: String, time: TimeCode = .default ) raises UsdError -> MeshData"
+    ],
+    "stage.Stage.mesh_snapshot": [
+      "def mesh_snapshot( self, path: String, time: TimeCode = .default ) raises UsdError -> MeshSnapshot"
+    ],
+    "stage.Stage.metadata_dictionary_keys": [
+      "def metadata_dictionary_keys( self, key: String, path: String = \"\", attribute: String = \"\", dictionary: String = \"\", ) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.metadata_names": [
+      "def metadata_names( self, path: String = \"\", attribute: String = \"\" ) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.meters_per_unit": [
+      "def meters_per_unit(self) raises UsdError -> Float64"
+    ],
+    "stage.Stage.normals_interpolation": [
+      "def normals_interpolation(self, path: String) raises UsdError -> String"
+    ],
+    "stage.Stage.physics_material_path": [
+      "def physics_material_path(self, var path: String) raises UsdError -> String"
+    ],
+    "stage.Stage.prim_info": [
+      "def prim_info(self, path: String) raises UsdError -> PrimInfo"
+    ],
+    "stage.Stage.prim_paths": [
+      "def prim_paths(self) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.prim_type": [
+      "def prim_type(self, var path: String) raises UsdError -> String"
+    ],
+    "stage.Stage.primvar_info": [
+      "def primvar_info( self, path: String, name: String ) raises UsdError -> PrimvarInfo"
+    ],
+    "stage.Stage.prototype_paths": [
+      "def prototype_paths(self) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.read_bool": [
+      "def read_bool( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> Bool"
+    ],
+    "stage.Stage.read_float": [
+      "def read_float( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> Float64"
+    ],
+    "stage.Stage.read_float_array": [
+      "def read_float_array( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> List[Float64]"
+    ],
+    "stage.Stage.read_int_array": [
+      "def read_int_array( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> List[Int32]"
+    ],
+    "stage.Stage.read_matrix4": [
+      "def read_matrix4( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> List[Float64]"
+    ],
+    "stage.Stage.read_metadata": [
+      "def read_metadata( self, key: String, path: String = \"\", attribute: String = \"\", dictionary: String = \"\", ) raises UsdError -> Value"
+    ],
+    "stage.Stage.read_quaternion": [
+      "def read_quaternion( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> Quaternion"
+    ],
+    "stage.Stage.read_text": [
+      "def read_text( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> String"
+    ],
+    "stage.Stage.read_value": [
+      "def read_value( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> Value"
+    ],
+    "stage.Stage.read_vector3": [
+      "def read_vector3( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> Vector3"
+    ],
+    "stage.Stage.read_vector3_array": [
+      "def read_vector3_array( self, var path: String, var name: String, time: TimeCode = .default ) raises UsdError -> List[Vector3]"
+    ],
+    "stage.Stage.relationship_names": [
+      "def relationship_names( self, var path: String ) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.relationship_targets": [
+      "def relationship_targets( self, var path: String, var name: String ) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.save": [
+      "def save(mut self) raises UsdError"
+    ],
+    "stage.Stage.select_variant": [
+      "def select_variant( mut self, var path: String, var set_name: String, var choice: String, create: Bool = False, ) raises UsdError"
+    ],
+    "stage.Stage.set_bool": [
+      "def set_bool( mut self, var path: String, var name: String, value: Bool, time: TimeCode = .default, ) raises UsdError"
+    ],
+    "stage.Stage.set_default_prim": [
+      "def set_default_prim(mut self, var path: String) raises UsdError"
+    ],
+    "stage.Stage.set_float": [
+      "def set_float( mut self, var path: String, var name: String, value: Float64, time: TimeCode = .default, ) raises UsdError"
+    ],
+    "stage.Stage.set_instanceable": [
+      "def set_instanceable(mut self, path: String, enabled: Bool) raises UsdError"
+    ],
+    "stage.Stage.set_payload_loaded": [
+      "def set_payload_loaded( mut self, path: String, loaded: Bool ) raises UsdError"
+    ],
+    "stage.Stage.set_text": [
+      "def set_text( mut self, var path: String, var name: String, var value: String, time: TimeCode = .default, ) raises UsdError"
+    ],
+    "stage.Stage.set_time_range": [
+      "def set_time_range( mut self, start: Float64, end: Float64, time_codes_per_second: Float64 = 24, frames_per_second: Float64 = 24, ) raises UsdError"
+    ],
+    "stage.Stage.set_value": [
+      "def set_value( mut self, var path: String, var name: String, value: Value, time: TimeCode = .default, ) raises UsdError"
+    ],
+    "stage.Stage.stage_info": [
+      "def stage_info(self) raises UsdError -> StageInfo"
+    ],
+    "stage.Stage.time_codes_per_second": [
+      "def time_codes_per_second(self) raises UsdError -> Float64"
+    ],
+    "stage.Stage.time_samples": [
+      "def time_samples( self, path: String, name: String ) raises UsdError -> List[Float64]"
+    ],
+    "stage.Stage.transform": [
+      "def transform( self, var path: String, time: TimeCode = .default ) raises UsdError -> TransformData"
+    ],
+    "stage.Stage.up_axis": [
+      "def up_axis(self) raises UsdError -> String"
+    ],
+    "stage.Stage.variant_names": [
+      "def variant_names( self, path: String, set_name: String ) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.variant_selection": [
+      "def variant_selection( self, path: String, set_name: String ) raises UsdError -> String"
+    ],
+    "stage.Stage.variant_sets": [
+      "def variant_sets(self, path: String) raises UsdError -> List[String]"
+    ],
+    "stage.Stage.world_transform": [
+      "def world_transform( self, var path: String, time: TimeCode = .default ) raises UsdError -> List[Float64]"
+    ],
+    "stage.TimeCode": [
+      "@fieldwise_init struct TimeCode(ImplicitlyCopyable)"
+    ],
+    "stage.TimeCode.at": [
+      "@staticmethod def at(value: Float64) raises UsdError -> Self"
+    ],
+    "stage.TimeCode.default": [
+      "comptime default = Self(0.0, True)"
+    ],
+    "stage.TimeCode.is_default": [
+      "var is_default: Bool"
+    ],
+    "stage.TimeCode.value": [
+      "var value: Float64"
+    ],
+    "stage.sdk_version": [
+      "def sdk_version() -> Int"
+    ],
+    "value.Value": [
+      "struct Value(Copyable)"
+    ],
+    "value.Value.__init__": [
+      "def __init__(out self, var type_name: String)"
+    ],
+    "value.Value.floating": [
+      "@staticmethod def floating(var type_name: String, var values: List[Float64]) -> Self"
+    ],
+    "value.Value.integers": [
+      "var integers: List[Int64]"
+    ],
+    "value.Value.numbers": [
+      "var numbers: List[Float64]"
+    ],
+    "value.Value.signed": [
+      "@staticmethod def signed(var type_name: String, var values: List[Int64]) -> Self"
+    ],
+    "value.Value.text": [
+      "@staticmethod def text(var type_name: String, var values: List[String]) -> Self"
+    ],
+    "value.Value.texts": [
+      "var texts: List[String]"
+    ],
+    "value.Value.type_name": [
+      "var type_name: String"
+    ],
+    "value.Value.unsigned": [
+      "@staticmethod def unsigned(var type_name: String, var values: List[UInt64]) -> Self"
+    ],
+    "value.Value.unsigned_integers": [
+      "var unsigned_integers: List[UInt64]"
+    ],
+    "values.Quaternion": [
+      "@fieldwise_init struct Quaternion(Equatable, ImplicitlyCopyable, Writable)"
+    ],
+    "values.Quaternion.identity": [
+      "comptime identity = Self(1, 0, 0, 0)"
+    ],
+    "values.Quaternion.w": [
+      "var w: Float64"
+    ],
+    "values.Quaternion.write_to": [
+      "def write_to(self, mut writer: Some[Writer])"
+    ],
+    "values.Quaternion.x": [
+      "var x: Float64"
+    ],
+    "values.Quaternion.y": [
+      "var y: Float64"
+    ],
+    "values.Quaternion.z": [
+      "var z: Float64"
+    ],
+    "values.TransformData": [
+      "@fieldwise_init struct TransformData(ImplicitlyCopyable)"
+    ],
+    "values.TransformData.position": [
+      "var position: Vector3"
+    ],
+    "values.TransformData.rotation": [
+      "var rotation: Quaternion"
+    ],
+    "values.TransformData.scale": [
+      "var scale: Vector3"
+    ],
+    "values.Vector3": [
+      "@fieldwise_init struct Vector3(Equatable, ImplicitlyCopyable, Writable)"
+    ],
+    "values.Vector3.write_to": [
+      "def write_to(self, mut writer: Some[Writer])"
+    ],
+    "values.Vector3.x": [
+      "var x: Float64"
+    ],
+    "values.Vector3.y": [
+      "var y: Float64"
+    ],
+    "values.Vector3.z": [
+      "var z: Float64"
+    ],
+    "values.Vector3.zero": [
+      "comptime zero = Self(0, 0, 0)"
+    ]
+  }
+}

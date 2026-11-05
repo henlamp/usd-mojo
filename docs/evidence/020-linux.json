@@ -1,0 +1,311 @@
+{
+  "status": "native_cpu_and_package_passed",
+  "checked_on": "2026-11-05",
+  "source_commit": "417ddb019f0c3953c00f2aaf323af07860bee594",
+  "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+  "hardware": {
+    "kernel": "6.6.87.2-microsoft-standard-WSL2",
+    "machine": "x86_64",
+    "glibc": "glibc 2.35",
+    "cpu": "AMD Ryzen 7 5800 8-Core Processor",
+    "os_release": "PRETTY_NAME=\"Ubuntu 22.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"22.04\"\nVERSION=\"22.04.5 LTS (Jammy Jellyfish)\"\nVERSION_CODENAME=jammy\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=jammy\n"
+  },
+  "native_acceptance": [
+    {
+      "system": "linux",
+      "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+      "compiler": "Mojo 1.1.0 (8189361e)",
+      "completed": true,
+      "checks_passed": 10,
+      "receipt_sha256": "4a76609447851926839235d15af08f4c0a3a9684dfd835ff6512ed98ee9341d9",
+      "external_corpus_checked": true
+    },
+    {
+      "system": "linux",
+      "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+      "compiler": "Mojo 1.2.0.dev2026100905 (3b71af75)",
+      "completed": true,
+      "checks_passed": 10,
+      "receipt_sha256": "b85537e28fded806ac7c5e6f3a287b58d4ec5bea82dc2a1949afd897e4f9fb70",
+      "external_corpus_checked": true
+    }
+  ],
+  "runner": {
+    "cpu_affinity": [12, 14],
+    "nice": 10,
+    "memory_max_bytes": 2147483648,
+    "receipt_sha256": "b8ff863862e741b98288cfb46602a8c9b87b22ed023b6cbb6a388653471ee1f3",
+    "all_checks_passed": true,
+    "scope": "Current CPU and GPU checks completed within the guarded workstation scope."
+  },
+  "conda": {
+    "status": "passed",
+    "artifact": "usd-mojo-0.2.0-mojo110_16.conda",
+    "sha256": "ac799a626dbc079aa48349c50d3479b72982fe791189a31a121319bc448189de",
+    "source_commit": "417ddb019f0c3953c00f2aaf323af07860bee594",
+    "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+    "installed_tests": "passed",
+    "privacy_scan": "passed",
+    "fresh_environment": true,
+    "package_cache": "shared",
+    "release_receipt_sha256": "e9557878ce59685c714c10394fcfe8f3d48dd6ba53db6dfb1d1f0548b9dabcfc",
+    "installed_receipt_sha256": "9b74a78338a53097f4f499329385f6f099686584e1c1288bc280d0e7a53fe822"
+  },
+  "nvidia_hydra": {
+    "status": "passed",
+    "source_commit": "417ddb019f0c3953c00f2aaf323af07860bee594",
+    "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+    "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+    "renderer": "D3D12 (NVIDIA GeForce RTX 3070)",
+    "opengl": "4.6 (Compatibility Profile) Mesa 25.0.7 - kisak-mesa PPA",
+    "context_helper": {
+      "source": "tests/imaging_context.cpp",
+      "selector": "USD_MOJO_TEST_GL_CONTEXT=1",
+      "external_harness": false
+    },
+    "compilers": {
+      "Mojo 1.1.0 (8189361e)": {
+        "timing_ns": {
+          "retained": [
+            [209355, 879529, 1088884],
+            [265791, 906860, 1172651],
+            [255802, 868067, 1123869],
+            [209325, 951174, 1160499],
+            [255241, 899036, 1154277],
+            [237748, 953328, 1191076],
+            [253819, 902092, 1155911],
+            [333959, 905468, 1239427],
+            [256714, 828603, 1085317],
+            [208873, 1007491, 1216364],
+            [234532, 870863, 1105395],
+            [257817, 889447, 1147264],
+            [232618, 830176, 1062794],
+            [234402, 917911, 1152313],
+            [261844, 841286, 1103130],
+            [250983, 855454, 1106437],
+            [207802, 861285, 1069087],
+            [236105, 883657, 1119762],
+            [234913, 856846, 1091759],
+            [235655, 1491512, 1727167],
+            [273406, 952136, 1225542],
+            [294665, 897242, 1191907],
+            [266172, 1061922, 1328094],
+            [341193, 1068947, 1410140],
+            [285108, 899647, 1184755],
+            [252366, 1157393, 1409759],
+            [418900, 959610, 1378510],
+            [277223, 864360, 1141583],
+            [251675, 851406, 1103081],
+            [210767, 921639, 1132406]
+          ],
+          "new": [
+            [64086194, 68657937, 133861218, 1117087],
+            [64095432, 69598621, 134793016, 1098963],
+            [62721620, 71866459, 135632639, 1044560],
+            [60731086, 71918995, 133847849, 1197768],
+            [61706445, 70841943, 133616743, 1068355],
+            [62212780, 68291604, 131674100, 1169716],
+            [62490112, 69513630, 133081515, 1077773],
+            [61616836, 68262749, 131192010, 1312425],
+            [61337109, 71055236, 133631492, 1239147],
+            [63463838, 71194638, 135667249, 1008773]
+          ]
+        },
+        "memory_bytes": [290770944, 290770944, 40845200, 29351920],
+        "median_retained_render_readback_ns": 1153295.0,
+        "median_new_session_render_readback_ns": 133739670.5,
+        "receipt_sha256": "49821ee3d852a03326b78f3281a99bf2ef33907d43a518f96a577f1a6bc57173"
+      },
+      "Mojo 1.2.0.dev2026100905 (3b71af75)": {
+        "timing_ns": {
+          "retained": [
+            [209215, 836057, 1045272],
+            [224764, 831949, 1056713],
+            [238720, 883777, 1122497],
+            [234392, 1112859, 1347251],
+            [264008, 884358, 1148366],
+            [241095, 887584, 1128679],
+            [254480, 844232, 1098712],
+            [212691, 839012, 1051703],
+            [237849, 840034, 1077883],
+            [210176, 940324, 1150500],
+            [241776, 836097, 1077873],
+            [233671, 861375, 1095046],
+            [211088, 856355, 1067443],
+            [234853, 839884, 1074737],
+            [242999, 838271, 1081270],
+            [252046, 957576, 1209622],
+            [236185, 967545, 1203730],
+            [272213, 869069, 1141282],
+            [246936, 879709, 1126645],
+            [254059, 1760369, 2014428],
+            [273335, 1103834, 1377169],
+            [356803, 889287, 1246090],
+            [244341, 880099, 1124440],
+            [256113, 851125, 1107238],
+            [230976, 838521, 1069497],
+            [234452, 864300, 1098752],
+            [210678, 898905, 1109583],
+            [236977, 843691, 1080668],
+            [233451, 1073443, 1306894],
+            [280138, 991159, 1271297]
+          ],
+          "new": [
+            [61973595, 70281353, 133215199, 960251],
+            [62717167, 70739649, 134561720, 1104904],
+            [63663151, 70547174, 135240158, 1029833],
+            [63289546, 67855738, 132189794, 1044510],
+            [64144219, 70590976, 135768083, 1032888],
+            [62748807, 71008524, 134905687, 1148356],
+            [63189897, 67759707, 132165427, 1215823],
+            [64539854, 69784565, 135624873, 1300454],
+            [65059383, 70223754, 136358526, 1075389],
+            [62600827, 69959817, 133683612, 1122968]
+          ]
+        },
+        "memory_bytes": [290435072, 290435072, 40852416, 29353616],
+        "median_retained_render_readback_ns": 1116040.0,
+        "median_new_session_render_readback_ns": 134733703.5,
+        "receipt_sha256": "c15f7ba99000826df7fcde517f2b9bc13d1de4e9325916e01752f1c4c6dd12a2"
+      }
+    },
+    "qualification_archive_sha256": "41b47bed93a9aba712c69232dc716f1594ba1894e6c17559bb396f2082bada3b",
+    "observations": {
+      "completed": true,
+      "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+      "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+      "rendering": {
+        "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+        "hgi_api": "OpenGL",
+        "renderer_plugin": "HdStormRendererPlugin",
+        "gpu_renderer": "D3D12 (NVIDIA GeForce RTX 3070)",
+        "gpu_version": "4.6 (Compatibility Profile) Mesa 25.0.7 - kisak-mesa PPA"
+      },
+      "native_boundaries": [
+        "legacy-image-abi",
+        "stage-owner-retained",
+        "read-before-render-rejected",
+        "wrong-extents-and-null-preserve-output",
+        "thread-affinity",
+        "failed-render-invalidates-readback",
+        "image-outlives-session",
+        "typed-error-contract"
+      ],
+      "width": 96,
+      "height": 64,
+      "frames": {
+        "base": {
+          "foreground_pixels": 1260,
+          "x_bounds": [11, 45],
+          "expected_x_bounds": [10.666666666666664, 46.54545454545455],
+          "dominant_rgb": 0
+        },
+        "animated": {
+          "foreground_pixels": 1260,
+          "x_bounds": [50, 84],
+          "expected_x_bounds": [49.45454545454545, 85.33333333333334],
+          "dominant_rgb": 0
+        },
+        "color": {
+          "foreground_pixels": 1260,
+          "x_bounds": [50, 84],
+          "expected_x_bounds": [49.45454545454545, 85.33333333333334],
+          "dominant_rgb": 1
+        },
+        "camera": {
+          "foreground_pixels": 1260,
+          "x_bounds": [34, 68],
+          "expected_x_bounds": [33.77777777777778, 69.33333333333334],
+          "dominant_rgb": 1
+        },
+        "restored": {
+          "foreground_pixels": 1292,
+          "x_bounds": [30, 65],
+          "expected_x_bounds": [30.22222222222222, 65.77777777777777],
+          "dominant_rgb": 2
+        },
+        "mesh_before": {
+          "foreground_pixels": 992,
+          "x_bounds": [15, 45],
+          "expected_x_bounds": [14.399999999999999, 46.4],
+          "dominant_rgb": 0
+        },
+        "mesh_after": {
+          "foreground_pixels": 992,
+          "x_bounds": [50, 80],
+          "expected_x_bounds": [49.6, 81.6],
+          "dominant_rgb": 0
+        },
+        "clip_cleared": {
+          "foreground_pixels": 1292,
+          "x_bounds": [30, 65],
+          "expected_x_bounds": [30.22222222222222, 65.77777777777777],
+          "dominant_rgb": 2
+        },
+        "clipped": {
+          "foreground_pixels": 646,
+          "x_bounds": [48, 65],
+          "y_bounds": [14, 49],
+          "expected_right": 65.77777777777777
+        },
+        "clip_moved": {
+          "foreground_pixels": 324,
+          "x_bounds": [48, 56],
+          "y_bounds": [14, 49],
+          "expected_right": 56.888888888888886
+        },
+        "clip_rotated": {
+          "foreground_pixels": 646,
+          "x_bounds": [48, 65],
+          "y_bounds": [14, 49],
+          "expected_right": 65.77777777777777
+        },
+        "timed_camera_centroids": {
+          "retained": [47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0],
+          "new": [47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0]
+        }
+      },
+      "installed_consumer": "passed",
+      "source_scene_unchanged": true,
+      "scope": "Moving-camera frames with warm caches; render-call CPU time and synchronized readback, not GPU timestamps.",
+      "one_shot_receipt_sha256": "0fb8aa5fa46667236849d426d967454852a02b26959e3f304ae6efb95c101fb8"
+    }
+  },
+  "previous_nvidia_attempt": {
+    "status": "blocked",
+    "renderer": "D3D12 (NVIDIA GeForce RTX 3070)",
+    "opengl": "4.2",
+    "required_opengl": "4.5",
+    "render_attempt_source_commit": "90afb46e6c817b3f0e2926c735c6fcb2c5b84c54",
+    "diagnostic_log_sha256": "d8649b7f782e0ca75ebabad31cc1b336e6779a8fdeb2293ce50361f1dee82fcd",
+    "software_override_used": false,
+    "reason": "WSLg context capability below the pinned OpenUSD HgiGL requirement. No successful NVIDIA render claim."
+  },
+  "mesa_update": {
+    "source": "https://ppa.launchpadcontent.net/kisak/turtle/ubuntu",
+    "fingerprint": "EB8B81E14DA65431D7504EA8F63F0F2B90935439",
+    "packages": [
+      "libegl-mesa0:amd64 25.0.7~kisak4~j",
+      "libgl1-mesa-dri:amd64 25.0.7~kisak4~j",
+      "libglx-mesa0:amd64 25.0.7~kisak4~j",
+      "mesa-libgallium:amd64 25.0.7~kisak4~j"
+    ],
+    "dpkg_audit": "passed",
+    "installed_reversibly": true,
+    "rollback_packages_preserved": true,
+    "wsl_restarted": false,
+    "login_driver_profile": "if [ -e /dev/dxg ] && [ -z \"${GALLIUM_DRIVER:-}\" ]; then\n    export GALLIUM_DRIVER=d3d12\nfi\n"
+  },
+  "nvidia_materialx": {
+    "status": "passed",
+    "record": "020-materialx.json",
+    "section": "nvidia_wslg",
+    "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+    "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+    "sdk_identity_sha256": "e8c837e1d367966249e8395f6d7187917ea842bbcba9e7add71eebebd5e3ce58",
+    "compilers": [
+      "Mojo 1.1.0 (8189361e)",
+      "Mojo 1.2.0.dev2026100905 (3b71af75)"
+    ]
+  }
+}

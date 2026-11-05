@@ -3,18 +3,31 @@
 import hashlib
 import json
 import os
+import platform
 import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+from config import pins, sdk_version
+from generate import generate
+from package import copy_documentation
+
+
+ENTRYPOINT_SCRIPT = """#!/usr/bin/env python3
+from pathlib import Path
+import runpy
+
+runpy.run_path(str(Path(__file__).resolve().parents[1] / "share/usd-mojo/compile.py"), run_name="__main__")
+"""
 
 
 def main():
     root = Path.cwd()
     prefix = Path(os.environ["PREFIX"])
     compiler = subprocess.check_output(["mojo", "--version"], text=True).strip()
-    if compiler != "Mojo 1.1.0 (8189361e)":
+    generate(check=True)
+    if compiler.split()[1] != pins()["mojo"]:
         raise RuntimeError(f"Unexpected compiler: {compiler}")
     native = root / "native-build"
     command = [
@@ -50,23 +63,11 @@ def main():
     )
     share = prefix / "share/usd-mojo"
     share.mkdir(parents=True, exist_ok=True)
-    for name in ["LICENSE", "THIRD_PARTY_NOTICES.md", "CHANGELOG.md"]:
-        shutil.copy2(root / name, share / name)
-    shutil.copytree(root / "licenses", share / "licenses")
-    shutil.copytree(
-        root / "docs",
-        share / "docs",
-        ignore=shutil.ignore_patterns("evidence", "PACKAGE_README.md"),
-    )
+    copy_documentation(share)
     shutil.copy2(root / "tools/package_compile.py", share / "compile.py")
     executable = prefix / "bin/usd-mojo-build"
     executable.parent.mkdir(exist_ok=True)
-    executable.write_text("""#!/usr/bin/env python3
-from pathlib import Path
-import runpy
-
-runpy.run_path(str(Path(__file__).resolve().parents[1] / "share/usd-mojo/compile.py"), run_name="__main__")
-""")
+    executable.write_text(ENTRYPOINT_SCRIPT)
     executable.chmod(0o755)
     bridge = (
         prefix
@@ -113,11 +114,13 @@ runpy.run_path(str(Path(__file__).resolve().parents[1] / "share/usd-mojo/compile
     manifest = {
         "format": 1,
         "layout": "conda",
-        "version": "0.1.0",
+        "version": json.loads((root / "conda.recipe/recipe.yaml").read_text())[
+            "package"
+        ]["version"],
         "compiler": compiler,
         "system": sys.platform,
-        "machine": "arm64" if sys.platform == "darwin" else "x86_64",
-        "sdk_version": 2608,
+        "machine": platform.machine(),
+        "sdk_version": sdk_version(prefix),
         "bridge_abi": 2,
         "sdk_bundled": False,
         "files_sha256": {

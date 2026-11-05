@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "source_commit": "417ddb019f0c3953c00f2aaf323af07860bee594",
+  "source_sha256": "7fd4a93d36f9491cba579cefca1bbcceec1322f9ac05f8f3f0cb1d0ce70c2811",
+  "checked_on": "2026-11-05",
+  "native_cpu_checks": 40,
+  "optional_checks": {
+    "macos": 10,
+    "linux_nvidia": 8
+  },
+  "api_additions": [
+    "RenderSession.backend",
+    "RenderSession.renderer"
+  ],
+  "original_01_api_preserved": true,
+  "shared_native_errors": "core/Hydra/MaterialX use one category and exception boundary; typed SDK file/parse/type errors retained",
+  "materialx_writes": "ofstream open and close states checked; failed writes return io",
+  "linux_materialx_error_contract": {
+    "status": "passed",
+    "checks": {
+      "missing-file": 6,
+      "malformed-xml": 5,
+      "missing-element": 2,
+      "invalid-target": 1,
+      "input-type": 3,
+      "unwritable-output": 6,
+      "unsupported-readback": 4,
+      "recovery-after-errors": true
+    }
+  },
+  "render_identity": "Hgi API and active plugin are read from the session; missing/mixed metadata and differing installed backends fail checks",
+  "reference_isolation": "Native Hydra boundary worker imports no Python pxr modules; SDK library paths apply only to child consumers",
+  "external_context_harness_required": false,
+  "linux_archive_sha256": "41b47bed93a9aba712c69232dc716f1594ba1894e6c17559bb396f2082bada3b",
+  "candidate_record": "020-candidate.json",
+  "skinning": {
+    "status": "passed",
+    "record": "020-candidate.json",
+    "section": "previous_full_qualification.skinning",
+    "sdk_evaluations_per_native_configuration": 19,
+    "sdk_point_components_per_native_configuration": 171,
+    "behavior": "Missing or blocked weights at the requested time leave shapes neutral; malformed resolved arrays fail before deformation."
+  },
+  "limits_record": "020-candidate.json"
+}

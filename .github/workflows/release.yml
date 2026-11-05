@@ -23,8 +23,15 @@ env:
 jobs:
   build:
     if: github.repository == 'henlamp/usd-mojo'
-    runs-on: macos-15
-    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    env:
+      PXR_WORK_THREAD_LIMIT: "2"
+      CMAKE_BUILD_PARALLEL_LEVEL: "2"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -35,21 +42,62 @@ jobs:
         with:
           pixi-version: v0.81.0
           run-install: false
-      - run: pixi run --locked -e default acceptance --execution-kind native
+      - run: pixi run --locked -e default python tools/corpus.py .local/corpus --fetch
+      - run: pixi run --locked -e default acceptance --execution-kind native --corpus .local/corpus
+        env:
+          USD_MOJO_BUILD_DIR: .build/release-acceptance/default
+      - run: pixi run --locked -e nightly acceptance --execution-kind native --corpus .local/corpus
+        env:
+          USD_MOJO_BUILD_DIR: .build/release-acceptance/nightly
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: usd-mojo-acceptance-${{ runner.os }}
+          path: |
+            .build/release-acceptance/**/*.json
+            .build/release-acceptance/*/*.log
+          include-hidden-files: true
+          if-no-files-found: error
       - name: Build and test Conda package
         run: pixi exec --spec python=3.12.13 --spec rattler-build=0.76.1 -- python tools/release.py build --tag "$RELEASE_TAG"
+      - name: Check fresh Pixi consumer
+        run: pixi exec --spec python=3.12.13 -- python tools/release.py installed --tag "$RELEASE_TAG" --channel "file://$PWD/.build/distributions"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: usd-mojo-release
+          name: usd-mojo-release-${{ runner.os }}
           path: |
-            .build/distributions/osx-arm64/*.conda
+            .build/distributions/*/*.conda
             .build/distributions/release.json
+            .build/distributions/installed.json
           if-no-files-found: error
           include-hidden-files: true
 
-  publish:
+  gate:
     needs: build
-    runs-on: macos-15
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
+        with:
+          pixi-version: v0.81.0
+          run-install: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          pattern: usd-mojo-acceptance-*
+          path: .build/release-evidence
+      - run: pixi exec --spec python=3.12.13 -- python tools/release_gate.py --release-root .build/release-evidence
+
+  publish:
+    needs: gate
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     environment: release
     permissions:
@@ -67,11 +115,15 @@ jobs:
           run-install: false
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
         with:
-          name: usd-mojo-release
+          name: usd-mojo-release-${{ runner.os }}
           path: .build/distributions
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          pattern: usd-mojo-acceptance-*
+          path: .build/release-evidence
       - name: Verify source and package
-        run: pixi exec --spec python=3.12.13 --spec rattler-build=0.76.1 -- python tools/release.py verify --tag "$RELEASE_TAG"
+        run: pixi exec --spec python=3.12.13 --spec rattler-build=0.76.1 -- python tools/release.py verify --tag "$RELEASE_TAG" --acceptance-root .build/release-evidence
       - name: Publish to private channel using OIDC
-        run: pixi exec --spec python=3.12.13 --spec rattler-build=0.76.1 -- python tools/release.py publish --tag "$RELEASE_TAG"
+        run: pixi exec --spec python=3.12.13 --spec rattler-build=0.76.1 -- python tools/release.py publish --tag "$RELEASE_TAG" --acceptance-root .build/release-evidence
       - name: Install published package by name
         run: pixi exec --spec python=3.12.13 -- python tools/release.py installed --tag "$RELEASE_TAG" --channel https://prefix.dev/henlamp/mojo

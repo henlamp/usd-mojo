@@ -9,12 +9,11 @@ import hashlib
 import json
 import math
 import subprocess
-import sys
 from pathlib import Path
 
 from build import BUILD, ROOT
 from evidence import source_hash
-from package import package
+from package import package, compile_installed
 from pxr import Gf, Usd, UsdGeom
 
 
@@ -155,16 +154,7 @@ def main():
     try:
         inventory, exporter = directory / "scene_report", directory / "export_obj"
         for name, binary in [("scene_report", inventory), ("export_obj", exporter)]:
-            subprocess.run(
-                [
-                    sys.executable,
-                    str(installed / "compile.py"),
-                    str(ROOT / "examples" / (name + ".mojo")),
-                    "-o",
-                    str(binary),
-                ],
-                check=True,
-            )
+            compile_installed(installed, ROOT / "examples" / (name + ".mojo"), binary)
         report["binaries_sha256"] = {
             "inventory": digest(inventory),
             "exporter": digest(exporter),

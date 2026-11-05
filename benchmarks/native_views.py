@@ -11,8 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
-from build import BUILD, build
-from check import require_compile
+from build import BUILD, build, require_compile
 from evidence import source_hash
 from pxr import Gf, Usd, UsdGeom, Vt
 

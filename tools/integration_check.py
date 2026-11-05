@@ -11,7 +11,7 @@ from pathlib import Path
 
 from build import BUILD, ROOT
 from evidence import source_hash
-from package import package
+from package import package, compile_installed
 from pxr import Gf, Usd, UsdGeom, Vt
 
 
@@ -48,17 +48,8 @@ def main():
         libraries[name] = manifest
     installed = package()
     binary = work / "tensor-cache"
-    subprocess.run(
-        [
-            sys.executable,
-            str(installed / "compile.py"),
-            str(ROOT / "examples/tensor_cache.mojo"),
-            "-I",
-            str(work),
-            "-o",
-            str(binary),
-        ],
-        check=True,
+    compile_installed(
+        installed, ROOT / "examples/tensor_cache.mojo", binary, includes=(work,)
     )
     scene = work / "geometry Ω.usda"
     stage = Usd.Stage.CreateNew(str(scene))
