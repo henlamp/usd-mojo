@@ -7,8 +7,8 @@
     "path": ".."
   },
   "build": {
-    "number": 16,
-    "string": "mojo110_16",
+    "number": 17,
+    "string": "mojo110_17",
     "skip": "not ((osx and arm64) or (linux and x86_64))",
     "files": [
       "lib/mojo/usd_mojo.mojoc",

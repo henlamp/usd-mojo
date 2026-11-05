@@ -92,6 +92,7 @@ jobs:
         if: always()
         with:
           name: linux-package
+          retention-days: 1
           path: |
             .build/distributions/**
             .build/linux-default/**/acceptance.json
