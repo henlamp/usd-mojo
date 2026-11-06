@@ -31,8 +31,7 @@ def main():
     build.mkdir(parents=True, exist_ok=True)
     lib = args.library.resolve()
     sys.path.insert(0, str(lib / "tools"))
-    from build import build as build_bridge
-    from check import require_compile
+    from build import build as build_bridge, require_compile
 
     # The harness is shared even when measuring an older source archive.
     sys.path.insert(0, str(ROOT / "tools"))

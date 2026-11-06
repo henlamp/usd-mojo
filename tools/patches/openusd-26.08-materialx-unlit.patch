@@ -1,0 +1,50 @@
+--- a/pxr/imaging/hdSt/materialXShaderGen.cpp
++++ b/pxr/imaging/hdSt/materialXShaderGen.cpp
+@@ -961,6 +961,23 @@
+     mx::GenContext& mxContext,
+     mx::ShaderStage& mxStage) const
+ {
++    // Hydra's environment helpers also run for unlit graphs. MaterialX may
++    // omit these uniforms when the graph itself does not require lighting.
++    auto &privateUniforms = mxStage.getUniformBlock(mx::HW::PRIVATE_UNIFORMS);
++    if (!privateUniforms.find(mx::HW::T_ENV_RADIANCE_MIPS)) {
++        addStageUniform(mx::HW::PRIVATE_UNIFORMS, mx::Type::INTEGER,
++            mx::HW::T_ENV_RADIANCE_MIPS, mxStage)->setValue(mx::Value::createValue<int>(1));
++    }
++    if (!privateUniforms.find(mx::HW::T_ENV_MATRIX)) {
++        addStageUniform(mx::HW::PRIVATE_UNIFORMS, mx::Type::MATRIX44,
++            mx::HW::T_ENV_MATRIX, mxStage)->setValue(
++                mx::Value::createValue<mx::Matrix44>(mx::Matrix44::IDENTITY));
++    }
++    if (!privateUniforms.find(mx::HW::T_ENV_LIGHT_INTENSITY)) {
++        addStageUniform(mx::HW::PRIVATE_UNIFORMS, mx::Type::FLOAT,
++            mx::HW::T_ENV_LIGHT_INTENSITY, mxStage)->setValue(mx::Value::createValue<float>(1.0f));
++    }
++
+     // Add a per-light shadowOcclusion value to the lightData uniform block
+     addStageUniform(mx::HW::LIGHT_DATA, mx::Type::FLOAT,
+         "shadowOcclusion", mxStage);
+@@ -1252,6 +1269,23 @@
+     }
+     resourceBindingCtx->emitDirectives(mxContext, mxStage);
+ 
++    // Hydra's environment helpers also run for unlit graphs. MaterialX may
++    // omit these uniforms when the graph itself does not require lighting.
++    auto &privateUniforms = mxStage.getUniformBlock(mx::HW::PRIVATE_UNIFORMS);
++    if (!privateUniforms.find(mx::HW::T_ENV_RADIANCE_MIPS)) {
++        addStageUniform(mx::HW::PRIVATE_UNIFORMS, mx::Type::INTEGER,
++            mx::HW::T_ENV_RADIANCE_MIPS, mxStage)->setValue(mx::Value::createValue<int>(1));
++    }
++    if (!privateUniforms.find(mx::HW::T_ENV_MATRIX)) {
++        addStageUniform(mx::HW::PRIVATE_UNIFORMS, mx::Type::MATRIX44,
++            mx::HW::T_ENV_MATRIX, mxStage)->setValue(
++                mx::Value::createValue<mx::Matrix44>(mx::Matrix44::IDENTITY));
++    }
++    if (!privateUniforms.find(mx::HW::T_ENV_LIGHT_INTENSITY)) {
++        addStageUniform(mx::HW::PRIVATE_UNIFORMS, mx::Type::FLOAT,
++            mx::HW::T_ENV_LIGHT_INTENSITY, mxStage)->setValue(mx::Value::createValue<float>(1.0f));
++    }
++
+     // Add a per-light shadowOcclusion value to the lightData uniform block
+     addStageUniform(mx::HW::LIGHT_DATA, mx::Type::FLOAT,
+         "shadowOcclusion", mxStage);

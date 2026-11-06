@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <texcoord name="uv" type="vector2"/>
+  <extract name="u" type="float">
+    <input name="in" type="vector2" nodename="uv"/>
+    <input name="index" type="integer" value="0"/>
+  </extract>
+  <combine3 name="combine" type="color3">
+    <input name="in1" type="float" nodename="u"/>
+    <input name="in2" type="float" value="0.4"/>
+    <input name="in3" type="float" value="0.8"/>
+  </combine3>
+  <output name="out" type="color3" nodename="combine"/>
+</materialx>

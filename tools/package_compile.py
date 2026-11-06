@@ -37,6 +37,19 @@ def validate(root: Path, prefix: Path, manifest):
         raise ValueError(
             f"SDK mismatch: package requires OpenUSD {manifest['sdk_version']}"
         )
+    if manifest.get("sdk_materialx") and not any(
+        (prefix / "lib" / ("libusd_usdMtlx" + extension)).is_file()
+        for extension in (".dylib", ".so")
+    ):
+        raise ValueError("This archive requires a MaterialX-enabled OpenUSD SDK")
+    if manifest.get("optional_sdk_sha256"):
+        identity = prefix / "usd-mojo-sdk.json"
+        if (
+            not identity.is_file()
+            or hashlib.sha256(identity.read_bytes()).hexdigest()
+            != manifest["optional_sdk_sha256"]
+        ):
+            raise ValueError("Optional SDK source/patch identity mismatch")
     return manifest
 
 
@@ -44,6 +57,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
     parser.add_argument("-o", "--output", type=Path, required=True)
+    parser.add_argument("--materialx", action="store_true")
+    parser.add_argument(
+        "--materialx-prefix",
+        type=Path,
+        default=Path(os.environ["USD_MOJO_MATERIALX_PREFIX"])
+        if "USD_MOJO_MATERIALX_PREFIX" in os.environ
+        else None,
+    )
+    parser.add_argument(
+        "--imaging", action="store_true", help="Link an optional Hydra-enabled package"
+    )
     parser.add_argument(
         "--sdk-prefix",
         type=Path,
@@ -64,6 +88,24 @@ def main():
         conda = manifest.get("layout") == "conda"
         root = location.parents[1] if conda else location
         validate(root, args.sdk_prefix, manifest)
+        if args.imaging and not manifest.get("imaging", False):
+            raise ValueError("This package was built without optional Hydra imaging")
+        if args.materialx:
+            if manifest.get("materialx") != "1.39.5" or args.materialx_prefix is None:
+                raise ValueError(
+                    "Use a MaterialX-enabled archive and --materialx-prefix"
+                )
+            version = args.materialx_prefix / "include/MaterialXCore/Generated.h"
+            actual = (
+                re.findall(
+                    r"#define MATERIALX_(?:MAJOR|MINOR|BUILD)_VERSION (\d+)",
+                    version.read_text(),
+                )
+                if version.is_file()
+                else []
+            )
+            if actual != ["1", "39", "5"]:
+                raise ValueError("MaterialX SDK version mismatch")
         for include in args.include:
             if not include.is_dir():
                 raise ValueError(
@@ -87,10 +129,21 @@ def main():
             "-Xlinker",
             f"-L{args.sdk_prefix.resolve() / 'lib'}",
         ]
+        if args.materialx:
+            command += ["-Xlinker", "-lusd_mojo_materialx"]
+        if args.imaging:
+            command += ["-Xlinker", "-lusd_mojo_imaging"]
         if sys.platform != "darwin":
             # DT_RPATH propagates to the separately supplied SDK's dependencies.
             command += ["-Xlinker", "--disable-new-dtags"]
-        for rpath in (f"{origin}/{relative}", str(args.sdk_prefix.resolve() / "lib")):
+        rpaths = [
+            f"{origin}/{relative}",
+            str(args.sdk_prefix.resolve() / "lib"),
+            str(Path(sys.prefix).resolve() / "lib"),
+        ]
+        if args.materialx_prefix:
+            rpaths.append(str(args.materialx_prefix.resolve() / "lib"))
+        for rpath in dict.fromkeys(rpaths):
             command += ["-Xlinker", "-rpath", "-Xlinker", rpath]
         for include in args.include:
             command += ["-I", str(include.resolve())]

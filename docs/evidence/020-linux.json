@@ -1,0 +1,283 @@
+{
+  "status": "native_cpu_and_package_passed",
+  "checked_on": "2026-11-06",
+  "source_commit": "a785608e82e3c7631ecf185212d0558e9fbfc1b1",
+  "source_sha256": "ba04f27e3eefa16ec4f445d4995b57927733f558f5297a7d151576c9f080bbaa",
+  "hardware": {
+    "cpu": "AMD Ryzen 7 5800 8-Core Processor",
+    "os": "Ubuntu 22.04.5 LTS",
+    "kernel": "6.6.87.2-microsoft-standard-WSL2",
+    "machine": "x86_64",
+    "glibc": "glibc 2.35",
+    "gpu": "NVIDIA GeForce RTX 3070, 610.60"
+  },
+  "native_acceptance": [
+    {
+      "configuration": "linux-default",
+      "system": "linux",
+      "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+      "compiler": "Mojo 1.2.0 (2016d0cd)",
+      "checks_passed": 10,
+      "receipt_sha256": "cf21422e73f9e98ce73c5cd6671b4fa12da947f3077aa0e8243896eed6c7c786",
+      "external_corpus_checked": true
+    },
+    {
+      "configuration": "linux-nightly",
+      "system": "linux",
+      "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+      "compiler": "Mojo 1.2.0.dev2026100905 (3b71af75)",
+      "checks_passed": 10,
+      "receipt_sha256": "560cc0d56676d599a56518001989feadc6d115a34fe5bba988706d958d07ac48",
+      "external_corpus_checked": true
+    }
+  ],
+  "runner": {
+    "cpu_affinity": [12, 14],
+    "nice": 10,
+    "memory_max_bytes": 2147483648,
+    "receipt_sha256": "b0403d441f58417867fc9928c653ae1b69656376471adeaadfa4f823da41596c",
+    "package_memory_max_bytes": 3221225472,
+    "package_receipt_sha256": "0345794ec16535c065667a6c0d19113a37e9981dca10bcfa4f419aff7327672d"
+  },
+  "conda": {
+    "status": "passed",
+    "artifact": "usd-mojo-0.2.0-mojo120_18.conda",
+    "sha256": "94d16eba32c8e7e884efcadb5956714e72ead7394dfe5df7ebcbae87c3274d18",
+    "source_commit": "a785608e82e3c7631ecf185212d0558e9fbfc1b1",
+    "source_sha256": "ba04f27e3eefa16ec4f445d4995b57927733f558f5297a7d151576c9f080bbaa",
+    "installed_tests": "passed",
+    "privacy_scan": "passed",
+    "fresh_environment": true,
+    "package_cache": "shared",
+    "release_receipt_sha256": "86c02c0b3466522bac663b88f829eaabd917c3e1496bf6f7d945e66f077d938a",
+    "installed_receipt_sha256": "1e4215d0fde5efea2a6c605164d6b79b4ae6fbba7e4f8c77260defa618852b6d"
+  },
+  "nvidia_hydra": {
+    "status": "passed",
+    "checked_on": "2026-11-06",
+    "source_commit": "a785608e82e3c7631ecf185212d0558e9fbfc1b1",
+    "source_sha256": "ba04f27e3eefa16ec4f445d4995b57927733f558f5297a7d151576c9f080bbaa",
+    "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+    "gpu_renderer": "D3D12 (NVIDIA GeForce RTX 3070)",
+    "gpu_version": "4.6 (Compatibility Profile) Mesa 25.0.7 - kisak-mesa PPA",
+    "context_helper": {
+      "source": "tests/imaging_context.cpp",
+      "selector": "USD_MOJO_TEST_GL_CONTEXT=1",
+      "external_harness": false
+    },
+    "observations": {
+      "completed": true,
+      "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+      "rendering": {
+        "backend": "Hydra/HdStormRendererPlugin/OpenGL",
+        "hgi_api": "OpenGL",
+        "renderer_plugin": "HdStormRendererPlugin",
+        "gpu_renderer": "D3D12 (NVIDIA GeForce RTX 3070)",
+        "gpu_version": "4.6 (Compatibility Profile) Mesa 25.0.7 - kisak-mesa PPA"
+      },
+      "native_boundaries": [
+        "legacy-image-abi",
+        "stage-owner-retained",
+        "read-before-render-rejected",
+        "wrong-extents-and-null-preserve-output",
+        "thread-affinity",
+        "failed-render-invalidates-readback",
+        "image-outlives-session",
+        "typed-error-contract"
+      ],
+      "width": 96,
+      "height": 64,
+      "frames": {
+        "base": {
+          "foreground_pixels": 1260,
+          "x_bounds": [11, 45],
+          "expected_x_bounds": [10.666666666666664, 46.54545454545455],
+          "dominant_rgb": 0
+        },
+        "animated": {
+          "foreground_pixels": 1260,
+          "x_bounds": [50, 84],
+          "expected_x_bounds": [49.45454545454545, 85.33333333333334],
+          "dominant_rgb": 0
+        },
+        "color": {
+          "foreground_pixels": 1260,
+          "x_bounds": [50, 84],
+          "expected_x_bounds": [49.45454545454545, 85.33333333333334],
+          "dominant_rgb": 1
+        },
+        "camera": {
+          "foreground_pixels": 1260,
+          "x_bounds": [34, 68],
+          "expected_x_bounds": [33.77777777777778, 69.33333333333334],
+          "dominant_rgb": 1
+        },
+        "restored": {
+          "foreground_pixels": 1292,
+          "x_bounds": [30, 65],
+          "expected_x_bounds": [30.22222222222222, 65.77777777777777],
+          "dominant_rgb": 2
+        },
+        "mesh_before": {
+          "foreground_pixels": 992,
+          "x_bounds": [15, 45],
+          "expected_x_bounds": [14.399999999999999, 46.4],
+          "dominant_rgb": 0
+        },
+        "mesh_after": {
+          "foreground_pixels": 992,
+          "x_bounds": [50, 80],
+          "expected_x_bounds": [49.6, 81.6],
+          "dominant_rgb": 0
+        },
+        "clip_cleared": {
+          "foreground_pixels": 1292,
+          "x_bounds": [30, 65],
+          "expected_x_bounds": [30.22222222222222, 65.77777777777777],
+          "dominant_rgb": 2
+        },
+        "clipped": {
+          "foreground_pixels": 646,
+          "x_bounds": [48, 65],
+          "y_bounds": [14, 49],
+          "expected_right": 65.77777777777777
+        },
+        "clip_moved": {
+          "foreground_pixels": 324,
+          "x_bounds": [48, 56],
+          "y_bounds": [14, 49],
+          "expected_right": 56.888888888888886
+        },
+        "clip_rotated": {
+          "foreground_pixels": 646,
+          "x_bounds": [48, 65],
+          "y_bounds": [14, 49],
+          "expected_right": 65.77777777777777
+        },
+        "timed_camera_centroids": {
+          "retained": [47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0],
+          "new": [47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0, 47.5, 44.0]
+        }
+      },
+      "installed_consumer": "passed",
+      "source_scene_unchanged": true,
+      "scope": "Moving-camera frames with warm caches; render-call CPU time and synchronized readback, not GPU timestamps.",
+      "one_shot_receipt_sha256": "4d8c3bb415519de5f0d8e5ef97c5b065238bd3ba221024ce6747284ecf4bcc0f"
+    },
+    "compilers": {
+      "Mojo 1.2.0 (2016d0cd)": {
+        "timing_ns": {
+          "retained": [
+            [186772, 833202, 1019974],
+            [210226, 877335, 1087561],
+            [204385, 917631, 1122016],
+            [240494, 924033, 1164527],
+            [231717, 894959, 1126676],
+            [233450, 926458, 1159908],
+            [269518, 912712, 1182230],
+            [229062, 852207, 1081269],
+            [263538, 875531, 1139069],
+            [203523, 867397, 1070920],
+            [200919, 862466, 1063385],
+            [200218, 888145, 1088363],
+            [204937, 830977, 1035914],
+            [202833, 828312, 1031145],
+            [201570, 826409, 1027979],
+            [201380, 892944, 1094324],
+            [227490, 1021817, 1249307],
+            [314703, 959931, 1274634],
+            [238039, 925956, 1163995],
+            [237779, 1480693, 1718472],
+            [268436, 954701, 1223137],
+            [258427, 910327, 1168754],
+            [229743, 877826, 1107569],
+            [205508, 841026, 1046534],
+            [207963, 855613, 1063576],
+            [205728, 835536, 1041264],
+            [205267, 839123, 1044390],
+            [203474, 828633, 1032107],
+            [205698, 857668, 1063366],
+            [202983, 842469, 1045452]
+          ],
+          "new": [
+            [62696323, 66706437, 130289172, 886412],
+            [60526659, 67280702, 128813028, 1005667],
+            [61366494, 68231544, 130689096, 1091058],
+            [61754183, 69030453, 131813076, 1028440],
+            [62839564, 68993250, 132898764, 1065950],
+            [60331833, 68780860, 130319339, 1206646],
+            [61910321, 74527410, 137472021, 1034290],
+            [60339216, 69705144, 131248902, 1204542],
+            [60982709, 68595472, 130687133, 1108952],
+            [61985101, 69815450, 132837807, 1037256]
+          ]
+        },
+        "memory_bytes": [289837056, 289837056, 40855552, 29354592],
+        "median_retained_render_readback_ns": 1087962.0,
+        "median_new_session_render_readback_ns": 130968999.0,
+        "receipt_sha256": "a66f65ee912c38f44e9b1efe35f31b542c5fbe8bec9ff7e4d93c3b54687cc86a"
+      },
+      "Mojo 1.2.0.dev2026100905 (3b71af75)": {
+        "timing_ns": {
+          "retained": [
+            [212170, 893055, 1105225],
+            [263647, 860464, 1124111],
+            [258007, 854362, 1112369],
+            [215095, 855625, 1070720],
+            [237578, 870362, 1107940],
+            [216338, 937639, 1153977],
+            [255332, 929113, 1184445],
+            [238530, 895520, 1134050],
+            [258498, 922030, 1180528],
+            [236446, 888607, 1125053],
+            [237558, 871464, 1109022],
+            [256243, 870863, 1127106],
+            [236807, 1165028, 1401835],
+            [314974, 1065942, 1380916],
+            [338389, 1022319, 1360708],
+            [309384, 884519, 1193903],
+            [239622, 908304, 1147926],
+            [258037, 898615, 1156652],
+            [239662, 899878, 1139540],
+            [258909, 1400582, 1659491],
+            [268386, 936617, 1205003],
+            [275820, 946486, 1222306],
+            [287423, 889348, 1176771],
+            [253719, 861054, 1114773],
+            [311629, 888485, 1200114],
+            [262586, 905578, 1168164],
+            [247748, 884629, 1132377],
+            [240043, 910968, 1151011],
+            [257886, 899618, 1157504],
+            [242347, 901992, 1144339]
+          ],
+          "new": [
+            [61461202, 68862946, 131233935, 909787],
+            [61820870, 68418527, 131431376, 1191979],
+            [62123870, 69889191, 133096786, 1083725],
+            [61514151, 71457127, 134193965, 1222687],
+            [62523063, 67708497, 131299024, 1067464],
+            [61902082, 69431697, 132382628, 1048849],
+            [64297530, 73250313, 138577265, 1029422],
+            [67034807, 69890642, 138073024, 1147575],
+            [61332048, 71311704, 133686820, 1043068],
+            [70213451, 79265203, 150604598, 1125944]
+          ]
+        },
+        "memory_bytes": [289542144, 289542144, 40842640, 29350736],
+        "median_retained_render_readback_ns": 1152494.0,
+        "median_new_session_render_readback_ns": 133391803.0,
+        "receipt_sha256": "79b7d9c5bbbd4a4ac35f78f5322a9d59a0c2d06c6d565fbac1a1b3d6c6ce0857"
+      }
+    },
+    "qualification_archive_sha256": "48f0d382453ebad0fc5418cf48d527d22332fd56f053ed292fe31e5512885510"
+  },
+  "nvidia_materialx": {
+    "status": "passed",
+    "record": "020-materialx.json",
+    "section": "nvidia_wslg",
+    "source_sha256": "ba04f27e3eefa16ec4f445d4995b57927733f558f5297a7d151576c9f080bbaa",
+    "sdk_identity_sha256": "e8c837e1d367966249e8395f6d7187917ea842bbcba9e7add71eebebd5e3ce58"
+  },
+  "previous_record": "https://github.com/henlamp/usd-mojo/blob/bd9d06e37edb516ac650f8cbe5d941934eea7d48/docs/evidence/020-linux.json"
+}

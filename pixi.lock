@@ -99,14 +99,14 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tbb-devel-2023.0.0-h7283337_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tk-8.6.13-hbeba79b_4.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-hf451053_7.conda
+      - pypi: https://files.pythonhosted.org/packages/3d/bb/9602cbee467102584721c700dda8033af67c3888c6c8edb6f66275c1df74/mojo_compiler_mojo_libs-1.2.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/58/50/6c0d534c5f134586a8e1ba4e330569e32f057e33372ae556463212fb4cd3/click-8.5.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/68/e9/f535cccbb05c92c92af9b45f719994dd54c78d1c9964392dc6e15a3c345d/mojo-1.1.0-py3-none-macosx_13_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/7b/29/1b39441a9932fc273bb689fc2246edf3ab536fd8bacb8ac46ab367f369b4/mojo_lldb_libs-1.1.0-py3-none-macosx_13_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/7e/47/4ee8cf2041538076d1a11bb3c2b3ed18791b52c1edec8e31ca244d841389/mojo_compiler-1.1.0-py3-none-macosx_13_0_arm64.whl
-      - pypi: https://files.pythonhosted.org/packages/83/8d/4fb2147d140b6ea688f6d256b3119d6554a3d50095d802f01bf24234bd7d/mojo_compiler_mojo_libs-1.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8d/15/1633010b26e88e872c93b67c0b6c5e174fb74cb6fb5c1472b4d51d4a8f22/platformdirs-4.13.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/8d/1e/69f18cd59c58c67224f5c3fa39cc17d1adc0649a064d8806eb7c350bebce/mblack-26.6.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/a1/ee/f40b38b0638d15371181e011b812d26d53877fd2dfd49ad687fc66ec3ac5/mojo_lldb_libs-1.2.0-py3-none-macosx_13_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/d0/64/6889babfad953d22620594064651fe8165ddb0074ba5a901d1bea1d059dd/mojo-1.2.0-py3-none-macosx_13_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/d6/0c/df22d1807e2bddebd992caee411e6cbe0c5d41834e36bff883f4a7d95fc3/mojo_compiler-1.2.0-py3-none-macosx_13_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/d7/d5/bfd1a8bcc198cc209be3602bde68f4bbe60cedaf52c616724553373b6850/mblack-26.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
       linux-x86:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
@@ -235,14 +235,14 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/pyopengl-3.1.10-pyha804496_2.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.12-9_cp312.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2026c-h151e31d_0.conda
+      - pypi: https://files.pythonhosted.org/packages/32/d2/e44568aa7d49ef8bd160933d668d78bb8f072efd73ce58c4a180067e8b39/mojo-1.2.0-py3-none-manylinux_2_34_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/39/79/320ed56b180e553f04329e0b94dffe9dbfed79c0439f5824fcac9d56fe6c/mojo_lldb_libs-1.2.0-py3-none-manylinux_2_34_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/3d/bb/9602cbee467102584721c700dda8033af67c3888c6c8edb6f66275c1df74/mojo_compiler_mojo_libs-1.2.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/54/8b/2758e8a2207793613d386f41e36f2bfd28837b157a659518c7b7474f7eb3/mojo_compiler-1.2.0-py3-none-manylinux_2_34_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/58/50/6c0d534c5f134586a8e1ba4e330569e32f057e33372ae556463212fb4cd3/click-8.5.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/83/8d/4fb2147d140b6ea688f6d256b3119d6554a3d50095d802f01bf24234bd7d/mojo_compiler_mojo_libs-1.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8d/15/1633010b26e88e872c93b67c0b6c5e174fb74cb6fb5c1472b4d51d4a8f22/platformdirs-4.13.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/8d/1e/69f18cd59c58c67224f5c3fa39cc17d1adc0649a064d8806eb7c350bebce/mblack-26.6.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/93/f3/abf242879fe2f26809faa351bfb52d0746c25dde78796c3c5b5443355ea5/mojo_lldb_libs-1.1.0-py3-none-manylinux_2_34_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/dd/c0/4118df04da5776700839642477bdda0b1f906a99c69c8f2f94d4aea9fef4/mojo-1.1.0-py3-none-manylinux_2_34_x86_64.whl
-      - pypi: https://files.pythonhosted.org/packages/e8/5e/31522e5336d63ab0fad18980cccf6c5cc2085c1a041ea3723eb916a17c08/mojo_compiler-1.1.0-py3-none-manylinux_2_34_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/d7/d5/bfd1a8bcc198cc209be3602bde68f4bbe60cedaf52c616724553373b6850/mblack-26.7.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
   nightly:
     channels:
@@ -3567,71 +3567,71 @@ packages:
     - zstd >=1.5.7,<1.6.0a0
   size: 433687
   timestamp: 1786599629846
+- pypi: https://files.pythonhosted.org/packages/32/d2/e44568aa7d49ef8bd160933d668d78bb8f072efd73ce58c4a180067e8b39/mojo-1.2.0-py3-none-manylinux_2_34_x86_64.whl
+  name: mojo
+  version: 1.2.0
+  sha256: 92e21c709072e1443b81709635583c62e17c1b32e34f0e6a89e5e8b47f9352f9
+  requires_dist:
+  - mojo-compiler==1.2.0
+  - mblack==26.7.0
+  - mojo-lldb-libs==1.2.0
+- pypi: https://files.pythonhosted.org/packages/39/79/320ed56b180e553f04329e0b94dffe9dbfed79c0439f5824fcac9d56fe6c/mojo_lldb_libs-1.2.0-py3-none-manylinux_2_34_x86_64.whl
+  name: mojo-lldb-libs
+  version: 1.2.0
+  sha256: 25b9f186eef9e50d0d331b2e9666b0d550cd277f62223979bd025a8f8b90efca
+- pypi: https://files.pythonhosted.org/packages/3d/bb/9602cbee467102584721c700dda8033af67c3888c6c8edb6f66275c1df74/mojo_compiler_mojo_libs-1.2.0-py3-none-any.whl
+  name: mojo-compiler-mojo-libs
+  version: 1.2.0
+  sha256: 3d631f7e798c11d0029c4a892ebae1f5742751fac0c526af74b45a8ae07c3acb
+- pypi: https://files.pythonhosted.org/packages/54/8b/2758e8a2207793613d386f41e36f2bfd28837b157a659518c7b7474f7eb3/mojo_compiler-1.2.0-py3-none-manylinux_2_34_x86_64.whl
+  name: mojo-compiler
+  version: 1.2.0
+  sha256: 3ee34a3b26c6cccaa9523a0e8db8f67bea954497d782d97c9e61c3c4ecbdac7b
+  requires_dist:
+  - mojo-compiler-mojo-libs==1.2.0
 - pypi: https://files.pythonhosted.org/packages/58/50/6c0d534c5f134586a8e1ba4e330569e32f057e33372ae556463212fb4cd3/click-8.5.0-py3-none-any.whl
   name: click
   version: 8.5.0
   sha256: 255bc9599cf7748b4b1a446ccc735421bd08a2ae529a8b88597d3de5664ee360
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/68/e9/f535cccbb05c92c92af9b45f719994dd54c78d1c9964392dc6e15a3c345d/mojo-1.1.0-py3-none-macosx_13_0_arm64.whl
-  name: mojo
-  version: 1.1.0
-  sha256: b913389621a243725253872b4815f49fb98a7708d3214816de7fd6e72bf2a25d
-  requires_dist:
-  - mojo-compiler==1.1.0
-  - mblack==26.6.0
-  - mojo-lldb-libs==1.1.0
 - pypi: https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl
   name: mypy-extensions
   version: 1.1.0
   sha256: 1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505
   requires_python: '>=3.8'
-- pypi: https://files.pythonhosted.org/packages/7b/29/1b39441a9932fc273bb689fc2246edf3ab536fd8bacb8ac46ab367f369b4/mojo_lldb_libs-1.1.0-py3-none-macosx_13_0_arm64.whl
-  name: mojo-lldb-libs
-  version: 1.1.0
-  sha256: 788860810bdbabc636a18b464cb378087d98821ac4ca068d8bd52f38423eff09
-- pypi: https://files.pythonhosted.org/packages/7e/47/4ee8cf2041538076d1a11bb3c2b3ed18791b52c1edec8e31ca244d841389/mojo_compiler-1.1.0-py3-none-macosx_13_0_arm64.whl
-  name: mojo-compiler
-  version: 1.1.0
-  sha256: 02daffdfd8fcd56ecfb74e93d2adfaf4551cbb0b384094508fd00c1d5d81cb00
-  requires_dist:
-  - mojo-compiler-mojo-libs==1.1.0
-- pypi: https://files.pythonhosted.org/packages/83/8d/4fb2147d140b6ea688f6d256b3119d6554a3d50095d802f01bf24234bd7d/mojo_compiler_mojo_libs-1.1.0-py3-none-any.whl
-  name: mojo-compiler-mojo-libs
-  version: 1.1.0
-  sha256: dd8c5382e27fe5c1ffe0834d267f549abbffee35bf1a8d605cf24252ff95a2e6
 - pypi: https://files.pythonhosted.org/packages/8d/15/1633010b26e88e872c93b67c0b6c5e174fb74cb6fb5c1472b4d51d4a8f22/platformdirs-4.13.0-py3-none-any.whl
   name: platformdirs
   version: 4.13.0
   sha256: 3dbcf4cd708f21cf876c4eaa90e58412bc4f033d87143f41b1493ff77c25b7e1
   requires_python: '>=3.11'
-- pypi: https://files.pythonhosted.org/packages/8d/1e/69f18cd59c58c67224f5c3fa39cc17d1adc0649a064d8806eb7c350bebce/mblack-26.6.0-py3-none-any.whl
+- pypi: https://files.pythonhosted.org/packages/a1/ee/f40b38b0638d15371181e011b812d26d53877fd2dfd49ad687fc66ec3ac5/mojo_lldb_libs-1.2.0-py3-none-macosx_13_0_arm64.whl
+  name: mojo-lldb-libs
+  version: 1.2.0
+  sha256: dc290e7e56d560d9d6725a2eec7648cf69b2b15bc5d25f3c9a28d5b2441d1160
+- pypi: https://files.pythonhosted.org/packages/d0/64/6889babfad953d22620594064651fe8165ddb0074ba5a901d1bea1d059dd/mojo-1.2.0-py3-none-macosx_13_0_arm64.whl
+  name: mojo
+  version: 1.2.0
+  sha256: e90bcd0e3a1f6ad5306d6af1bd3a6bbcd849ddfd06c66552a4440682bf6f703a
+  requires_dist:
+  - mojo-compiler==1.2.0
+  - mblack==26.7.0
+  - mojo-lldb-libs==1.2.0
+- pypi: https://files.pythonhosted.org/packages/d6/0c/df22d1807e2bddebd992caee411e6cbe0c5d41834e36bff883f4a7d95fc3/mojo_compiler-1.2.0-py3-none-macosx_13_0_arm64.whl
+  name: mojo-compiler
+  version: 1.2.0
+  sha256: bc1777d9b3cf4522ee213cc83876b1955499aec2aa8dd8a75ce477f0cd227a90
+  requires_dist:
+  - mojo-compiler-mojo-libs==1.2.0
+- pypi: https://files.pythonhosted.org/packages/d7/d5/bfd1a8bcc198cc209be3602bde68f4bbe60cedaf52c616724553373b6850/mblack-26.7.0-py3-none-any.whl
   name: mblack
-  version: 26.6.0
-  sha256: 4edda4c1bd7d75d03709280777ff3bbdeb92891568340029015fd39f213120e0
+  version: 26.7.0
+  sha256: a7dcf3cf1a8439bacd0fc692eb75783b8fd315fcfd5260e0f74e8e5ba77e5133
   requires_dist:
   - click>=8.0.0
   - mypy-extensions>=0.4.3
   - pathspec>=1.1.0
   - platformdirs>=2
   - tomli>=1.1.0 ; python_full_version < '3.11'
-- pypi: https://files.pythonhosted.org/packages/93/f3/abf242879fe2f26809faa351bfb52d0746c25dde78796c3c5b5443355ea5/mojo_lldb_libs-1.1.0-py3-none-manylinux_2_34_x86_64.whl
-  name: mojo-lldb-libs
-  version: 1.1.0
-  sha256: 782ff566b14100634a717d5b59602e6b310f4480107e391047db31d14f3497aa
-- pypi: https://files.pythonhosted.org/packages/dd/c0/4118df04da5776700839642477bdda0b1f906a99c69c8f2f94d4aea9fef4/mojo-1.1.0-py3-none-manylinux_2_34_x86_64.whl
-  name: mojo
-  version: 1.1.0
-  sha256: aa95383d960d2d7a8738117ed808df745fa5fc92d24566ac73e775a8defe832d
-  requires_dist:
-  - mojo-compiler==1.1.0
-  - mblack==26.6.0
-  - mojo-lldb-libs==1.1.0
-- pypi: https://files.pythonhosted.org/packages/e8/5e/31522e5336d63ab0fad18980cccf6c5cc2085c1a041ea3723eb916a17c08/mojo_compiler-1.1.0-py3-none-manylinux_2_34_x86_64.whl
-  name: mojo-compiler
-  version: 1.1.0
-  sha256: b47442278eb39705075f23d058b38a364bd68bdaa542ad514c187cee633beab7
-  requires_dist:
-  - mojo-compiler-mojo-libs==1.1.0
 - pypi: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
   name: pathspec
   version: 1.1.1

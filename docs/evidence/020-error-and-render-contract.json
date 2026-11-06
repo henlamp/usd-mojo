@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "source_commit": "a785608e82e3c7631ecf185212d0558e9fbfc1b1",
+  "source_sha256": "ba04f27e3eefa16ec4f445d4995b57927733f558f5297a7d151576c9f080bbaa",
+  "checked_on": "2026-11-06",
+  "native_cpu_checks": 40,
+  "optional_checks": {
+    "macos": 10,
+    "linux_nvidia": 8
+  },
+  "api_additions": [
+    "RenderSession.backend",
+    "RenderSession.renderer"
+  ],
+  "original_01_api_preserved": true,
+  "shared_native_errors": "core/Hydra/MaterialX use one category and exception boundary; typed SDK file/parse/type errors retained",
+  "materialx_writes": "ofstream open and close states checked; failed writes return io",
+  "linux_materialx_error_contract": {
+    "status": "passed",
+    "source_sha256": "ba04f27e3eefa16ec4f445d4995b57927733f558f5297a7d151576c9f080bbaa",
+    "checks": {
+      "missing-file": 6,
+      "malformed-xml": 5,
+      "missing-element": 2,
+      "invalid-target": 1,
+      "input-type": 3,
+      "unwritable-output": 6,
+      "unsupported-readback": 4,
+      "recovery-after-errors": true
+    }
+  },
+  "render_identity": "Hgi API and active plugin are read from the session; missing/mixed metadata and differing installed backends fail checks",
+  "reference_isolation": "Native Hydra boundary worker imports no Python pxr modules; SDK library paths apply only to child consumers",
+  "external_context_harness_required": false,
+  "linux_archive_sha256": "48f0d382453ebad0fc5418cf48d527d22332fd56f053ed292fe31e5512885510",
+  "candidate_record": "020-candidate.json",
+  "skinning": {
+    "status": "passed",
+    "record": "020-candidate.json",
+    "section": "current.skinning",
+    "sdk_evaluations_per_native_configuration": 19,
+    "sdk_point_components_per_native_configuration": 171,
+    "behavior": "Missing or blocked weights at the requested time leave shapes neutral; malformed resolved arrays fail before deformation."
+  },
+  "limits_record": "020-candidate.json",
+  "gcc13_native_test": "Retain VtValue owners and use const lvalue UncheckedGet; do not invoke the rvalue UncheckedRemove path."
+}

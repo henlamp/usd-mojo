@@ -141,6 +141,7 @@ USDM_API uint64_t usdm_stage_open_policy(const char *path, int32_t load_all) noe
         check_diagnostics(diagnostics);
         auto o = std::make_unique<StageOwner>();
         o->stage = stage;
+        o->watch();
         return o;
     });
 }
