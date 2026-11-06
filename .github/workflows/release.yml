@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing release tag
+        description: Existing release tag; publishing also requires a tag workflow ref
         required: true
         type: string
       reuse_linux_run:
@@ -153,6 +153,7 @@ jobs:
 
   publish:
     needs: gate
+    if: startsWith(github.ref, 'refs/tags/v')
     strategy:
       fail-fast: false
       matrix:

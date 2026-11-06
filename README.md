@@ -32,7 +32,8 @@ pixi run ./example
 ```
 
 Published 0.1.0 packages target Mojo 1.1.0, OpenUSD 26.08 and macOS ARM64.
-The 0.2.0 community package update is pending.
+The [0.2.0 community update](https://github.com/modular/modular-community/pull/449)
+is pending. Downloadable packages are on [Releases](https://github.com/henlamp/usd-mojo/releases/tag/v0.2.0).
 Pixi installs the SDK and CPython library; the Mojo API makes no Python
 calls. Version 0.2.0 uses Mojo 1.2.0; the pinned 1.2.0.dev2026100905
 snapshot remains an additional compatibility target.
