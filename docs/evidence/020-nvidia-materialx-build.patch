@@ -1,0 +1,10 @@
+--- a/pxr/usdImaging/bin/CMakeLists.txt
++++ b/pxr/usdImaging/bin/CMakeLists.txt
+@@ -8,6 +8,6 @@
+     add_subdirectory(${d})
+ endforeach()
+ 
+-if (${PXR_ENABLE_MATERIALX_SUPPORT})
++if (${PXR_ENABLE_MATERIALX_SUPPORT} AND TARGET MaterialXRenderGlsl)
+     add_subdirectory(usdBakeMtlx)
+ endif()

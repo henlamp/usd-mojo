@@ -1,0 +1,194 @@
+{
+  "status": "passed",
+  "checked_on": "2026-11-04",
+  "source_commit": "d01216fe1177ec20d2cd42feae7df970c49e76f6",
+  "source_sha256": "08658e32b43908a8fcb421a108ba018f12e9ef2b0097f0298292b36482e9fb25",
+  "system": "darwin",
+  "machine": "arm64",
+  "openusd": "26.08",
+  "asset": {
+    "repository": "usd-wg/assets",
+    "commit": "091bb5c6f8eb665ad4cf9d6c10025cecc07eda88",
+    "entrypoint": "full_assets/Vehicles/USD_Mini_Car_Kit/assets/vehicles/vehicleVariants.usda",
+    "sha256": "a43447c1152127a45b079a791a966aaef75dadab0029170d7fb457f4dfd2fa1f",
+    "corpus_receipt_sha256": "2c7ab9ce5f10895811d871acb6518b6102d4a4fc99cc6927d84f75526203a396"
+  },
+  "profile_receipt_sha256": "a039f405352ed5aef88a22d11608185b9b426d796d02f92044b30c364061a9bf",
+  "bridge_sha256": "16317c22c5af8774d5674ac3c59cd8f9e32541627fa8f98113f6b84cf9a8f5a5",
+  "warmup_cycles": 100,
+  "measured_cycles_per_fresh_process": 2000,
+  "cases": {
+    "sdk-open": {
+      "result": {
+        "prims": 91
+      },
+      "first_sample": {
+        "cycle": 0,
+        "rss_bytes": 118702080,
+        "allocator_live_bytes": 15735312,
+        "loaded_layers": 0,
+        "tokens": 847
+      },
+      "last_sample": {
+        "cycle": 2000,
+        "rss_bytes": 109658112,
+        "allocator_live_bytes": 17849728,
+        "loaded_layers": 0,
+        "tokens": 847
+      },
+      "growth": {
+        "rss_bytes": -9043968,
+        "allocator_live_bytes": 2114416,
+        "loaded_layers": 0,
+        "tokens": 0
+      },
+      "layers_after_close": 0
+    },
+    "sdk-flatten": {
+      "result": {
+        "root_prims": 1
+      },
+      "first_sample": {
+        "cycle": 0,
+        "rss_bytes": 122208256,
+        "allocator_live_bytes": 18470944,
+        "loaded_layers": 17,
+        "tokens": 1232
+      },
+      "last_sample": {
+        "cycle": 2000,
+        "rss_bytes": 122716160,
+        "allocator_live_bytes": 32786336,
+        "loaded_layers": 17,
+        "tokens": 1232
+      },
+      "growth": {
+        "rss_bytes": 507904,
+        "allocator_live_bytes": 14315392,
+        "loaded_layers": 0,
+        "tokens": 0
+      },
+      "layers_after_close": 17
+    },
+    "sdk-snapshot": {
+      "result": {
+        "prims": 91,
+        "matrix_sum": -1253.8989095510397
+      },
+      "first_sample": {
+        "cycle": 0,
+        "rss_bytes": 58097664,
+        "allocator_live_bytes": 18241744,
+        "loaded_layers": 17,
+        "tokens": 1265
+      },
+      "last_sample": {
+        "cycle": 2000,
+        "rss_bytes": 67174400,
+        "allocator_live_bytes": 32359520,
+        "loaded_layers": 17,
+        "tokens": 1265
+      },
+      "growth": {
+        "rss_bytes": 9076736,
+        "allocator_live_bytes": 14117776,
+        "loaded_layers": 0,
+        "tokens": 0
+      },
+      "layers_after_close": 17
+    },
+    "bridge-snapshot": {
+      "result": {
+        "prims": 91,
+        "matrix_sum": -1253.89890955104
+      },
+      "first_sample": {
+        "cycle": 0,
+        "rss_bytes": 121421824,
+        "allocator_live_bytes": 17428032,
+        "loaded_layers": 17,
+        "tokens": 1620
+      },
+      "last_sample": {
+        "cycle": 2000,
+        "rss_bytes": 124141568,
+        "allocator_live_bytes": 32095792,
+        "loaded_layers": 17,
+        "tokens": 1620
+      },
+      "growth": {
+        "rss_bytes": 2719744,
+        "allocator_live_bytes": 14667760,
+        "loaded_layers": 0,
+        "tokens": 0
+      },
+      "layers_after_close": 17
+    },
+    "sdk-reuse": {
+      "result": {
+        "prims": 91,
+        "matrix_sum": -1253.8989095510397
+      },
+      "first_sample": {
+        "cycle": 0,
+        "rss_bytes": 95043584,
+        "allocator_live_bytes": 15308512,
+        "loaded_layers": 33,
+        "tokens": 1265
+      },
+      "last_sample": {
+        "cycle": 2000,
+        "rss_bytes": 45252608,
+        "allocator_live_bytes": 18283440,
+        "loaded_layers": 33,
+        "tokens": 1265
+      },
+      "growth": {
+        "rss_bytes": -49790976,
+        "allocator_live_bytes": 2974928,
+        "loaded_layers": 0,
+        "tokens": 0
+      },
+      "layers_after_close": 17
+    },
+    "bridge-reuse": {
+      "result": {
+        "prims": 91,
+        "matrix_sum": -1253.89890955104
+      },
+      "first_sample": {
+        "cycle": 0,
+        "rss_bytes": 120815616,
+        "allocator_live_bytes": 15617280,
+        "loaded_layers": 33,
+        "tokens": 1620
+      },
+      "last_sample": {
+        "cycle": 2000,
+        "rss_bytes": 113885184,
+        "allocator_live_bytes": 18599616,
+        "loaded_layers": 33,
+        "tokens": 1620
+      },
+      "growth": {
+        "rss_bytes": -6930432,
+        "allocator_live_bytes": 2982336,
+        "loaded_layers": 0,
+        "tokens": 0
+      },
+      "layers_after_close": 17
+    }
+  },
+  "observations": [
+    "SDK flattening reproduces allocator retention without calling the bridge API.",
+    "Snapshot prim counts and world-matrix checksums match between SDK and bridge paths.",
+    "Live-layer and interned-token counts stay constant within each warmed process.",
+    "Keeping the source stage open reduces the measured growth; it does not establish an eventual plateau."
+  ],
+  "limits": [
+    "Default malloc-zone live bytes and current RSS on macOS; not cumulative allocations or every allocator.",
+    "C ABI ownership and SDK reference calls, not native Mojo-versus-Python performance.",
+    "One pinned educational vehicle asset, not industrial CAD or production acceptance.",
+    "Retained storage has not been attributed to a specific SDK allocation site; unbounded memory stability remains unqualified."
+  ]
+}

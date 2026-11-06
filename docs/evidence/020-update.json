@@ -1,0 +1,46 @@
+{
+  "status": "passed",
+  "checked_on": "2026-11-05",
+  "base_commit": "8d083207dcc85a352911e821b9ac0082d0e94c3a",
+  "base_source_sha256": "90dc9cd566c98a2e26dadba9dd8eba472826e9faa58c7b9a00c9f57035af6282",
+  "proposal_commit": "5859c60727d0bdc4d0fa9d20238554c26dc5a146",
+  "proposal_source_sha256": "752d5b3ddb7a4b3ff8de7b98f0365907489c52a75d61e3bc0b4304997169f8d7",
+  "compiler": "Mojo 1.2.0 (2016d0cd)",
+  "execution_kind": "native",
+  "system": "darwin",
+  "machine": "arm64",
+  "phases": {
+    "proposal": {
+      "exit_code": 0
+    },
+    "lock": {
+      "exit_code": 0
+    },
+    "generation": {
+      "exit_code": 0
+    },
+    "generated-check": {
+      "exit_code": 0
+    },
+    "acceptance": {
+      "exit_code": 0
+    },
+    "package": {
+      "exit_code": 0
+    },
+    "installed": {
+      "exit_code": 0
+    }
+  },
+  "checks_passed": 10,
+  "acceptance_receipt_sha256": "3f4aa78054237b743bc75b87a9b9c9829ee6ad441f4366452ebe938000c400a1",
+  "conda": {
+    "artifact": "usd-mojo-0.2.0-mojo120_14.conda",
+    "sha256": "08284d0b0684c864e86afc6996d6c4af94800816ffd3fe296c473ddb30bc5cb8",
+    "fresh_environment": true
+  },
+  "cloud_workflow_dispatched": false,
+  "pins_adopted": false,
+  "published": false,
+  "scope": "Local replay of update, lock, generation, CPU acceptance, package and installed consumer. This does not qualify a newer OpenUSD SDK or GitHub workflow permissions."
+}
