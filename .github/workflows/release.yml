@@ -9,9 +9,15 @@ on:
         description: Existing release tag
         required: true
         type: string
+      reuse_linux_run:
+        description: Reuse exact-source Linux acceptance and packages from this run
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: release-${{ inputs.tag || github.event.release.tag_name }}
@@ -38,15 +44,67 @@ jobs:
           ref: ${{ env.RELEASE_TAG }}
           fetch-depth: 0
           persist-credentials: false
-      - uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
+      - if: matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run != ''
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: usd-mojo-acceptance-Linux
+          path: .build/release-acceptance
+          run-id: ${{ inputs.reuse_linux_run }}
+          github-token: ${{ github.token }}
+      - if: matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run != ''
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: usd-mojo-release-Linux
+          path: .build/distributions
+          run-id: ${{ inputs.reuse_linux_run }}
+          github-token: ${{ github.token }}
+      - name: Verify reused Linux package
+        if: matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run != ''
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, subprocess
+          from pathlib import Path
+          root = Path('.build/distributions')
+          report = json.loads((root / 'release.json').read_text())
+          installed = json.loads((root / 'installed.json').read_text())
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          assert report['source_commit'] == installed['source_commit'] == head
+          assert report['subdir'] == 'linux-64'
+          assert installed['status'] == 'passed' and installed['fresh_environment']
+          artifact = report['artifact']
+          assert Path(artifact).name == artifact and artifact.endswith('.conda')
+          package = root / 'linux-64' / artifact
+          assert hashlib.sha256(package.read_bytes()).hexdigest() == report['sha256'] == installed['sha256']
+          PY
+      - if: ${{ !(matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run) }}
+        uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
         with:
           pixi-version: v0.81.0
           run-install: false
-      - run: pixi run --locked -e default python tools/corpus.py .local/corpus --fetch
-      - run: pixi run --locked -e default acceptance --execution-kind native --corpus .local/corpus
+      - name: Fetch pinned corpus
+        if: ${{ !(matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run) }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pixi run --locked -e default python - <<'PY'
+          import os, runpy, sys
+          from urllib.parse import urlsplit
+          from urllib.request import BaseHandler, build_opener, install_opener
+          class GitHubAuth(BaseHandler):
+              def https_request(self, request):
+                  if urlsplit(request.full_url).hostname == 'api.github.com':
+                      request.add_unredirected_header('Authorization', 'Bearer ' + os.environ['GH_TOKEN'])
+                  return request
+          install_opener(build_opener(GitHubAuth()))
+          sys.argv = ['tools/corpus.py', '.local/corpus', '--fetch']
+          runpy.run_path('tools/corpus.py', run_name='__main__')
+          PY
+      - if: ${{ !(matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run) }}
+        run: pixi run --locked -e default acceptance --execution-kind native --corpus .local/corpus
         env:
           USD_MOJO_BUILD_DIR: .build/release-acceptance/default
-      - run: pixi run --locked -e nightly acceptance --execution-kind native --corpus .local/corpus
+      - if: ${{ !(matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run) }}
+        run: pixi run --locked -e nightly acceptance --execution-kind native --corpus .local/corpus
         env:
           USD_MOJO_BUILD_DIR: .build/release-acceptance/nightly
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
@@ -59,8 +117,10 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
       - name: Build and test Conda package
+        if: ${{ !(matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run) }}
         run: pixi exec --spec python=3.12.13 --spec rattler-build=0.76.1 -- python tools/release.py build --tag "$RELEASE_TAG"
       - name: Check fresh Pixi consumer
+        if: ${{ !(matrix.os == 'ubuntu-24.04' && inputs.reuse_linux_run) }}
         run: pixi exec --spec python=3.12.13 -- python tools/release.py installed --tag "$RELEASE_TAG" --channel "file://$PWD/.build/distributions"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
