@@ -58,7 +58,7 @@ Flattened exports and frozen snapshots reject unregistered metadata that the SDK
 would discard. Register its schema plugin before opening, or use `Layer.export`
 to retain the original opinions. A population mask may exclude unrelated objects.
 
-## Development 0.2 additions
+## Version 0.2 additions
 
 | Area | API and semantics |
 | --- | --- |
@@ -189,7 +189,7 @@ Linux applications must supply a current OpenGL 4.5+ context. For local tests,
 The helper is not installed or required by the core library.
 On the qualified WSLg/Mesa 25 stack, `GALLIUM_DRIVER=d3d12` selects hardware
 rendering. The embedding application supplies a registered shared SDK context;
-the exact qualification setup is in [Linux evidence](https://github.com/henlamp/usd-mojo/blob/development/docs/evidence/020-linux.json).
+the exact qualification setup is in [Linux evidence](https://github.com/henlamp/usd-mojo/blob/v0.2.0/docs/evidence/020-linux.json).
 
 Run `pixi run python tools/imaging_check.py` for the one-shot path and
 `pixi run python tools/render_session_check.py` for sequences and buffer reuse. To build
@@ -209,7 +209,7 @@ input edits and saving. `shader(element, target="msl")` generates MSL; use
 Texture-space Metal readbacks own Float32 pixels and lend lifetime-bound spans. These are value-output renders;
 surface materials are evaluated by the separate MaterialX-enabled Hydra path.
 Hydra surface shading is qualified on Metal and NVIDIA/WSLg; see the
-[MaterialX evidence](https://github.com/henlamp/usd-mojo/blob/development/docs/evidence/020-materialx.json) for SDK configuration and cases.
+[MaterialX evidence](https://github.com/henlamp/usd-mojo/blob/v0.2.0/docs/evidence/020-materialx.json) for SDK configuration and cases.
 The MaterialX platform helper uses a hidden window; rendering requires the main
 thread. File access and XML version upgrades follow MaterialX, without an asset
 sandbox. The original file changes only when explicitly saved.

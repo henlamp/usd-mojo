@@ -1,6 +1,6 @@
 # Validation
 
-The [qualification record](https://github.com/henlamp/usd-mojo/blob/development/docs/evidence/020-candidate.json)
+The [qualification record](https://github.com/henlamp/usd-mojo/blob/v0.2.0/docs/evidence/020-candidate.json)
 identifies the tested source, native platform/compiler runs and packages.
 Both pinned compilers passed macOS ARM64 and Linux x86-64 acceptance, plus
 Metal/NVIDIA rendering checks. Conda build `mojo120_18` passed fresh Pixi
@@ -44,7 +44,7 @@ rejects unregistered metadata, while layer export preserves those opinions.
 
 Workloads measure forty open/edit/snapshot/save/close cycles after ten warmups;
 `tools/workloads_check.py --corpus .local/corpus --rounds 1000` extends the run.
-The [lifetime profile](https://github.com/henlamp/usd-mojo/blob/development/docs/evidence/020-memory-profile.json)
+The [lifetime profile](https://github.com/henlamp/usd-mojo/blob/v0.2.0/docs/evidence/020-memory-profile.json)
 compares six SDK/C ABI paths over 2,000 cycles. These are bounded measurements.
 Fresh Pixi checks verify the installed artifact hash. Local dependency caches are
 shared; remote-channel retries isolate caches and invalidate stale success receipts.
@@ -61,8 +61,8 @@ Optional checks, run after `pixi run --locked python`:
 
 MaterialX checks require `USD_MOJO_MATERIALX_PREFIX`; the Hydra MaterialX check
 also requires the separate `USD_MOJO_SDK_PREFIX`. See [SDK setup](API.md#optional-materialx).
-[Rendering evidence](https://github.com/henlamp/usd-mojo/blob/development/docs/evidence/020-render-session.json)
-and [MaterialX evidence](https://github.com/henlamp/usd-mojo/blob/development/docs/evidence/020-materialx.json)
+[Rendering evidence](https://github.com/henlamp/usd-mojo/blob/v0.2.0/docs/evidence/020-render-session.json)
+and [MaterialX evidence](https://github.com/henlamp/usd-mojo/blob/v0.2.0/docs/evidence/020-materialx.json)
 bind compiler runs to logs, pixels and samples. The pinned unlit-uniform patch
 and optional SDK identity are recorded; the unpatched failure remains in diagnostics.
 

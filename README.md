@@ -32,10 +32,11 @@ pixi run ./example
 ```
 
 Published 0.1.0 packages target Mojo 1.1.0, OpenUSD 26.08 and macOS ARM64.
+The 0.2.0 community package update is pending.
 Pixi installs the SDK and CPython library; the Mojo API makes no Python
-calls. Development 0.2.0 uses Mojo 1.2.0; the pinned 1.2.0.dev2026100905
+calls. Version 0.2.0 uses Mojo 1.2.0; the pinned 1.2.0.dev2026100905
 snapshot remains an additional compatibility target.
-Unreleased 0.2.0 adds Linux x86-64 alongside macOS ARM64, layer/edit-target APIs,
+Version 0.2.0 adds Linux x86-64 alongside macOS ARM64, layer/edit-target APIs,
 metadata/schema snapshots, working-set controls, splines, skeleton evaluation,
 USDZ export and optional Hydra/MaterialX rendering.
 [Validation](docs/VALIDATION.md) records tested sources, platforms and packages.

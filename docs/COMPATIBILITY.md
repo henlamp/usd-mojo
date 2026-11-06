@@ -1,6 +1,6 @@
 # Compatibility
 
-Development 0.2.0 retains the reviewed 0.1 API. The original declarations remain
+Version 0.2.0 retains the reviewed 0.1 API. The original declarations remain
 in `tests/api/usd_mojo-0.1.json` and are checked as a subset of the expanded API.
 Platform checks and installed-package qualification are recorded separately in
 [validation](VALIDATION.md), with the exact source tested on each platform.

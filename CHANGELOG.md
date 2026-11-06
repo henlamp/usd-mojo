@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (unreleased)
+## 0.2.0 — 2026-11-06
 
 - Default compiler and compiled packages use stable Mojo 1.2.0.
 - Linux x86-64 packages alongside macOS ARM64; the reviewed 0.1 source API remains.
