@@ -130,7 +130,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: henlamp/modular-community
-          ref: 6e1f784a6be47b1d0947bb47cb361b5941db8587
+          ref: 0c64c0de7021644f7d1853c01a5a4e9ba3cfc11d
           path: .build/community-recipe
           persist-credentials: false
       - uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
