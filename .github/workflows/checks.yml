@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
+      community_diagnostic:
+        description: Diagnose only the pinned community recipe on Linux
+        type: boolean
+        default: false
       package_only:
         description: Check only the Linux package and a fresh installed consumer
         type: boolean
@@ -18,7 +22,7 @@ permissions:
   contents: read
 jobs:
   sdk-and-mojo:
-    if: ${{ !inputs.package_only && !inputs.linux_candidate }}
+    if: ${{ !inputs.package_only && !inputs.linux_candidate && !inputs.community_diagnostic }}
     strategy:
       fail-fast: false
       matrix:
@@ -109,5 +113,47 @@ jobs:
             .build/linux-nightly/benchmarks/benchmark.json
             .build/linux-nightly/scene-benchmarks/benchmark.json
             .build/linux-nightly/mutation-array-benchmarks/benchmark.json
+          include-hidden-files: true
+          if-no-files-found: error
+
+  linux-community-diagnostic:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.community_diagnostic }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PXR_WORK_THREAD_LIMIT: "2"
+      CMAKE_BUILD_PARALLEL_LEVEL: "2"
+      TOKIO_WORKER_THREADS: "2"
+      RAYON_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: henlamp/modular-community
+          ref: 6e1f784a6be47b1d0947bb47cb361b5941db8587
+          path: .build/community-recipe
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514
+        with:
+          pixi-version: v0.81.0
+          run-install: false
+      - name: Build only the pinned community package
+        run: |
+          set -o pipefail
+          pixi exec --spec rattler-build=0.30.0 -- rattler-build build \
+            --recipe .build/community-recipe/recipes/usd-mojo/recipe.yaml \
+            --channel conda-forge --channel https://conda.modular.com/max \
+            --output-dir .build/community-package 2>&1 | tee .build/community-package.log
+      - name: Record the actual embedded paths
+        if: always()
+        run: python3 tools/diagnose_conda_paths.py .build/community-package .build/community-diagnostics
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: community-package-diagnostic
+          retention-days: 3
+          path: |
+            .build/community-diagnostics/**
+            .build/community-package.log
           include-hidden-files: true
           if-no-files-found: error
