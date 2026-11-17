@@ -23,9 +23,12 @@ GPU claims need measurements on each advertised backend.
 The workflow collects both compiler runs per platform; the gate and upload command
 verify report, artifact and log hashes. Manual uploads require the same
 `--acceptance-root` evidence. The `release` environment uses prefix.dev Repository
-Access and permits version tags only. Branch dispatches validate packages without
-publishing; dispatch from a version tag to upload. Increment both recipe build
-fields for changed builds of the same version.
+Access and permits version tags only. Manual dispatches validate without uploading;
+upload requires `publish=true` and the matching version-tag workflow ref. `reuse_run`
+can reuse both platforms' packages and evidence after source, recipe, checksum and
+installed-consumer checks. Released tags keep their original workflow; workflow
+updates apply to future tags. Increment both recipe build fields for changed builds
+of the same version.
 
 `python tools/release.py community --output DIR` exports a pinned community recipe.
 Community builds start at zero; use `--build-number N` for subsequent rebuilds.
